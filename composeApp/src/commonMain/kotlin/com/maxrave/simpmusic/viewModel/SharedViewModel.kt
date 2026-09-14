@@ -1401,7 +1401,7 @@ class SharedViewModel(
         artist: String?,
         duration: Int,
     ) {
-        lyricsCanvasRepository.getOmniMusicLyrics(videoId).collectLatest {
+        lyricsCanvasRepository.getSimpMusicLyrics(videoId).collectLatest {
             Logger.w(tag, "Get OmniMusic Lyrics for $videoId: $it")
             val data = it.data
             if (it is Resource.Success && data != null) {
@@ -1587,7 +1587,7 @@ class SharedViewModel(
     ) {
         val translationLanguage =
             dataStoreManager.translationLanguage.first()
-        lyricsCanvasRepository.getOmniMusicTranslatedLyrics(videoId, translationLanguage).collectLatest { response ->
+        lyricsCanvasRepository.getSimpMusicTranslatedLyrics(videoId, translationLanguage).collectLatest { response ->
             val data = response.data
             when (response) {
                 is Resource.Success if (data != null) -> {
