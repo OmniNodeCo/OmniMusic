@@ -93,14 +93,14 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.add_to_queue
-import simpmusic.composeapp.generated.resources.album
-import simpmusic.composeapp.generated.resources.artists
-import simpmusic.composeapp.generated.resources.playlist
-import simpmusic.composeapp.generated.resources.podcasts
-import simpmusic.composeapp.generated.resources.radio
-import simpmusic.composeapp.generated.resources.you
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.add_to_queue
+import omnimusic.composeapp.generated.resources.album
+import omnimusic.composeapp.generated.resources.artists
+import omnimusic.composeapp.generated.resources.playlist
+import omnimusic.composeapp.generated.resources.podcasts
+import omnimusic.composeapp.generated.resources.radio
+import omnimusic.composeapp.generated.resources.you
 import kotlin.math.roundToInt
 
 /**

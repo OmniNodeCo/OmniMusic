@@ -84,12 +84,12 @@ import dev.chrisbanes.haze.rememberHazeState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.album
-import simpmusic.composeapp.generated.resources.new_release
-import simpmusic.composeapp.generated.resources.no_notification
-import simpmusic.composeapp.generated.resources.notification
-import simpmusic.composeapp.generated.resources.singles
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.album
+import omnimusic.composeapp.generated.resources.new_release
+import omnimusic.composeapp.generated.resources.no_notification
+import omnimusic.composeapp.generated.resources.notification
+import omnimusic.composeapp.generated.resources.singles
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

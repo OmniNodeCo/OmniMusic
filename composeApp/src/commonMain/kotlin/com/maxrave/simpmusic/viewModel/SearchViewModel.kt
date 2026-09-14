@@ -28,15 +28,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.albums
-import simpmusic.composeapp.generated.resources.all
-import simpmusic.composeapp.generated.resources.artists
-import simpmusic.composeapp.generated.resources.featured_playlists
-import simpmusic.composeapp.generated.resources.playlists
-import simpmusic.composeapp.generated.resources.podcasts
-import simpmusic.composeapp.generated.resources.songs
-import simpmusic.composeapp.generated.resources.videos
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.albums
+import omnimusic.composeapp.generated.resources.all
+import omnimusic.composeapp.generated.resources.artists
+import omnimusic.composeapp.generated.resources.featured_playlists
+import omnimusic.composeapp.generated.resources.playlists
+import omnimusic.composeapp.generated.resources.podcasts
+import omnimusic.composeapp.generated.resources.songs
+import omnimusic.composeapp.generated.resources.videos
 
 // State cho tìm kiếm
 data class SearchScreenState(

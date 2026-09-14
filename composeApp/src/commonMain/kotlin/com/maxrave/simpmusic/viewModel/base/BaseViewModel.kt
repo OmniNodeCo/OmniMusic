@@ -18,8 +18,8 @@ import multiplatform.network.cmptoast.showToast
 import org.jetbrains.compose.resources.StringResource
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.loading
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.loading
 
 abstract class BaseViewModel :
     ViewModel(),

@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.share_url
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.share_url
 
 // UI state cho podcast
 sealed class PodcastUIState {

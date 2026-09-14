@@ -62,17 +62,17 @@ import com.maxrave.simpmusic.viewModel.UIEvent
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.ai_translated
-import simpmusic.composeapp.generated.resources.line_synced
-import simpmusic.composeapp.generated.resources.lyrics_provider_betterlyrics
-import simpmusic.composeapp.generated.resources.lyrics_provider_lrc
-import simpmusic.composeapp.generated.resources.lyrics_provider_omnimusic
-import simpmusic.composeapp.generated.resources.lyrics_provider_youtube
-import simpmusic.composeapp.generated.resources.offline_mode
-import simpmusic.composeapp.generated.resources.rich_synced
-import simpmusic.composeapp.generated.resources.spotify_lyrics_provider
-import simpmusic.composeapp.generated.resources.unsynced
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.ai_translated
+import omnimusic.composeapp.generated.resources.line_synced
+import omnimusic.composeapp.generated.resources.lyrics_provider_betterlyrics
+import omnimusic.composeapp.generated.resources.lyrics_provider_lrc
+import omnimusic.composeapp.generated.resources.lyrics_provider_omnimusic
+import omnimusic.composeapp.generated.resources.lyrics_provider_youtube
+import omnimusic.composeapp.generated.resources.offline_mode
+import omnimusic.composeapp.generated.resources.rich_synced
+import omnimusic.composeapp.generated.resources.spotify_lyrics_provider
+import omnimusic.composeapp.generated.resources.unsynced
 
 /**
  * The LYRICS body: compact header, the app's own [LyricsView] — the SAME renderer the other

@@ -95,14 +95,14 @@ import com.maxrave.simpmusic.viewModel.HomeViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.album
-import simpmusic.composeapp.generated.resources.app_name
-import simpmusic.composeapp.generated.resources.description
-import simpmusic.composeapp.generated.resources.playlist
-import simpmusic.composeapp.generated.resources.subscribers
-import simpmusic.composeapp.generated.resources.wrapped_recap_subtitle
-import simpmusic.composeapp.generated.resources.you
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.album
+import omnimusic.composeapp.generated.resources.app_name
+import omnimusic.composeapp.generated.resources.description
+import omnimusic.composeapp.generated.resources.playlist
+import omnimusic.composeapp.generated.resources.subscribers
+import omnimusic.composeapp.generated.resources.wrapped_recap_subtitle
+import omnimusic.composeapp.generated.resources.you
 
 @Composable
 fun HomeItem(

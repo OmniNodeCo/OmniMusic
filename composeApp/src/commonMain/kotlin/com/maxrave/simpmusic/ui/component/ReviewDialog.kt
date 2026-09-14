@@ -19,7 +19,7 @@ import com.maxrave.simpmusic.ui.theme.seed
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.*
+import omnimusic.composeapp.generated.resources.*
 
 @Composable
 @ExperimentalMaterial3Api

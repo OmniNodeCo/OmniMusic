@@ -24,7 +24,7 @@ import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.MoodViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.*
+import omnimusic.composeapp.generated.resources.*
 
 @Composable
 fun MoodScreen(

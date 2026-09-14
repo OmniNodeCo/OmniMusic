@@ -27,10 +27,10 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.playlist
-import simpmusic.composeapp.generated.resources.wrapped_recap_month
-import simpmusic.composeapp.generated.resources.wrapped_recap_month_year
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.playlist
+import omnimusic.composeapp.generated.resources.wrapped_recap_month
+import omnimusic.composeapp.generated.resources.wrapped_recap_month_year
 
 class LibraryDynamicPlaylistViewModel(
     private val songRepository: SongRepository,

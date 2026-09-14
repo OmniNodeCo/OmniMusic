@@ -63,20 +63,20 @@ import kotlinx.coroutines.launch
 import multiplatform.network.cmptoast.ToastGravity
 import multiplatform.network.cmptoast.showToast
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.share_lyrics
-import simpmusic.composeapp.generated.resources.share_lyrics_background
-import simpmusic.composeapp.generated.resources.share_lyrics_continue
-import simpmusic.composeapp.generated.resources.share_lyrics_max_reached
-import simpmusic.composeapp.generated.resources.share_lyrics_permission_denied
-import simpmusic.composeapp.generated.resources.share_lyrics_save
-import simpmusic.composeapp.generated.resources.share_lyrics_save_failed
-import simpmusic.composeapp.generated.resources.share_lyrics_saved
-import simpmusic.composeapp.generated.resources.share_lyrics_saved_desktop
-import simpmusic.composeapp.generated.resources.share_lyrics_select_title
-import simpmusic.composeapp.generated.resources.share_lyrics_selected_count
-import simpmusic.composeapp.generated.resources.share_lyrics_share_action
-import simpmusic.composeapp.generated.resources.share_lyrics_share_failed
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.share_lyrics
+import omnimusic.composeapp.generated.resources.share_lyrics_background
+import omnimusic.composeapp.generated.resources.share_lyrics_continue
+import omnimusic.composeapp.generated.resources.share_lyrics_max_reached
+import omnimusic.composeapp.generated.resources.share_lyrics_permission_denied
+import omnimusic.composeapp.generated.resources.share_lyrics_save
+import omnimusic.composeapp.generated.resources.share_lyrics_save_failed
+import omnimusic.composeapp.generated.resources.share_lyrics_saved
+import omnimusic.composeapp.generated.resources.share_lyrics_saved_desktop
+import omnimusic.composeapp.generated.resources.share_lyrics_select_title
+import omnimusic.composeapp.generated.resources.share_lyrics_selected_count
+import omnimusic.composeapp.generated.resources.share_lyrics_share_action
+import omnimusic.composeapp.generated.resources.share_lyrics_share_failed
 import kotlin.random.Random
 
 /**

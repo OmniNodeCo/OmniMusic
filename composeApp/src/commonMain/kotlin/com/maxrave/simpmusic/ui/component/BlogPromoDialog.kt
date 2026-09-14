@@ -12,12 +12,12 @@ import androidx.compose.ui.window.DialogProperties
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.blog_promo_message
-import simpmusic.composeapp.generated.resources.blog_promo_title
-import simpmusic.composeapp.generated.resources.later
-import simpmusic.composeapp.generated.resources.mono
-import simpmusic.composeapp.generated.resources.visit_blog
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.blog_promo_message
+import omnimusic.composeapp.generated.resources.blog_promo_title
+import omnimusic.composeapp.generated.resources.later
+import omnimusic.composeapp.generated.resources.mono
+import omnimusic.composeapp.generated.resources.visit_blog
 
 @Composable
 @ExperimentalMaterial3Api

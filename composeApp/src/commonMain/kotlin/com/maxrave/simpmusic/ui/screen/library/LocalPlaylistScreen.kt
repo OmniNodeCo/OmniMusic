@@ -190,24 +190,24 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.album_length
-import simpmusic.composeapp.generated.resources.baseline_downloaded
-import simpmusic.composeapp.generated.resources.cancel
-import simpmusic.composeapp.generated.resources.created_at
-import simpmusic.composeapp.generated.resources.downloaded
-import simpmusic.composeapp.generated.resources.downloading
-import simpmusic.composeapp.generated.resources.reload
-import simpmusic.composeapp.generated.resources.remove_from_playlist
-import simpmusic.composeapp.generated.resources.sort_by
-import simpmusic.composeapp.generated.resources.suggest
-import simpmusic.composeapp.generated.resources.sync_playlist_warning
-import simpmusic.composeapp.generated.resources.synced_playlist_cannot_change_order
-import simpmusic.composeapp.generated.resources.unsync_playlist_warning
-import simpmusic.composeapp.generated.resources.warning
-import simpmusic.composeapp.generated.resources.yes
-import simpmusic.composeapp.generated.resources.your_playlist
-import simpmusic.composeapp.generated.resources.search
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.album_length
+import omnimusic.composeapp.generated.resources.baseline_downloaded
+import omnimusic.composeapp.generated.resources.cancel
+import omnimusic.composeapp.generated.resources.created_at
+import omnimusic.composeapp.generated.resources.downloaded
+import omnimusic.composeapp.generated.resources.downloading
+import omnimusic.composeapp.generated.resources.reload
+import omnimusic.composeapp.generated.resources.remove_from_playlist
+import omnimusic.composeapp.generated.resources.sort_by
+import omnimusic.composeapp.generated.resources.suggest
+import omnimusic.composeapp.generated.resources.sync_playlist_warning
+import omnimusic.composeapp.generated.resources.synced_playlist_cannot_change_order
+import omnimusic.composeapp.generated.resources.unsync_playlist_warning
+import omnimusic.composeapp.generated.resources.warning
+import omnimusic.composeapp.generated.resources.yes
+import omnimusic.composeapp.generated.resources.your_playlist
+import omnimusic.composeapp.generated.resources.search
 
 private const val TAG = "LocalPlaylistScreen"
 

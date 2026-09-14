@@ -63,9 +63,9 @@ import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.error
-import simpmusic.composeapp.generated.resources.recently_added
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.error
+import omnimusic.composeapp.generated.resources.recently_added
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable

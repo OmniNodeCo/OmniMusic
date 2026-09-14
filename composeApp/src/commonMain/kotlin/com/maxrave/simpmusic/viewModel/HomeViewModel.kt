@@ -28,11 +28,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.music_video
-import simpmusic.composeapp.generated.resources.new_release
-import simpmusic.composeapp.generated.resources.song
-import simpmusic.composeapp.generated.resources.view_count
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.music_video
+import omnimusic.composeapp.generated.resources.new_release
+import omnimusic.composeapp.generated.resources.song
+import omnimusic.composeapp.generated.resources.view_count
 
 class HomeViewModel(
     private val dataStoreManager: DataStoreManager,

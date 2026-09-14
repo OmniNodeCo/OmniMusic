@@ -23,13 +23,13 @@ import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.VoteData
 import com.maxrave.simpmusic.viewModel.VoteState
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.cancel
-import simpmusic.composeapp.generated.resources.downvote
-import simpmusic.composeapp.generated.resources.rate_lyrics
-import simpmusic.composeapp.generated.resources.rate_translated_lyrics
-import simpmusic.composeapp.generated.resources.upvote
-import simpmusic.composeapp.generated.resources.vote_for_lyrics
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.cancel
+import omnimusic.composeapp.generated.resources.downvote
+import omnimusic.composeapp.generated.resources.rate_lyrics
+import omnimusic.composeapp.generated.resources.rate_translated_lyrics
+import omnimusic.composeapp.generated.resources.upvote
+import omnimusic.composeapp.generated.resources.vote_for_lyrics
 
 @Composable
 fun VoteLyricsDialog(

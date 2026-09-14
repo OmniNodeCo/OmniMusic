@@ -49,11 +49,11 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.added_local_playlist
-import simpmusic.composeapp.generated.resources.wrapped_recap_month
-import simpmusic.composeapp.generated.resources.wrapped_recap_month_year
-import simpmusic.composeapp.generated.resources.youtube_liked_music
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.added_local_playlist
+import omnimusic.composeapp.generated.resources.wrapped_recap_month
+import omnimusic.composeapp.generated.resources.wrapped_recap_month_year
+import omnimusic.composeapp.generated.resources.youtube_liked_music
 
 class LibraryViewModel(
     private val dataStoreManager: DataStoreManager,

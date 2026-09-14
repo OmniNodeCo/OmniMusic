@@ -28,10 +28,10 @@ import com.maxrave.simpmusic.ui.screen.home.wrapped.formatCount
 import com.maxrave.simpmusic.viewModel.WrappedBiggestDay
 import com.maxrave.simpmusic.viewModel.WrappedYear
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.wrapped_biggest_day_caption
-import simpmusic.composeapp.generated.resources.wrapped_biggest_day_plays
-import simpmusic.composeapp.generated.resources.wrapped_biggest_day_title
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.wrapped_biggest_day_caption
+import omnimusic.composeapp.generated.resources.wrapped_biggest_day_plays
+import omnimusic.composeapp.generated.resources.wrapped_biggest_day_title
 
 /**
  * Card 07 — the one day of the year that beat every other one.

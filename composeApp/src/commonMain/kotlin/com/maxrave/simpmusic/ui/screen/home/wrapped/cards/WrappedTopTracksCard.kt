@@ -32,9 +32,9 @@ import com.maxrave.simpmusic.ui.screen.home.wrapped.formatCount
 import com.maxrave.simpmusic.viewModel.WrappedTrack
 import com.maxrave.simpmusic.viewModel.WrappedYear
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.wrapped_plays
-import simpmusic.composeapp.generated.resources.wrapped_tracks_title
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.wrapped_plays
+import omnimusic.composeapp.generated.resources.wrapped_tracks_title
 
 /**
  * Card 03 — the five, counted down from one.

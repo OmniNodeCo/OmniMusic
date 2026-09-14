@@ -30,12 +30,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.radio
-import simpmusic.composeapp.generated.resources.shuffle
-import simpmusic.composeapp.generated.resources.sync_follow_failed
-import simpmusic.composeapp.generated.resources.subscribed_on_youtube
-import simpmusic.composeapp.generated.resources.unsubscribed_on_youtube
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.radio
+import omnimusic.composeapp.generated.resources.shuffle
+import omnimusic.composeapp.generated.resources.sync_follow_failed
+import omnimusic.composeapp.generated.resources.subscribed_on_youtube
+import omnimusic.composeapp.generated.resources.unsubscribed_on_youtube
 import org.jetbrains.compose.resources.getString
 
 class ArtistViewModel(

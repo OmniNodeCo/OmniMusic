@@ -102,8 +102,8 @@ import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentState
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.UIEvent
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.crossfading
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.crossfading
 import kotlin.math.roundToLong
 
 /** Which body the dock is currently showing. Held by the top-level Apple Music composable. */

@@ -50,10 +50,10 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.log_in
-import simpmusic.composeapp.generated.resources.login_failed
-import simpmusic.composeapp.generated.resources.login_success
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.log_in
+import omnimusic.composeapp.generated.resources.login_failed
+import omnimusic.composeapp.generated.resources.login_success
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable

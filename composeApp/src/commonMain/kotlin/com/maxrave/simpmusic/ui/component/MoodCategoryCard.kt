@@ -25,8 +25,8 @@ import coil3.compose.AsyncImage
 import com.maxrave.simpmusic.extension.angledGradientBackground
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.painterResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.monochrome
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.monochrome
 
 /**
  * A "Moods & Genres" browse category tile: the [playlistTitleGradient] and OmniMusic badge of an

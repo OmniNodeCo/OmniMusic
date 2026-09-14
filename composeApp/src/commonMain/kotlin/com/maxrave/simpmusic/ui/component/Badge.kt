@@ -22,8 +22,8 @@ import com.maxrave.simpmusic.ui.icon.Explicit
 import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.ai
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.ai
 
 @Composable
 fun ExplicitBadge(modifier: Modifier = Modifier) {

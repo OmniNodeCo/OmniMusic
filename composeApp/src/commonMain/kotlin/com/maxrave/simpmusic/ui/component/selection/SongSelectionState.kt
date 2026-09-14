@@ -10,8 +10,8 @@ import androidx.compose.runtime.setValue
 import multiplatform.network.cmptoast.ToastGravity
 import multiplatform.network.cmptoast.showToast
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.max_selection_reached
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.max_selection_reached
 
 /**
  * Hard cap on how many songs can be selected at once. Anything that acts on the selection

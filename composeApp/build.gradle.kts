@@ -34,6 +34,15 @@ plugins {
 // Force it to `always` so `Res` is generated for this app module.
 compose.resources {
     generateResClass = always
+    // Pin the generated `Res` package explicitly.
+    //
+    // Left empty, Compose derives it as "{project.group}.{project.name}.generated.resources",
+    // and a Gradle subproject with no explicit `group` inherits rootProject.name. So the
+    // package used to be `omnimusic.composeapp.generated.resources` purely because
+    // rootProject.name was "SimpMusic" — renaming the root project to "OmniMusic" silently
+    // moved it to `omnimusic.composeapp.generated.resources` and broke all ~1146 imports
+    // across 107 files. Pinning it makes the package independent of the project name.
+    packageOfResClass = "omnimusic.composeapp.generated.resources"
 }
 
 kotlin {

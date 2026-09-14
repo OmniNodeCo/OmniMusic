@@ -29,11 +29,11 @@ import com.maxrave.simpmusic.ui.icon.Download
 import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.home_offline_subtitle
-import simpmusic.composeapp.generated.resources.home_offline_title
-import simpmusic.composeapp.generated.resources.listen_to_downloaded
-import simpmusic.composeapp.generated.resources.retry
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.home_offline_subtitle
+import omnimusic.composeapp.generated.resources.home_offline_title
+import omnimusic.composeapp.generated.resources.listen_to_downloaded
+import omnimusic.composeapp.generated.resources.retry
 
 /**
  * Spotify-style minimal offline / error state shown on the Home tab when

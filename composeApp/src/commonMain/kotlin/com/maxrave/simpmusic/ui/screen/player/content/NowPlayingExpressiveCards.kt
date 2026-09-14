@@ -107,25 +107,25 @@ import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.LyricsProvider
 import com.maxrave.simpmusic.viewModel.UIEvent
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.artists
-import simpmusic.composeapp.generated.resources.description
-import simpmusic.composeapp.generated.resources.like_and_dislike
-import simpmusic.composeapp.generated.resources.line_synced
-import simpmusic.composeapp.generated.resources.lyrics
-import simpmusic.composeapp.generated.resources.lyrics_provider_betterlyrics
-import simpmusic.composeapp.generated.resources.lyrics_provider_lrc
-import simpmusic.composeapp.generated.resources.lyrics_provider_omnimusic
-import simpmusic.composeapp.generated.resources.lyrics_provider_youtube
-import simpmusic.composeapp.generated.resources.offline_mode
-import simpmusic.composeapp.generated.resources.published_at
-import simpmusic.composeapp.generated.resources.rate_lyrics
-import simpmusic.composeapp.generated.resources.rich_synced
-import simpmusic.composeapp.generated.resources.share_lyrics
-import simpmusic.composeapp.generated.resources.show
-import simpmusic.composeapp.generated.resources.spotify_lyrics_provider
-import simpmusic.composeapp.generated.resources.unsynced
-import simpmusic.composeapp.generated.resources.view_count
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.artists
+import omnimusic.composeapp.generated.resources.description
+import omnimusic.composeapp.generated.resources.like_and_dislike
+import omnimusic.composeapp.generated.resources.line_synced
+import omnimusic.composeapp.generated.resources.lyrics
+import omnimusic.composeapp.generated.resources.lyrics_provider_betterlyrics
+import omnimusic.composeapp.generated.resources.lyrics_provider_lrc
+import omnimusic.composeapp.generated.resources.lyrics_provider_omnimusic
+import omnimusic.composeapp.generated.resources.lyrics_provider_youtube
+import omnimusic.composeapp.generated.resources.offline_mode
+import omnimusic.composeapp.generated.resources.published_at
+import omnimusic.composeapp.generated.resources.rate_lyrics
+import omnimusic.composeapp.generated.resources.rich_synced
+import omnimusic.composeapp.generated.resources.share_lyrics
+import omnimusic.composeapp.generated.resources.show
+import omnimusic.composeapp.generated.resources.spotify_lyrics_provider
+import omnimusic.composeapp.generated.resources.unsynced
+import omnimusic.composeapp.generated.resources.view_count
 
 // Shared shape for the below-the-fold tonal cards.
 private val ExpressiveCardShape = RoundedCornerShape(20.dp)

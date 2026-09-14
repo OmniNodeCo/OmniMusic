@@ -21,8 +21,8 @@ import com.maxrave.logger.Logger
 import com.maxrave.simpmusic.viewModel.SharedViewModel
 import com.maxrave.simpmusic.viewModel.UIEvent
 import org.jetbrains.compose.resources.painterResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.circle_app_icon
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.circle_app_icon
 import java.awt.Dimension
 import java.util.prefs.Preferences
 

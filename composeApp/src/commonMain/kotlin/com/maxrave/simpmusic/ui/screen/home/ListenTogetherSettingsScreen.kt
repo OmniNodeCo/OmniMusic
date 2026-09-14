@@ -60,20 +60,20 @@ import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.ListenTogetherSettingsViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.listen_together
-import simpmusic.composeapp.generated.resources.lt_as_host
-import simpmusic.composeapp.generated.resources.lt_auto_approve_joins
-import simpmusic.composeapp.generated.resources.lt_auto_approve_joins_desc
-import simpmusic.composeapp.generated.resources.lt_blocked
-import simpmusic.composeapp.generated.resources.lt_blocked_empty
-import simpmusic.composeapp.generated.resources.lt_custom_server
-import simpmusic.composeapp.generated.resources.lt_custom_server_desc
-import simpmusic.composeapp.generated.resources.lt_default_server_location
-import simpmusic.composeapp.generated.resources.lt_default_server_name
-import simpmusic.composeapp.generated.resources.lt_save_server
-import simpmusic.composeapp.generated.resources.lt_server
-import simpmusic.composeapp.generated.resources.lt_unblock
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.listen_together
+import omnimusic.composeapp.generated.resources.lt_as_host
+import omnimusic.composeapp.generated.resources.lt_auto_approve_joins
+import omnimusic.composeapp.generated.resources.lt_auto_approve_joins_desc
+import omnimusic.composeapp.generated.resources.lt_blocked
+import omnimusic.composeapp.generated.resources.lt_blocked_empty
+import omnimusic.composeapp.generated.resources.lt_custom_server
+import omnimusic.composeapp.generated.resources.lt_custom_server_desc
+import omnimusic.composeapp.generated.resources.lt_default_server_location
+import omnimusic.composeapp.generated.resources.lt_default_server_name
+import omnimusic.composeapp.generated.resources.lt_save_server
+import omnimusic.composeapp.generated.resources.lt_server
+import omnimusic.composeapp.generated.resources.lt_unblock
 
 /** Matches ListenTogetherScreen — a phone-width column, centred in a wide window. */
 private const val CONTENT_MAX_WIDTH_DP = 560

@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.maxrave.logger.Logger
 import org.jetbrains.compose.resources.painterResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.monochrome
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.monochrome
 import kotlin.math.abs
 
 @Composable

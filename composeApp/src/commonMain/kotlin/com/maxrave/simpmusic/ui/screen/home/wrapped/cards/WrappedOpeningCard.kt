@@ -30,11 +30,11 @@ import com.maxrave.simpmusic.ui.screen.home.wrapped.WrappedTokens
 import com.maxrave.simpmusic.ui.screen.home.wrapped.formatCount
 import com.maxrave.simpmusic.viewModel.WrappedYear
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.wrapped_opening_days
-import simpmusic.composeapp.generated.resources.wrapped_opening_lead
-import simpmusic.composeapp.generated.resources.wrapped_opening_title
-import simpmusic.composeapp.generated.resources.wrapped_opening_tracks
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.wrapped_opening_days
+import omnimusic.composeapp.generated.resources.wrapped_opening_lead
+import omnimusic.composeapp.generated.resources.wrapped_opening_title
+import omnimusic.composeapp.generated.resources.wrapped_opening_tracks
 import kotlin.math.ceil
 
 /**

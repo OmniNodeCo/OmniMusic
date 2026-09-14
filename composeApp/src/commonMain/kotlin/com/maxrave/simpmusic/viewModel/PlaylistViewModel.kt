@@ -45,19 +45,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.auto_created_by_youtube_music
-import simpmusic.composeapp.generated.resources.downloading
-import simpmusic.composeapp.generated.resources.error
-import simpmusic.composeapp.generated.resources.playlist
-import simpmusic.composeapp.generated.resources.playlist_is_empty
-import simpmusic.composeapp.generated.resources.radio
-import simpmusic.composeapp.generated.resources.radio_not_available
-import simpmusic.composeapp.generated.resources.shuffle
-import simpmusic.composeapp.generated.resources.shuffle_not_available
-import simpmusic.composeapp.generated.resources.synced
-import simpmusic.composeapp.generated.resources.syncing
-import simpmusic.composeapp.generated.resources.view_count
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.auto_created_by_youtube_music
+import omnimusic.composeapp.generated.resources.downloading
+import omnimusic.composeapp.generated.resources.error
+import omnimusic.composeapp.generated.resources.playlist
+import omnimusic.composeapp.generated.resources.playlist_is_empty
+import omnimusic.composeapp.generated.resources.radio
+import omnimusic.composeapp.generated.resources.radio_not_available
+import omnimusic.composeapp.generated.resources.shuffle
+import omnimusic.composeapp.generated.resources.shuffle_not_available
+import omnimusic.composeapp.generated.resources.synced
+import omnimusic.composeapp.generated.resources.syncing
+import omnimusic.composeapp.generated.resources.view_count
 
 class PlaylistViewModel(
     private val songRepository: SongRepository,

@@ -75,10 +75,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.continue_playing
-import simpmusic.composeapp.generated.resources.endless_queue
-import simpmusic.composeapp.generated.resources.now_playing
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.continue_playing
+import omnimusic.composeapp.generated.resources.endless_queue
+import omnimusic.composeapp.generated.resources.now_playing
 
 /**
  * The QUEUE body: compact header, [Info][PlaylistAdd][Shuffle][Repeat] pills, a "Continue

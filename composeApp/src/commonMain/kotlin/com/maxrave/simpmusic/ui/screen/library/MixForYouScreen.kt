@@ -60,9 +60,9 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.http.Url
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.mix_for_you
-import simpmusic.composeapp.generated.resources.no_mixes_found
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.mix_for_you
+import omnimusic.composeapp.generated.resources.no_mixes_found
 
 /**
  * The YouTube "Mix for you" playlists, promoted out of the Library chip row into a tab of its own.

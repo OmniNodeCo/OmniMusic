@@ -70,12 +70,12 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.most_played
-import simpmusic.composeapp.generated.resources.no_favorite_playlists
-import simpmusic.composeapp.generated.resources.no_playlists_downloaded
-import simpmusic.composeapp.generated.resources.radio
-import simpmusic.composeapp.generated.resources.recently_added
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.most_played
+import omnimusic.composeapp.generated.resources.no_favorite_playlists
+import omnimusic.composeapp.generated.resources.no_playlists_downloaded
+import omnimusic.composeapp.generated.resources.radio
+import omnimusic.composeapp.generated.resources.recently_added
 import com.maxrave.domain.mediaservice.handler.PlaylistType as DomainPlaylistType
 
 @OptIn(ExperimentalMaterial3Api::class)

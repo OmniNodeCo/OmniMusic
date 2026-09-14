@@ -27,11 +27,11 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.footguns_promo_message
-import simpmusic.composeapp.generated.resources.footguns_promo_title
-import simpmusic.composeapp.generated.resources.give_a_star
-import simpmusic.composeapp.generated.resources.later
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.footguns_promo_message
+import omnimusic.composeapp.generated.resources.footguns_promo_title
+import omnimusic.composeapp.generated.resources.give_a_star
+import omnimusic.composeapp.generated.resources.later
 
 private const val FOOTGUNS_REPO_URL = "https://github.com/maxrave-dev/kotlin-footguns"
 

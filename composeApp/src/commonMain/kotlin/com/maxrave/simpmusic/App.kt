@@ -114,21 +114,21 @@ import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.cancel
-import simpmusic.composeapp.generated.resources.do_not_show_again
-import simpmusic.composeapp.generated.resources.download
-import simpmusic.composeapp.generated.resources.good_night
-import simpmusic.composeapp.generated.resources.notification
-import simpmusic.composeapp.generated.resources.settings
-import simpmusic.composeapp.generated.resources.sleep_timer_off
-import simpmusic.composeapp.generated.resources.this_app_needs_to_access_your_notification
-import simpmusic.composeapp.generated.resources.this_link_is_not_supported
-import simpmusic.composeapp.generated.resources.unknown
-import simpmusic.composeapp.generated.resources.update_available
-import simpmusic.composeapp.generated.resources.update_message
-import simpmusic.composeapp.generated.resources.version_format
-import simpmusic.composeapp.generated.resources.yes
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.cancel
+import omnimusic.composeapp.generated.resources.do_not_show_again
+import omnimusic.composeapp.generated.resources.download
+import omnimusic.composeapp.generated.resources.good_night
+import omnimusic.composeapp.generated.resources.notification
+import omnimusic.composeapp.generated.resources.settings
+import omnimusic.composeapp.generated.resources.sleep_timer_off
+import omnimusic.composeapp.generated.resources.this_app_needs_to_access_your_notification
+import omnimusic.composeapp.generated.resources.this_link_is_not_supported
+import omnimusic.composeapp.generated.resources.unknown
+import omnimusic.composeapp.generated.resources.update_available
+import omnimusic.composeapp.generated.resources.update_message
+import omnimusic.composeapp.generated.resources.version_format
+import omnimusic.composeapp.generated.resources.yes
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class, ExperimentalFoundationApi::class)

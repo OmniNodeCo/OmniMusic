@@ -86,23 +86,23 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.album_length
-import simpmusic.composeapp.generated.resources.artists
-import simpmusic.composeapp.generated.resources.downloaded
-import simpmusic.composeapp.generated.resources.favorite
-import simpmusic.composeapp.generated.resources.followed
-import simpmusic.composeapp.generated.resources.lower_plays
-import simpmusic.composeapp.generated.resources.most_played
-import simpmusic.composeapp.generated.resources.search
-import simpmusic.composeapp.generated.resources.seconds
-import simpmusic.composeapp.generated.resources.wrapped
-import simpmusic.composeapp.generated.resources.wrapped_recap_month
-import simpmusic.composeapp.generated.resources.wrapped_recap_month_year
-import simpmusic.composeapp.generated.resources.wrapped_recap_subtitle
-import simpmusic.composeapp.generated.resources.your_top_albums
-import simpmusic.composeapp.generated.resources.your_top_artists
-import simpmusic.composeapp.generated.resources.your_top_tracks
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.album_length
+import omnimusic.composeapp.generated.resources.artists
+import omnimusic.composeapp.generated.resources.downloaded
+import omnimusic.composeapp.generated.resources.favorite
+import omnimusic.composeapp.generated.resources.followed
+import omnimusic.composeapp.generated.resources.lower_plays
+import omnimusic.composeapp.generated.resources.most_played
+import omnimusic.composeapp.generated.resources.search
+import omnimusic.composeapp.generated.resources.seconds
+import omnimusic.composeapp.generated.resources.wrapped
+import omnimusic.composeapp.generated.resources.wrapped_recap_month
+import omnimusic.composeapp.generated.resources.wrapped_recap_month_year
+import omnimusic.composeapp.generated.resources.wrapped_recap_subtitle
+import omnimusic.composeapp.generated.resources.your_top_albums
+import omnimusic.composeapp.generated.resources.your_top_artists
+import omnimusic.composeapp.generated.resources.your_top_tracks
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable

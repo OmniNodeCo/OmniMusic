@@ -50,17 +50,17 @@ import com.maxrave.simpmusic.viewModel.LogInViewModel
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.lastfm_login_failed
-import simpmusic.composeapp.generated.resources.lastfm_login_step_1
-import simpmusic.composeapp.generated.resources.lastfm_login_step_2
-import simpmusic.composeapp.generated.resources.lastfm_open_authorize_page
-import simpmusic.composeapp.generated.resources.lastfm_paste_callback_confirm
-import simpmusic.composeapp.generated.resources.lastfm_paste_callback_hint
-import simpmusic.composeapp.generated.resources.lastfm_paste_callback_title
-import simpmusic.composeapp.generated.resources.log_in_to_lastfm
-import simpmusic.composeapp.generated.resources.login_success
-import simpmusic.composeapp.generated.resources.scrobbling_info
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.lastfm_login_failed
+import omnimusic.composeapp.generated.resources.lastfm_login_step_1
+import omnimusic.composeapp.generated.resources.lastfm_login_step_2
+import omnimusic.composeapp.generated.resources.lastfm_open_authorize_page
+import omnimusic.composeapp.generated.resources.lastfm_paste_callback_confirm
+import omnimusic.composeapp.generated.resources.lastfm_paste_callback_hint
+import omnimusic.composeapp.generated.resources.lastfm_paste_callback_title
+import omnimusic.composeapp.generated.resources.log_in_to_lastfm
+import omnimusic.composeapp.generated.resources.login_success
+import omnimusic.composeapp.generated.resources.scrobbling_info
 
 /** Desktop is far wider than any reading measure — the column stops here and centres. */
 private val CONTENT_MAX_WIDTH = 420.dp

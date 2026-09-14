@@ -114,9 +114,9 @@ import com.maxrave.simpmusic.viewModel.UIEvent
 import kotlin.math.roundToLong
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.crossfading
-import simpmusic.composeapp.generated.resources.now_playing_upper
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.crossfading
+import omnimusic.composeapp.generated.resources.now_playing_upper
 
 /**
  * The Material 3 Expressive ("Tonal pills") Now Playing style.

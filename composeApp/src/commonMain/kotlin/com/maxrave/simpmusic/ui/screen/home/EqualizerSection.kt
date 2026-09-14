@@ -49,12 +49,12 @@ import com.maxrave.simpmusic.viewModel.EQUALIZER_BAND_LABELS
 import com.maxrave.simpmusic.viewModel.SettingsViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.equalizer_autoeq
-import simpmusic.composeapp.generated.resources.equalizer_preamp
-import simpmusic.composeapp.generated.resources.equalizer_preset_custom
-import simpmusic.composeapp.generated.resources.equalizer_presets
-import simpmusic.composeapp.generated.resources.equalizer_reset
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.equalizer_autoeq
+import omnimusic.composeapp.generated.resources.equalizer_preamp
+import omnimusic.composeapp.generated.resources.equalizer_preset_custom
+import omnimusic.composeapp.generated.resources.equalizer_presets
+import omnimusic.composeapp.generated.resources.equalizer_reset
 import kotlin.math.roundToInt
 
 /** Gain limits, in dB. Past this it stops being tone shaping and starts being distortion. */

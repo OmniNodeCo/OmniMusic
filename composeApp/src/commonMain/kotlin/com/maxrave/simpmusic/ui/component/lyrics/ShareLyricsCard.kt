@@ -32,8 +32,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.mono
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.mono
 
 /**
  * The card's preferred width — a ceiling, not a fixed size.

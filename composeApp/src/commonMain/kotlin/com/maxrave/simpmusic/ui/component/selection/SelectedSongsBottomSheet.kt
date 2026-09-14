@@ -35,13 +35,13 @@ import com.maxrave.simpmusic.ui.icon.SkipNext
 import com.maxrave.simpmusic.ui.theme.typo
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.add_to_a_playlist
-import simpmusic.composeapp.generated.resources.add_to_queue
-import simpmusic.composeapp.generated.resources.download
-import simpmusic.composeapp.generated.resources.favorite
-import simpmusic.composeapp.generated.resources.n_songs_selected
-import simpmusic.composeapp.generated.resources.play_next
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.add_to_a_playlist
+import omnimusic.composeapp.generated.resources.add_to_queue
+import omnimusic.composeapp.generated.resources.download
+import omnimusic.composeapp.generated.resources.favorite
+import omnimusic.composeapp.generated.resources.n_songs_selected
+import omnimusic.composeapp.generated.resources.play_next
 
 /**
  * One row in [SelectedSongsBottomSheet] that only some screens have — "remove from playlist"

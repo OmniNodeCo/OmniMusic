@@ -23,8 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.loading
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.loading
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

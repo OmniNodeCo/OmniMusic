@@ -94,16 +94,16 @@ import multiplatform.network.cmptoast.ToastGravity
 import multiplatform.network.cmptoast.showToast
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.share_lyrics_permission_denied
-import simpmusic.composeapp.generated.resources.share_lyrics_save_failed
-import simpmusic.composeapp.generated.resources.share_lyrics_saved
-import simpmusic.composeapp.generated.resources.share_lyrics_saved_desktop
-import simpmusic.composeapp.generated.resources.share_lyrics_share_failed
-import simpmusic.composeapp.generated.resources.wrapped_share
-import simpmusic.composeapp.generated.resources.wrapped_tap_to_begin
-import simpmusic.composeapp.generated.resources.wrapped_tap_to_continue
-import simpmusic.composeapp.generated.resources.wrapped_year
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.share_lyrics_permission_denied
+import omnimusic.composeapp.generated.resources.share_lyrics_save_failed
+import omnimusic.composeapp.generated.resources.share_lyrics_saved
+import omnimusic.composeapp.generated.resources.share_lyrics_saved_desktop
+import omnimusic.composeapp.generated.resources.share_lyrics_share_failed
+import omnimusic.composeapp.generated.resources.wrapped_share
+import omnimusic.composeapp.generated.resources.wrapped_tap_to_begin
+import omnimusic.composeapp.generated.resources.wrapped_tap_to_continue
+import omnimusic.composeapp.generated.resources.wrapped_year
 import kotlin.random.Random
 
 /**

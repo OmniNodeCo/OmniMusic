@@ -5,11 +5,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import com.maxrave.simpmusic.ui.theme.LocalForceDarkText
 import com.maxrave.simpmusic.ui.theme.LocalIsDarkTheme
 import org.jetbrains.compose.resources.painterResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.holder
-import simpmusic.composeapp.generated.resources.holder_light
-import simpmusic.composeapp.generated.resources.holder_video
-import simpmusic.composeapp.generated.resources.holder_video_light
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.holder
+import omnimusic.composeapp.generated.resources.holder_light
+import omnimusic.composeapp.generated.resources.holder_video
+import omnimusic.composeapp.generated.resources.holder_video_light
 
 /**
  * Theme-aware artwork placeholder.

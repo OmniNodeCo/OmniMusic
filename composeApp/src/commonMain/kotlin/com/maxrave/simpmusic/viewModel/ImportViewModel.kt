@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.import_invalid_file
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.import_invalid_file
 
 /**
  * Drives an import of a file produced by the OmniMusic web converter.

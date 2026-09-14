@@ -16,15 +16,15 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.added_to_playlist
-import simpmusic.composeapp.generated.resources.added_to_queue
-import simpmusic.composeapp.generated.resources.delete_song_from_playlist
-import simpmusic.composeapp.generated.resources.downloading
-import simpmusic.composeapp.generated.resources.error
-import simpmusic.composeapp.generated.resources.error_occurred
-import simpmusic.composeapp.generated.resources.play_next
-import simpmusic.composeapp.generated.resources.removed_from_YouTube_playlist
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.added_to_playlist
+import omnimusic.composeapp.generated.resources.added_to_queue
+import omnimusic.composeapp.generated.resources.delete_song_from_playlist
+import omnimusic.composeapp.generated.resources.downloading
+import omnimusic.composeapp.generated.resources.error
+import omnimusic.composeapp.generated.resources.error_occurred
+import omnimusic.composeapp.generated.resources.play_next
+import omnimusic.composeapp.generated.resources.removed_from_YouTube_playlist
 
 /**
  * Runs the bulk actions offered by

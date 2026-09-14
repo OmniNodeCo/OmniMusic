@@ -64,15 +64,15 @@ import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.inject
 import org.koin.mp.KoinPlatform.getKoin
 import org.simpmusic.lastfm.configLastfm
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.app_name
-import simpmusic.composeapp.generated.resources.circle_app_icon
-import simpmusic.composeapp.generated.resources.close_miniplayer
-import simpmusic.composeapp.generated.resources.explicit_content_blocked
-import simpmusic.composeapp.generated.resources.open_app
-import simpmusic.composeapp.generated.resources.open_miniplayer
-import simpmusic.composeapp.generated.resources.quit_app
-import simpmusic.composeapp.generated.resources.time_out_check_internet_connection_or_change_piped_instance_in_settings
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.app_name
+import omnimusic.composeapp.generated.resources.circle_app_icon
+import omnimusic.composeapp.generated.resources.close_miniplayer
+import omnimusic.composeapp.generated.resources.explicit_content_blocked
+import omnimusic.composeapp.generated.resources.open_app
+import omnimusic.composeapp.generated.resources.open_miniplayer
+import omnimusic.composeapp.generated.resources.quit_app
+import omnimusic.composeapp.generated.resources.time_out_check_internet_connection_or_change_piped_instance_in_settings
 
 /**
  * Any `scheme://…` command-line argument. RFC 3986 §3.1 allows ALPHA followed by

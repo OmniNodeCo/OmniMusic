@@ -28,11 +28,11 @@ import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.album
-import simpmusic.composeapp.generated.resources.downloaded
-import simpmusic.composeapp.generated.resources.error
-import simpmusic.composeapp.generated.resources.playlist_is_empty
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.album
+import omnimusic.composeapp.generated.resources.downloaded
+import omnimusic.composeapp.generated.resources.error
+import omnimusic.composeapp.generated.resources.playlist_is_empty
 
 class AlbumViewModel(
     private val songRepository: SongRepository,

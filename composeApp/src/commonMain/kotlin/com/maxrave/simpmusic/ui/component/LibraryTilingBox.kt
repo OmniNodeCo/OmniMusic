@@ -29,11 +29,11 @@ import com.maxrave.simpmusic.ui.screen.library.LibraryDynamicPlaylistType
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.downloaded
-import simpmusic.composeapp.generated.resources.favorite
-import simpmusic.composeapp.generated.resources.followed
-import simpmusic.composeapp.generated.resources.most_played
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.downloaded
+import omnimusic.composeapp.generated.resources.favorite
+import omnimusic.composeapp.generated.resources.followed
+import omnimusic.composeapp.generated.resources.most_played
 
 @Composable
 fun LibraryTilingBox(navController: NavController) {

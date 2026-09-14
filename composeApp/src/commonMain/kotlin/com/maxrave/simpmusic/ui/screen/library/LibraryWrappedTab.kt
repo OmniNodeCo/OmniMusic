@@ -17,8 +17,8 @@ import com.maxrave.simpmusic.ui.navigation.destination.home.WrappedDestination
 import com.maxrave.simpmusic.viewModel.WrappedUiState
 import com.maxrave.simpmusic.viewModel.WrappedViewModel
 import org.koin.compose.viewmodel.koinViewModel
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.wrapped_recap_empty
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.wrapped_recap_empty
 
 /** The page margin the card sits in, matching the gutter the playlist tiles below it carry. */
 private val CARD_GUTTER = 10.dp

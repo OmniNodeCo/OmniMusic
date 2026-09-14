@@ -132,10 +132,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import simpmusic.composeapp.generated.resources.Res
-import simpmusic.composeapp.generated.resources.crossfading
-import simpmusic.composeapp.generated.resources.share_lyrics
-import simpmusic.composeapp.generated.resources.unavailable
+import omnimusic.composeapp.generated.resources.Res
+import omnimusic.composeapp.generated.resources.crossfading
+import omnimusic.composeapp.generated.resources.share_lyrics
+import omnimusic.composeapp.generated.resources.unavailable
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
