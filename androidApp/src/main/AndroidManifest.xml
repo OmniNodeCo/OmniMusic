@@ -49,7 +49,7 @@
     </queries>
 
     <application
-        android:name=".SimpMusicApplication"
+        android:name=".OmniMusicApplication"
         android:allowBackup="true"
         android:appCategory="audio"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -58,7 +58,7 @@
         android:localeConfig="@xml/locale_config"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SimpMusic"
+        android:theme="@style/Theme.OmniMusic"
         android:enableOnBackInvokedCallback="true"
         android:requestLegacyExternalStorage="true"
         tools:replace="android:name"
@@ -71,7 +71,7 @@
             android:supportsPictureInPicture="true"
             android:enableOnBackInvokedCallback="true"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.SimpMusic"
+            android:theme="@style/Theme.OmniMusic"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -142,7 +142,7 @@
                 <data android:scheme="vnd.youtube.launch" />
             </intent-filter>
 
-            <!-- SimpMusic deep link filter (https) -->
+            <!-- OmniMusic deep link filter (https) -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -150,22 +150,22 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="simpmusic.org" />
+                <data android:host="omnimusic.org" />
                 <data android:pathPrefix="/app/" />
             </intent-filter>
 
-            <!-- SimpMusic deep link filter (custom scheme) -->
+            <!-- OmniMusic deep link filter (custom scheme) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="simpmusic" />
+                <data android:scheme="omnimusic" />
             </intent-filter>
 
             <!-- Last.fm auth callback. The scheme is fixed by the callback URL registered on the
-                 Last.fm API account, so it is not "simpmusic". -->
+                 Last.fm API account, so it is not "omnimusic". -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

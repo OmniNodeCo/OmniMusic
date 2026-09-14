@@ -114,7 +114,7 @@ import com.maxrave.simpmusic.ui.icon.Check
 import com.maxrave.simpmusic.ui.icon.PersonAdd
 import com.maxrave.simpmusic.ui.icon.Sensors
 import com.maxrave.simpmusic.ui.icon.Shuffle
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.list.AlbumDestination
 import com.maxrave.simpmusic.ui.navigation.destination.list.ArtistDestination
 import com.maxrave.simpmusic.ui.navigation.destination.list.MoreAlbumsDestination
@@ -436,7 +436,7 @@ fun ArtistScreen(
                                     // Back button — liquid glass, sibling of the backdrop source.
                                     LiquidGlassIconButton(
                                         backdrop = artworkBackdrop,
-                                        imageVector = SimpIcons.ArrowBackIosNew,
+                                        imageVector = OmniIcons.ArrowBackIosNew,
                                         shape = RoundedCornerShape(24.dp),
                                         // Matching the other three headers: the pill-style directional rim, thickened
                                         // from the 0.5.dp default so it stays visible around a 48dp circle.
@@ -453,7 +453,7 @@ fun ArtistScreen(
                                 }
 
                                 // Apple Music-style action row: [Radio][Shuffle pill][Follow] centered.
-                                // In SimpMusic "play" an artist == shuffle, so the big middle button is Shuffle.
+                                // In OmniMusic "play" an artist == shuffle, so the big middle button is Shuffle.
                                 Row(
                                     modifier =
                                         Modifier
@@ -482,7 +482,7 @@ fun ArtistScreen(
                                         contentAlignment = Alignment.Center,
                                     ) {
                                         Icon(
-                                            imageVector = SimpIcons.Sensors,
+                                            imageVector = OmniIcons.Sensors,
                                             contentDescription = "Radio",
                                             tint = artistAccent,
                                             modifier = Modifier.size(22.dp),
@@ -508,7 +508,7 @@ fun ArtistScreen(
                                         contentAlignment = Alignment.Center,
                                     ) {
                                         Icon(
-                                            imageVector = SimpIcons.Shuffle,
+                                            imageVector = OmniIcons.Shuffle,
                                             contentDescription = "Shuffle",
                                             tint = mutedPaletteBg,
                                             modifier = Modifier.size(28.dp),
@@ -533,7 +533,7 @@ fun ArtistScreen(
                                         contentAlignment = Alignment.Center,
                                     ) {
                                         Icon(
-                                            imageVector = if (isFollowed) SimpIcons.Check else SimpIcons.PersonAdd,
+                                            imageVector = if (isFollowed) OmniIcons.Check else OmniIcons.PersonAdd,
                                             contentDescription = if (isFollowed) "Followed" else "Follow",
                                             tint = if (isFollowed) mutedPaletteBg else artistAccent,
                                             modifier = Modifier.size(22.dp),
@@ -585,7 +585,7 @@ fun ArtistScreen(
                                 Box(Modifier.padding(horizontal = 5.dp)) {
                                     IconButton(onClick = { navController.navigateUp() }) {
                                         Icon(
-                                            imageVector = SimpIcons.ArrowBackIosNew,
+                                            imageVector = OmniIcons.ArrowBackIosNew,
                                             contentDescription = "Back",
                                             tint = Color.White,
                                             modifier = Modifier.size(20.dp),

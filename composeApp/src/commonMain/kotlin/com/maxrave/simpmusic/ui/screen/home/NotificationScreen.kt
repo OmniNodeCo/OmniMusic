@@ -71,7 +71,7 @@ import com.maxrave.simpmusic.ui.component.rememberHolderPainter
 import com.maxrave.simpmusic.ui.component.rememberNowPlayingGlowTint
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
 import com.maxrave.simpmusic.ui.icon.RssFeed
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.list.AlbumDestination
 import com.maxrave.simpmusic.ui.navigation.destination.list.ArtistDestination
 import com.maxrave.simpmusic.ui.theme.typo
@@ -207,7 +207,7 @@ fun NotificationScreen(
                 },
                 navigationIcon = {
                     RippleIconButton(
-                        imageVector = SimpIcons.ArrowBackIosNew,
+                        imageVector = OmniIcons.ArrowBackIosNew,
                         tint = MaterialTheme.colorScheme.onSurface,
                     ) {
                         navController.navigateUp()
@@ -340,7 +340,7 @@ fun BlogNotificationItem(notification: NotificationEntity) {
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = SimpIcons.RssFeed,
+                    imageVector = OmniIcons.RssFeed,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(26.dp),

@@ -34,7 +34,7 @@ import com.maxrave.domain.data.player.ReverbPreset
 import com.maxrave.simpmusic.ui.component.Chip
 import com.maxrave.simpmusic.ui.component.RippleIconButton
 import com.maxrave.simpmusic.ui.icon.Help
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.SettingsViewModel
 import org.jetbrains.compose.resources.StringResource
@@ -241,7 +241,7 @@ fun ReverbSection(viewModel: SettingsViewModel = koinViewModel()) {
                 }
             }
             RippleIconButton(
-                imageVector = SimpIcons.Help,
+                imageVector = OmniIcons.Help,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 onClick = { showHelp = true },
             )

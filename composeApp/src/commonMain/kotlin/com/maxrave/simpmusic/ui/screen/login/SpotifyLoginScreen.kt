@@ -39,7 +39,7 @@ import com.maxrave.simpmusic.ui.component.RippleIconButton
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
 import com.maxrave.simpmusic.ui.icon.Cookie
 import com.maxrave.simpmusic.ui.icon.LogoDev
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.LogInViewModel
 import com.maxrave.simpmusic.viewModel.SettingsViewModel
@@ -130,7 +130,7 @@ fun SpotifyLoginScreen(
                                 ),
                     ) {
                         Icon(
-                            SimpIcons.Cookie,
+                            OmniIcons.Cookie,
                             "Cookies",
                         )
                     }
@@ -206,7 +206,7 @@ fun SpotifyLoginScreen(
             navigationIcon = {
                 Box(Modifier.padding(horizontal = 5.dp)) {
                     RippleIconButton(
-                        SimpIcons.ArrowBackIosNew,
+                        OmniIcons.ArrowBackIosNew,
                         Modifier.size(32.dp),
                         true,
                     ) {
@@ -221,7 +221,7 @@ fun SpotifyLoginScreen(
                     },
                 ) {
                     Icon(
-                        SimpIcons.LogoDev,
+                        OmniIcons.LogoDev,
                         "Developer Mode",
                     )
                 }

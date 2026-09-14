@@ -41,7 +41,7 @@ import androidx.navigation.NavController
 import com.maxrave.simpmusic.expect.openUrl
 import com.maxrave.simpmusic.ui.component.RippleIconButton
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.utils.VersionManager
 import dev.chrisbanes.haze.hazeEffect
@@ -125,20 +125,6 @@ fun CreditScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
-            // Website button
-            TextButton(
-                onClick = {
-                    openUrl("https://simpmusic.org")
-                },
-                modifier =
-                    Modifier
-                        .align(Alignment.Start)
-                        .padding(horizontal = 25.dp)
-                        .defaultMinSize(minHeight = 1.dp, minWidth = 1.dp),
-            ) {
-                Text(text = stringResource(Res.string.website))
-            }
-
             // Developer blog button
             TextButton(
                 onClick = {
@@ -162,7 +148,7 @@ fun CreditScreen(
             // GitHub button
             TextButton(
                 onClick = {
-                    openUrl("https://github.com/maxrave-dev/SimpMusic")
+                    openUrl("https://github.com/maxrave-dev/OmniMusic")
                 },
                 modifier =
                     Modifier
@@ -176,7 +162,7 @@ fun CreditScreen(
             // Issue tracker button
             TextButton(
                 onClick = {
-                    openUrl("https://github.com/maxrave-dev/SimpMusic/issues")
+                    openUrl("https://github.com/maxrave-dev/OmniMusic/issues")
                 },
                 modifier =
                     Modifier
@@ -243,7 +229,7 @@ fun CreditScreen(
         navigationIcon = {
             Box(Modifier.padding(horizontal = 5.dp)) {
                 RippleIconButton(
-                    SimpIcons.ArrowBackIosNew,
+                    OmniIcons.ArrowBackIosNew,
                     Modifier
                         .size(32.dp),
                     true,

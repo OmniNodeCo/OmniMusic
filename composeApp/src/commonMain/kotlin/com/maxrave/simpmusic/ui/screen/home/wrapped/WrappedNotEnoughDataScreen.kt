@@ -29,7 +29,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.maxrave.simpmusic.ui.component.RippleIconButton
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.viewModel.WrappedUiState
 import org.jetbrains.compose.resources.stringResource
 import simpmusic.composeapp.generated.resources.Res
@@ -78,7 +78,7 @@ fun WrappedNotEnoughDataScreen(
             // be a surface. The reel's own close button floats over artwork, which is the case
             // glass exists for.
             RippleIconButton(
-                imageVector = SimpIcons.ArrowBackIosNew,
+                imageVector = OmniIcons.ArrowBackIosNew,
                 tint = MaterialTheme.colorScheme.onSurface,
                 onClick = onBack,
             )

@@ -37,7 +37,7 @@ import androidx.compose.ui.window.WindowState
 import com.maxrave.simpmusic.extension.DesktopWindowChrome
 import com.maxrave.simpmusic.ui.icon.Close
 import com.maxrave.simpmusic.ui.icon.Remove
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.UnfoldLess
 import com.maxrave.simpmusic.ui.icon.UnfoldMore
 import com.maxrave.simpmusic.ui.theme.typo
@@ -217,13 +217,13 @@ private fun WindowControlButton(
             Box(modifier = Modifier.padding(1.dp)) {
                 when (icon) {
                     WindowControlIcon.Minimize -> {
-                        Icon(SimpIcons.Remove, tint = Color.DarkGray, contentDescription = "Minimize")
+                        Icon(OmniIcons.Remove, tint = Color.DarkGray, contentDescription = "Minimize")
                     }
 
                     WindowControlIcon.Maximize -> {
                         Icon(
                             modifier = Modifier.rotate(45f),
-                            imageVector = SimpIcons.UnfoldMore,
+                            imageVector = OmniIcons.UnfoldMore,
                             tint = Color.DarkGray,
                             contentDescription = "Minimize",
                         )
@@ -232,7 +232,7 @@ private fun WindowControlButton(
                     WindowControlIcon.Restore -> {
                         Icon(
                             modifier = Modifier.rotate(45f),
-                            imageVector = SimpIcons.UnfoldLess,
+                            imageVector = OmniIcons.UnfoldLess,
                             tint = Color.DarkGray,
                             contentDescription = "Minimize",
                         )
@@ -240,7 +240,7 @@ private fun WindowControlButton(
 
                     WindowControlIcon.Close -> {
                         Icon(
-                            imageVector = SimpIcons.Close,
+                            imageVector = OmniIcons.Close,
                             tint = Color.DarkGray,
                             contentDescription = "Close",
                         )

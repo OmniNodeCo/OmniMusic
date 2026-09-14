@@ -56,7 +56,7 @@ import com.maxrave.simpmusic.ui.component.NowPlayingBottomSheet
 import com.maxrave.simpmusic.ui.component.QueueBottomSheet
 import com.maxrave.simpmusic.ui.component.VoteLyricsDialog
 import com.maxrave.simpmusic.ui.icon.KeyboardArrowDown
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.list.ArtistDestination
 import com.maxrave.simpmusic.ui.navigation.destination.player.FullscreenDestination
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentActions
@@ -121,7 +121,7 @@ fun NowPlayingScreen(
             sharedViewModel = sharedViewModel,
             navController = navController,
             isExpanded = sheetState.currentValue == SheetValue.Expanded,
-            dismissIcon = SimpIcons.KeyboardArrowDown,
+            dismissIcon = OmniIcons.KeyboardArrowDown,
             onDismiss = {
                 hideSheet()
             },
@@ -618,12 +618,12 @@ fun NowPlayingScreenContent(
     // Vote Dialog
     if (showVoteDialog) {
         val canVoteLyrics =
-            screenDataState.lyricsData?.lyricsProvider == LyricsProvider.SIMPMUSIC &&
+            screenDataState.lyricsData?.lyricsProvider == LyricsProvider.OMNIMUSIC &&
                 screenDataState.lyricsData
                     ?.lyrics
                     ?.simpMusicLyrics != null
         val canVoteTranslatedLyrics =
-            screenDataState.lyricsData?.translatedLyrics?.second == LyricsProvider.SIMPMUSIC &&
+            screenDataState.lyricsData?.translatedLyrics?.second == LyricsProvider.OMNIMUSIC &&
                 screenDataState.lyricsData
                     ?.translatedLyrics
                     ?.first

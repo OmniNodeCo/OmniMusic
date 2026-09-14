@@ -39,7 +39,7 @@ import org.simpmusic.crashlytics.configCrashlytics
 import org.simpmusic.lastfm.configLastfm
 import java.lang.reflect.Field
 
-class SimpMusicApplication :
+class OmniMusicApplication :
     Application(),
     KoinComponent,
     SingletonImageLoader.Factory {
@@ -54,7 +54,7 @@ class SimpMusicApplication :
         configLastfm(BuildKonfig.lastfmApiKey, BuildKonfig.lastfmSecret)
         startKoin {
             androidLogger(level = Level.DEBUG)
-            androidContext(this@SimpMusicApplication)
+            androidContext(this@OmniMusicApplication)
             loadAllModules(
                 AppIdentity(
                     applicationId = BuildConfig.APPLICATION_ID,

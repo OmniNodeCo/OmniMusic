@@ -92,7 +92,7 @@ import com.maxrave.simpmusic.ui.icon.MoreVert
 import com.maxrave.simpmusic.ui.icon.Pause
 import com.maxrave.simpmusic.ui.icon.PlayArrow
 import com.maxrave.simpmusic.ui.icon.QueueMusic
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.Star
 import com.maxrave.simpmusic.ui.icon.StarBorder
 import com.maxrave.simpmusic.ui.icon.VolumeDown
@@ -293,7 +293,7 @@ internal fun AppleMusicHeaderActions(
             ) {
                 Crossfade(targetState = state.likeStatus, label = "appleMusicYtLiked") { liked ->
                     Icon(
-                        imageVector = if (liked) SimpIcons.CheckCircle else SimpIcons.AddCircleOutline,
+                        imageVector = if (liked) OmniIcons.CheckCircle else OmniIcons.AddCircleOutline,
                         contentDescription = "",
                         tint = Color.White,
                     )
@@ -316,14 +316,14 @@ internal fun AppleMusicHeaderActions(
         ) {
             Crossfade(targetState = state.controllerState.isLiked, label = "appleMusicFavorite") { liked ->
                 Icon(
-                    imageVector = if (liked) SimpIcons.Star else SimpIcons.StarBorder,
+                    imageVector = if (liked) OmniIcons.Star else OmniIcons.StarBorder,
                     contentDescription = "",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp),
                 )
             }
         }
-        AppleMusicGlyphButton(icon = SimpIcons.MoreVert, onClick = { actions.onShowMoreSheet() })
+        AppleMusicGlyphButton(icon = OmniIcons.MoreVert, onClick = { actions.onShowMoreSheet() })
     }
 }
 
@@ -551,7 +551,7 @@ internal fun AppleMusicTimesRow(
                             .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
                     Icon(
-                        imageVector = SimpIcons.GraphicEq,
+                        imageVector = OmniIcons.GraphicEq,
                         contentDescription = "",
                         tint = Color.White.copy(alpha = 0.9f),
                         modifier = Modifier.size(15.dp),
@@ -595,7 +595,7 @@ internal fun AppleMusicTransportRow(
             modifier = Modifier.appleMusicPressInflate().size(56.dp).clip(CircleShape),
         ) {
             Icon(
-                imageVector = SimpIcons.FastRewind,
+                imageVector = OmniIcons.FastRewind,
                 contentDescription = "",
                 tint = Color.White.copy(alpha = if (controllerState.isPreviousAvailable) 1f else 0.4f),
                 modifier = Modifier.size(46.dp),
@@ -615,7 +615,7 @@ internal fun AppleMusicTransportRow(
         ) {
             Crossfade(targetState = controllerState.isPlaying, label = "appleMusicPlayPauseIcon") { isPlaying ->
                 Icon(
-                    imageVector = if (isPlaying) SimpIcons.Pause else SimpIcons.PlayArrow,
+                    imageVector = if (isPlaying) OmniIcons.Pause else OmniIcons.PlayArrow,
                     contentDescription = "",
                     tint = Color.White,
                     modifier = Modifier.size(66.dp),
@@ -627,7 +627,7 @@ internal fun AppleMusicTransportRow(
             modifier = Modifier.appleMusicPressInflate().size(56.dp).clip(CircleShape),
         ) {
             Icon(
-                imageVector = SimpIcons.FastForward,
+                imageVector = OmniIcons.FastForward,
                 contentDescription = "",
                 tint = Color.White.copy(alpha = if (controllerState.isNextAvailable) 1f else 0.4f),
                 modifier = Modifier.size(46.dp),
@@ -643,7 +643,7 @@ internal fun AppleMusicVolumeRow(
 ) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            imageVector = SimpIcons.VolumeDown,
+            imageVector = OmniIcons.VolumeDown,
             contentDescription = "",
             tint = AppleMusicTextSecondary,
             modifier = Modifier.size(18.dp),
@@ -659,7 +659,7 @@ internal fun AppleMusicVolumeRow(
         }
         Spacer(modifier = Modifier.width(12.dp))
         Icon(
-            imageVector = SimpIcons.VolumeUp,
+            imageVector = OmniIcons.VolumeUp,
             contentDescription = "",
             tint = AppleMusicTextSecondary,
             modifier = Modifier.size(18.dp),
@@ -724,7 +724,7 @@ internal fun AppleMusicDock(
     ) {
         // Re-tapping the active tab returns to MAIN — the dock is a toggle, not one-way nav.
         AppleMusicDockButton(
-            icon = SimpIcons.Lyrics,
+            icon = OmniIcons.Lyrics,
             active = viewState == AppleMusicView.LYRICS,
             activeColor = activeColor,
             activeContentColor = activeContentColor,
@@ -742,7 +742,7 @@ internal fun AppleMusicDock(
             }
         }
         AppleMusicDockButton(
-            icon = SimpIcons.QueueMusic,
+            icon = OmniIcons.QueueMusic,
             active = viewState == AppleMusicView.QUEUE,
             activeColor = activeColor,
             activeContentColor = activeContentColor,

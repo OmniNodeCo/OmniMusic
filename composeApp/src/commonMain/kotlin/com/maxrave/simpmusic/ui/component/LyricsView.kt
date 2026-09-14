@@ -121,7 +121,7 @@ import com.maxrave.simpmusic.extension.parseRichSyncWords
 import com.maxrave.simpmusic.ui.icon.Info
 import com.maxrave.simpmusic.ui.icon.MoreVert
 import com.maxrave.simpmusic.ui.icon.QueueMusic
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.list.ArtistDestination
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.NowPlayingScreenData
@@ -1668,7 +1668,7 @@ fun FullscreenLyricsSheet(
                             onClick = { showShareLyricsSheet = true },
                         ) {
                             Icon(
-                                imageVector = SimpIcons.Share,
+                                imageVector = OmniIcons.Share,
                                 contentDescription = stringResource(Res.string.share_lyrics),
                                 tint = Color.White,
                             )
@@ -1680,7 +1680,7 @@ fun FullscreenLyricsSheet(
                         onClick = { showNowPlayingSheet = true },
                     ) {
                         Icon(
-                            imageVector = SimpIcons.MoreVert,
+                            imageVector = OmniIcons.MoreVert,
                             contentDescription = "",
                             tint = Color.White,
                         )
@@ -1951,7 +1951,7 @@ fun FullscreenLyricsSheet(
                                             showControlButtons = true
                                         },
                                     ) {
-                                        Icon(imageVector = SimpIcons.Info, tint = Color.White, contentDescription = "")
+                                        Icon(imageVector = OmniIcons.Info, tint = Color.White, contentDescription = "")
                                     }
                                     Row(
                                         Modifier.align(Alignment.CenterEnd),
@@ -1971,7 +1971,7 @@ fun FullscreenLyricsSheet(
                                             },
                                         ) {
                                             Icon(
-                                                imageVector = SimpIcons.QueueMusic,
+                                                imageVector = OmniIcons.QueueMusic,
                                                 tint = Color.White,
                                                 contentDescription = "",
                                             )

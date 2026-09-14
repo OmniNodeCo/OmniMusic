@@ -140,7 +140,7 @@ import com.maxrave.simpmusic.ui.icon.PlaylistAdd
 import com.maxrave.simpmusic.ui.icon.QueueMusic
 import com.maxrave.simpmusic.ui.icon.Replay5
 import com.maxrave.simpmusic.ui.icon.Share
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.Subtitles
 import com.maxrave.simpmusic.ui.icon.SubtitlesOff
 import com.maxrave.simpmusic.ui.icon.ThumbsUpDown
@@ -164,7 +164,7 @@ import simpmusic.composeapp.generated.resources.line_synced
 import simpmusic.composeapp.generated.resources.lyrics
 import simpmusic.composeapp.generated.resources.lyrics_provider_betterlyrics
 import simpmusic.composeapp.generated.resources.lyrics_provider_lrc
-import simpmusic.composeapp.generated.resources.lyrics_provider_simpmusic
+import simpmusic.composeapp.generated.resources.lyrics_provider_omnimusic
 import simpmusic.composeapp.generated.resources.lyrics_provider_youtube
 import simpmusic.composeapp.generated.resources.now_playing_upper
 import simpmusic.composeapp.generated.resources.offline_mode
@@ -648,7 +648,7 @@ fun NowPlayingContentSpotify(
                                                                 Modifier.align(Alignment.TopEnd),
                                                             ) {
                                                                 Icon(
-                                                                    imageVector = SimpIcons.Fullscreen,
+                                                                    imageVector = OmniIcons.Fullscreen,
                                                                     contentDescription = "",
                                                                     tint = Color.White,
                                                                 )
@@ -674,7 +674,7 @@ fun NowPlayingContentSpotify(
                                                                     },
                                                                 ) {
                                                                     Icon(
-                                                                        imageVector = SimpIcons.Replay5,
+                                                                        imageVector = OmniIcons.Replay5,
                                                                         tint = Color.White,
                                                                         contentDescription = "",
                                                                         modifier =
@@ -698,7 +698,7 @@ fun NowPlayingContentSpotify(
                                                                     },
                                                                 ) {
                                                                     Icon(
-                                                                        imageVector = SimpIcons.Forward5,
+                                                                        imageVector = OmniIcons.Forward5,
                                                                         tint = Color.White,
                                                                         contentDescription = "",
                                                                         modifier =
@@ -718,9 +718,9 @@ fun NowPlayingContentSpotify(
                                                                     Icon(
                                                                         imageVector =
                                                                             if (internalShowSubtitle) {
-                                                                                SimpIcons.SubtitlesOff
+                                                                                OmniIcons.SubtitlesOff
                                                                             } else {
-                                                                                SimpIcons.Subtitles
+                                                                                OmniIcons.Subtitles
                                                                             },
                                                                         contentDescription = "",
                                                                         tint = Color.White,
@@ -858,7 +858,7 @@ fun NowPlayingContentSpotify(
                             actions.onShowMoreSheet()
                         }) {
                             Icon(
-                                imageVector = SimpIcons.MoreVert,
+                                imageVector = OmniIcons.MoreVert,
                                 contentDescription = "",
                                 tint = Color.White,
                             )
@@ -1220,7 +1220,7 @@ fun NowPlayingContentSpotify(
                                                     actions.onShowInfo()
                                                 },
                                             ) {
-                                                Icon(imageVector = SimpIcons.Info, tint = Color.White, contentDescription = "")
+                                                Icon(imageVector = OmniIcons.Info, tint = Color.White, contentDescription = "")
                                             }
                                             // Cyan rather than colorScheme.primary: this screen is force-dark whatever
                                             // the app theme is, so a light-theme primary would sink into the black
@@ -1260,7 +1260,7 @@ fun NowPlayingContentSpotify(
                                                 },
                                             ) {
                                                 Icon(
-                                                    imageVector = SimpIcons.PlaylistAdd,
+                                                    imageVector = OmniIcons.PlaylistAdd,
                                                     tint = Color.White,
                                                     contentDescription = "Add to Playlist",
                                                 )
@@ -1278,7 +1278,7 @@ fun NowPlayingContentSpotify(
                                                 },
                                             ) {
                                                 Icon(
-                                                    imageVector = SimpIcons.QueueMusic,
+                                                    imageVector = OmniIcons.QueueMusic,
                                                     tint = Color.White,
                                                     contentDescription = "",
                                                 )
@@ -1434,7 +1434,7 @@ fun NowPlayingContentSpotify(
                                         }
                                         Spacer(modifier = Modifier.weight(1f))
                                         // Vote button — only when the lyrics or the translation came from
-                                        // SimpMusic Lyrics. The rule itself lives on the shared contract
+                                        // OmniMusic Lyrics. The rule itself lives on the shared contract
                                         // (canVote), so a style cannot ship without it the way the Apple
                                         // Music tab did.
                                         if (state.screenData.lyricsData.canVote()) {
@@ -1445,7 +1445,7 @@ fun NowPlayingContentSpotify(
                                                     },
                                                 ) {
                                                     Icon(
-                                                        imageVector = SimpIcons.ThumbsUpDown,
+                                                        imageVector = OmniIcons.ThumbsUpDown,
                                                         contentDescription = stringResource(Res.string.rate_lyrics),
                                                         tint = Color.White,
                                                         modifier = Modifier.size(16.dp),
@@ -1459,7 +1459,7 @@ fun NowPlayingContentSpotify(
                                                 onClick = { showShareLyricsSheet = true },
                                             ) {
                                                 Icon(
-                                                    imageVector = SimpIcons.Share,
+                                                    imageVector = OmniIcons.Share,
                                                     contentDescription = stringResource(Res.string.share_lyrics),
                                                     tint = Color.White,
                                                     modifier = Modifier.size(16.dp),
@@ -1519,8 +1519,8 @@ fun NowPlayingContentSpotify(
                                         Text(
                                             text =
                                                 when (state.screenData.lyricsData?.lyricsProvider) {
-                                                    LyricsProvider.SIMPMUSIC -> {
-                                                        stringResource(Res.string.lyrics_provider_simpmusic)
+                                                    LyricsProvider.OMNIMUSIC -> {
+                                                        stringResource(Res.string.lyrics_provider_omnimusic)
                                                     }
 
                                                     LyricsProvider.LRCLIB -> {
@@ -1991,7 +1991,7 @@ private fun NowPlayingTrackInfoRow(
                             actions.onAddToYouTubeLiked()
                         },
                     ) {
-                        Icon(imageVector = SimpIcons.CheckCircle, tint = Color.White, contentDescription = "")
+                        Icon(imageVector = OmniIcons.CheckCircle, tint = Color.White, contentDescription = "")
                     }
                 } else {
                     IconButton(
@@ -2007,7 +2007,7 @@ private fun NowPlayingTrackInfoRow(
                         },
                     ) {
                         Icon(
-                            imageVector = SimpIcons.AddCircleOutline,
+                            imageVector = OmniIcons.AddCircleOutline,
                             tint = Color.White,
                             contentDescription = "",
                         )

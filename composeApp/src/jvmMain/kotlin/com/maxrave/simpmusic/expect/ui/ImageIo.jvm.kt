@@ -23,7 +23,7 @@ actual suspend fun persistPickedImage(
     withContext(Dispatchers.IO) {
         runCatching {
             // Same place the rest of the desktop app keeps its data.
-            val dir = File(System.getProperty("user.home"), ".simpmusic/$COVER_DIR").apply { mkdirs() }
+            val dir = File(System.getProperty("user.home"), ".omnimusic/$COVER_DIR").apply { mkdirs() }
             val file = File(dir, fileName)
             file.writeBytes(bytes)
             file.toURI().toString()

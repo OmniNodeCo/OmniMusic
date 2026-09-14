@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.maxrave.domain.mediaservice.handler.ControlState
 import com.maxrave.simpmusic.ui.icon.Pause
 import com.maxrave.simpmusic.ui.icon.PlayArrow
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.SkipNext
 import com.maxrave.simpmusic.ui.icon.SkipPrevious
 import com.maxrave.simpmusic.viewModel.UIEvent
@@ -118,7 +118,7 @@ fun ExpressiveTransportRow(
         ) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                 Icon(
-                    imageVector = SimpIcons.SkipPrevious,
+                    imageVector = OmniIcons.SkipPrevious,
                     contentDescription = "",
                     tint =
                         colorScheme.onSecondaryContainer.copy(
@@ -170,7 +170,7 @@ fun ExpressiveTransportRow(
                         ) { isPlaying ->
                             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                                 Icon(
-                                    imageVector = if (isPlaying) SimpIcons.Pause else SimpIcons.PlayArrow,
+                                    imageVector = if (isPlaying) OmniIcons.Pause else OmniIcons.PlayArrow,
                                     contentDescription = "",
                                     tint = colorScheme.onPrimary,
                                     modifier = Modifier.size(36.dp),
@@ -198,7 +198,7 @@ fun ExpressiveTransportRow(
         ) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                 Icon(
-                    imageVector = SimpIcons.SkipNext,
+                    imageVector = OmniIcons.SkipNext,
                     contentDescription = "",
                     tint =
                         colorScheme.onSecondaryContainer.copy(

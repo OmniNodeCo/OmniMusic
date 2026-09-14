@@ -18,7 +18,7 @@ crowdin.yml
 # Kotlin 2.0
 .kotlin/
 .idea
-/simpmusic.jks
+/omnimusic.jks
 /ffmpeg-kit/build/
 
 #dev files

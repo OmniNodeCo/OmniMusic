@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.maxrave.simpmusic.ui.icon.PlayArrow
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.screen.home.wrapped.formatCount
 import com.maxrave.simpmusic.ui.screen.home.wrapped.wholeMinutes
 import com.maxrave.simpmusic.ui.theme.typo
@@ -114,7 +114,7 @@ fun WrappedEntryCard(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = SimpIcons.PlayArrow,
+                        imageVector = OmniIcons.PlayArrow,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(DISC_GLYPH_SIZE),

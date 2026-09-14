@@ -66,7 +66,7 @@ import com.maxrave.simpmusic.ui.icon.PlaylistAdd
 import com.maxrave.simpmusic.ui.icon.Repeat
 import com.maxrave.simpmusic.ui.icon.RepeatOne
 import com.maxrave.simpmusic.ui.icon.Shuffle
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentActions
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentState
 import com.maxrave.simpmusic.viewModel.UIEvent
@@ -296,7 +296,7 @@ internal fun AppleMusicQueueView(
     }
 }
 
-/** [SimpIcons.Info] [SimpIcons.PlaylistAdd] [SimpIcons.Shuffle] [SimpIcons.Repeat] — exactly, per the corrected spec. */
+/** [OmniIcons.Info] [OmniIcons.PlaylistAdd] [OmniIcons.Shuffle] [OmniIcons.Repeat] — exactly, per the corrected spec. */
 @Composable
 private fun AppleMusicQueuePillsRow(
     state: NowPlayingContentState,
@@ -311,7 +311,7 @@ private fun AppleMusicQueuePillsRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         AppleMusicQueuePill(
-            icon = SimpIcons.Info,
+            icon = OmniIcons.Info,
             active = false,
             activeContainer = activePillContainer,
             activeContent = activePillContent,
@@ -319,7 +319,7 @@ private fun AppleMusicQueuePillsRow(
             modifier = Modifier.weight(1f),
         )
         AppleMusicQueuePill(
-            icon = SimpIcons.PlaylistAdd,
+            icon = OmniIcons.PlaylistAdd,
             active = false,
             activeContainer = activePillContainer,
             activeContent = activePillContent,
@@ -327,7 +327,7 @@ private fun AppleMusicQueuePillsRow(
             modifier = Modifier.weight(1f),
         )
         AppleMusicQueuePill(
-            icon = SimpIcons.Shuffle,
+            icon = OmniIcons.Shuffle,
             active = state.controllerState.isShuffle,
             activeContainer = activePillContainer,
             activeContent = activePillContent,
@@ -335,7 +335,7 @@ private fun AppleMusicQueuePillsRow(
             modifier = Modifier.weight(1f),
         )
         AppleMusicQueuePill(
-            icon = if (repeatState is RepeatState.One) SimpIcons.RepeatOne else SimpIcons.Repeat,
+            icon = if (repeatState is RepeatState.One) OmniIcons.RepeatOne else OmniIcons.Repeat,
             active = repeatState !is RepeatState.None,
             activeContainer = activePillContainer,
             activeContent = activePillContent,

@@ -57,7 +57,7 @@ import com.maxrave.simpmusic.ui.component.capture.rememberCaptureController
 import com.maxrave.simpmusic.ui.icon.Download
 import com.maxrave.simpmusic.ui.icon.KeyboardArrowDown
 import com.maxrave.simpmusic.ui.icon.Share
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.screen.player.content.applemusic.appleMusicVerticalFadeEdges
 import kotlinx.coroutines.launch
 import multiplatform.network.cmptoast.ToastGravity
@@ -137,7 +137,7 @@ fun ShareLyricsSheet(
     val fileName =
         remember(songTitle) {
             val stem = songTitle.ifBlank { "lyrics" }.take(32).map { if (it.isLetterOrDigit()) it else '_' }.joinToString("")
-            "SimpMusic_${stem}_${Random.nextInt(100_000, 999_999)}.png"
+            "OmniMusic_${stem}_${Random.nextInt(100_000, 999_999)}.png"
         }
 
     // Saving is the only half that can be refused: sharing goes through the app's own cache, which
@@ -263,7 +263,7 @@ private fun ShareLyricsSheetHeader(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = SimpIcons.KeyboardArrowDown,
+                imageVector = OmniIcons.KeyboardArrowDown,
                 contentDescription = null,
                 tint = content,
                 modifier = Modifier.size(26.dp),
@@ -428,7 +428,7 @@ private fun ShareLyricsPreview(
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ShareLyricsPill(
                 text = stringResource(Res.string.share_lyrics_save),
-                icon = SimpIcons.Download,
+                icon = OmniIcons.Download,
                 container = Color.Transparent,
                 label = content,
                 outlined = true,
@@ -436,7 +436,7 @@ private fun ShareLyricsPreview(
             )
             ShareLyricsPill(
                 text = stringResource(Res.string.share_lyrics_share_action),
-                icon = SimpIcons.Share,
+                icon = OmniIcons.Share,
                 container = content,
                 label = onFilled,
                 onClick = onShare,

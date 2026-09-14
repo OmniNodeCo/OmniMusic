@@ -55,7 +55,7 @@ import com.maxrave.simpmusic.ui.component.EndOfPage
 import com.maxrave.simpmusic.ui.component.LiquidGlassIconButton
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
 import com.maxrave.simpmusic.ui.icon.Check
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.ListenTogetherSettingsViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -287,7 +287,7 @@ fun ListenTogetherSettingsScreen(
         // the backdrop source, exactly the arrangement the main Listen Together page uses.
         LiquidGlassIconButton(
             backdrop = backdrop,
-            imageVector = SimpIcons.ArrowBackIosNew,
+            imageVector = OmniIcons.ArrowBackIosNew,
             tint = MaterialTheme.colorScheme.onSurface,
             shape = RoundedCornerShape(24.dp),
             modifier =
@@ -350,7 +350,7 @@ private fun ServerOption(
             contentAlignment = Alignment.Center,
         ) {
             if (selected) {
-                Icon(SimpIcons.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+                Icon(OmniIcons.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
             }
         }
         Column(Modifier.weight(1f)) {

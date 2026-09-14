@@ -1,4 +1,4 @@
-name: Build release APK (FOSS)
+name: Build OmniMusic (Android FOSS APK)
 on:
   workflow_dispatch:
   push:

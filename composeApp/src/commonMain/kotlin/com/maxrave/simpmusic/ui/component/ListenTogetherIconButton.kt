@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maxrave.domain.repository.ListenTogetherRepository
 import com.maxrave.simpmusic.ui.icon.Groups
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import org.koin.compose.koinInject
 
 /**
@@ -34,7 +34,7 @@ fun ListenTogetherIconButton(onClick: () -> Unit) {
 
     Box {
         RippleIconButton(
-            imageVector = SimpIcons.Groups,
+            imageVector = OmniIcons.Groups,
             tint = MaterialTheme.colorScheme.onBackground,
             onClick = onClick,
         )

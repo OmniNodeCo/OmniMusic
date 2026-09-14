@@ -97,7 +97,7 @@ import com.maxrave.simpmusic.ui.icon.Forward5
 import com.maxrave.simpmusic.ui.icon.Fullscreen
 import com.maxrave.simpmusic.ui.icon.Replay5
 import com.maxrave.simpmusic.ui.icon.Share
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.Subtitles
 import com.maxrave.simpmusic.ui.icon.SubtitlesOff
 import com.maxrave.simpmusic.ui.icon.ThumbsUpDown
@@ -115,7 +115,7 @@ import simpmusic.composeapp.generated.resources.line_synced
 import simpmusic.composeapp.generated.resources.lyrics
 import simpmusic.composeapp.generated.resources.lyrics_provider_betterlyrics
 import simpmusic.composeapp.generated.resources.lyrics_provider_lrc
-import simpmusic.composeapp.generated.resources.lyrics_provider_simpmusic
+import simpmusic.composeapp.generated.resources.lyrics_provider_omnimusic
 import simpmusic.composeapp.generated.resources.lyrics_provider_youtube
 import simpmusic.composeapp.generated.resources.offline_mode
 import simpmusic.composeapp.generated.resources.published_at
@@ -407,7 +407,7 @@ internal fun ExpressiveArtworkCardPage(
                                                 modifier = Modifier.align(Alignment.TopEnd),
                                             ) {
                                                 Icon(
-                                                    imageVector = SimpIcons.Fullscreen,
+                                                    imageVector = OmniIcons.Fullscreen,
                                                     contentDescription = "",
                                                     // Over-video control, not a semantic surface
                                                     // foreground — stays white like Classic.
@@ -435,7 +435,7 @@ internal fun ExpressiveArtworkCardPage(
                                                     },
                                                 ) {
                                                     Icon(
-                                                        imageVector = SimpIcons.Replay5,
+                                                        imageVector = OmniIcons.Replay5,
                                                         tint = Color.White,
                                                         contentDescription = "",
                                                         modifier =
@@ -459,7 +459,7 @@ internal fun ExpressiveArtworkCardPage(
                                                     },
                                                 ) {
                                                     Icon(
-                                                        imageVector = SimpIcons.Forward5,
+                                                        imageVector = OmniIcons.Forward5,
                                                         tint = Color.White,
                                                         contentDescription = "",
                                                         modifier =
@@ -479,9 +479,9 @@ internal fun ExpressiveArtworkCardPage(
                                                     Icon(
                                                         imageVector =
                                                             if (internalShowSubtitle) {
-                                                                SimpIcons.SubtitlesOff
+                                                                OmniIcons.SubtitlesOff
                                                             } else {
-                                                                SimpIcons.Subtitles
+                                                                OmniIcons.Subtitles
                                                             },
                                                         contentDescription = "",
                                                         tint = Color.White,
@@ -558,7 +558,7 @@ internal fun ExpressiveBelowTheFold(
                             AIBadge()
                         }
                         Spacer(modifier = Modifier.weight(1f))
-                        // Vote button — only when the lyrics or the translation come from SimpMusic
+                        // Vote button — only when the lyrics or the translation come from OmniMusic
                         // Lyrics. The rule itself lives on the shared contract (canVote), so a style
                         // cannot ship without it the way the Apple Music tab did.
                         if (state.screenData.lyricsData.canVote()) {
@@ -569,7 +569,7 @@ internal fun ExpressiveBelowTheFold(
                                     },
                                 ) {
                                     Icon(
-                                        imageVector = SimpIcons.ThumbsUpDown,
+                                        imageVector = OmniIcons.ThumbsUpDown,
                                         contentDescription = stringResource(Res.string.rate_lyrics),
                                         tint = colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(16.dp),
@@ -583,7 +583,7 @@ internal fun ExpressiveBelowTheFold(
                                 onClick = { showShareLyricsSheet = true },
                             ) {
                                 Icon(
-                                    imageVector = SimpIcons.Share,
+                                    imageVector = OmniIcons.Share,
                                     contentDescription = stringResource(Res.string.share_lyrics),
                                     tint = colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(16.dp),
@@ -643,8 +643,8 @@ internal fun ExpressiveBelowTheFold(
                         Text(
                             text =
                                 when (state.screenData.lyricsData?.lyricsProvider) {
-                                    LyricsProvider.SIMPMUSIC -> {
-                                        stringResource(Res.string.lyrics_provider_simpmusic)
+                                    LyricsProvider.OMNIMUSIC -> {
+                                        stringResource(Res.string.lyrics_provider_omnimusic)
                                     }
 
                                     LyricsProvider.LRCLIB -> {

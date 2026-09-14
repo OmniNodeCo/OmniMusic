@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 @Suppress("CheckReturnValue")
-val SimpIcons.Settings: ImageVector
+val OmniIcons.Settings: ImageVector
   get() {
     if (_Settings != null) {
       return _Settings!!

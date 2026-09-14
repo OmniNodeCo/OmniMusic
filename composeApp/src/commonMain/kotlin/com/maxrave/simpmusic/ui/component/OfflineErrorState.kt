@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.maxrave.simpmusic.ui.icon.CloudOff
 import com.maxrave.simpmusic.ui.icon.Download
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
 import simpmusic.composeapp.generated.resources.Res
@@ -67,7 +67,7 @@ fun OfflineErrorState(
                 .padding(horizontal = 24.dp),
         ) {
             Icon(
-                imageVector = SimpIcons.CloudOff,
+                imageVector = OmniIcons.CloudOff,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f),
                 modifier = Modifier.size(80.dp),
@@ -110,7 +110,7 @@ fun OfflineErrorState(
                 ),
             ) {
                 Icon(
-                    imageVector = SimpIcons.Download,
+                    imageVector = OmniIcons.Download,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.size(18.dp),

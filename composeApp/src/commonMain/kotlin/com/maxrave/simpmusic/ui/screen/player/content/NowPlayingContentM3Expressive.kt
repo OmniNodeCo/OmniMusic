@@ -105,7 +105,7 @@ import com.maxrave.simpmusic.ui.icon.QueueMusic
 import com.maxrave.simpmusic.ui.icon.Repeat
 import com.maxrave.simpmusic.ui.icon.RepeatOne
 import com.maxrave.simpmusic.ui.icon.Shuffle
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.screen.player.content.expressive.ExpressiveTransportRow
 import com.maxrave.simpmusic.ui.screen.player.content.expressive.WavySeekBar
 import com.maxrave.simpmusic.ui.theme.seed
@@ -359,7 +359,7 @@ private fun NowPlayingM3ExpressiveLayout(
                         modifier = Modifier.size(44.dp),
                     ) {
                         Icon(
-                            imageVector = SimpIcons.MoreVert,
+                            imageVector = OmniIcons.MoreVert,
                             contentDescription = "",
                         )
                     }
@@ -823,7 +823,7 @@ private fun ExpressiveTrackInfoRow(
             ) {
                 Crossfade(targetState = state.likeStatus) { liked ->
                     Icon(
-                        imageVector = if (liked) SimpIcons.CheckCircle else SimpIcons.AddCircleOutline,
+                        imageVector = if (liked) OmniIcons.CheckCircle else OmniIcons.AddCircleOutline,
                         contentDescription = "",
                     )
                 }
@@ -852,7 +852,7 @@ private fun ExpressiveTrackInfoRow(
         ) {
             Crossfade(targetState = state.controllerState.isLiked) { liked ->
                 Icon(
-                    imageVector = if (liked) SimpIcons.Favorite else SimpIcons.FavoriteBorder,
+                    imageVector = if (liked) OmniIcons.Favorite else OmniIcons.FavoriteBorder,
                     contentDescription = "",
                 )
             }
@@ -887,7 +887,7 @@ private fun ExpressiveConnectedGroup(
             onClick = { actions.onShowInfo() },
         ) {
             Icon(
-                imageVector = SimpIcons.Info,
+                imageVector = OmniIcons.Info,
                 contentDescription = "",
                 tint = colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(22.dp),
@@ -914,7 +914,7 @@ private fun ExpressiveConnectedGroup(
         ) {
             Crossfade(targetState = state.controllerState.isShuffle, label = "expressiveShuffle") { isShuffle ->
                 Icon(
-                    imageVector = SimpIcons.Shuffle,
+                    imageVector = OmniIcons.Shuffle,
                     contentDescription = "",
                     tint = if (isShuffle) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(22.dp),
@@ -930,7 +930,7 @@ private fun ExpressiveConnectedGroup(
                 when (rs) {
                     is RepeatState.None -> {
                         Icon(
-                            imageVector = SimpIcons.Repeat,
+                            imageVector = OmniIcons.Repeat,
                             contentDescription = "",
                             tint = colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(22.dp),
@@ -939,7 +939,7 @@ private fun ExpressiveConnectedGroup(
 
                     RepeatState.All -> {
                         Icon(
-                            imageVector = SimpIcons.Repeat,
+                            imageVector = OmniIcons.Repeat,
                             contentDescription = "",
                             tint = colorScheme.onPrimaryContainer,
                             modifier = Modifier.size(22.dp),
@@ -948,7 +948,7 @@ private fun ExpressiveConnectedGroup(
 
                     RepeatState.One -> {
                         Icon(
-                            imageVector = SimpIcons.RepeatOne,
+                            imageVector = OmniIcons.RepeatOne,
                             contentDescription = "",
                             tint = colorScheme.onPrimaryContainer,
                             modifier = Modifier.size(22.dp),
@@ -962,7 +962,7 @@ private fun ExpressiveConnectedGroup(
             onClick = { actions.onShowAddToPlaylist() },
         ) {
             Icon(
-                imageVector = SimpIcons.PlaylistAdd,
+                imageVector = OmniIcons.PlaylistAdd,
                 contentDescription = "Add to Playlist",
                 tint = colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(22.dp),
@@ -973,7 +973,7 @@ private fun ExpressiveConnectedGroup(
             onClick = { actions.onShowQueue() },
         ) {
             Icon(
-                imageVector = SimpIcons.QueueMusic,
+                imageVector = OmniIcons.QueueMusic,
                 contentDescription = "",
                 tint = colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(22.dp),

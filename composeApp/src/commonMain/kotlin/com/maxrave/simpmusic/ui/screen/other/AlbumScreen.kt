@@ -101,7 +101,7 @@ import com.maxrave.simpmusic.ui.icon.MoreVert
 import com.maxrave.simpmusic.ui.icon.Pause
 import com.maxrave.simpmusic.ui.icon.PlayArrow
 import com.maxrave.simpmusic.ui.icon.Shuffle
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.list.AlbumDestination
 import com.maxrave.simpmusic.ui.navigation.destination.list.ArtistDestination
 import com.maxrave.simpmusic.ui.theme.seed
@@ -345,7 +345,7 @@ fun AlbumScreen(
                                             // Back button — liquid glass effect (Kyant backdrop)
                                             LiquidGlassIconButton(
                                                 backdrop = artworkBackdrop,
-                                                imageVector = SimpIcons.ArrowBackIosNew,
+                                                imageVector = OmniIcons.ArrowBackIosNew,
                                                 modifier =
                                                     Modifier
                                                         .align(Alignment.TopStart)
@@ -382,7 +382,7 @@ fun AlbumScreen(
                                                     onClick = { albumBottomSheetShow = true },
                                                 ) {
                                                     Icon(
-                                                        imageVector = SimpIcons.MoreVert,
+                                                        imageVector = OmniIcons.MoreVert,
                                                         contentDescription = "More",
                                                         tint = Color.White,
                                                     )
@@ -501,7 +501,7 @@ fun AlbumScreen(
                                                                 contentAlignment = Alignment.Center,
                                                             ) {
                                                                 Icon(
-                                                                    imageVector = SimpIcons.Shuffle,
+                                                                    imageVector = OmniIcons.Shuffle,
                                                                     contentDescription = "Shuffle",
                                                                     tint = Color.White,
                                                                     modifier = Modifier.size(22.dp),
@@ -528,7 +528,7 @@ fun AlbumScreen(
                                                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                                                     Icon(
                                                                         imageVector =
-                                                                            if (isThisPlaying) SimpIcons.Pause else SimpIcons.PlayArrow,
+                                                                            if (isThisPlaying) OmniIcons.Pause else OmniIcons.PlayArrow,
                                                                         contentDescription = null,
                                                                         tint = Color.Black,
                                                                         modifier = Modifier.size(22.dp),
@@ -603,7 +603,7 @@ fun AlbumScreen(
                                                                                 contentAlignment = Alignment.Center,
                                                                             ) {
                                                                                 Icon(
-                                                                                    imageVector = SimpIcons.DownloadForOffline,
+                                                                                    imageVector = OmniIcons.DownloadForOffline,
                                                                                     tint = Color.White,
                                                                                     contentDescription = "Download",
                                                                                     modifier = Modifier.size(22.dp),
@@ -621,7 +621,7 @@ fun AlbumScreen(
                                             Box(Modifier.padding(start = 12.dp)) {
                                                 LiquidGlassIconButton(
                                                     backdrop = headerBackdrop,
-                                                    imageVector = SimpIcons.ArrowBackIosNew,
+                                                    imageVector = OmniIcons.ArrowBackIosNew,
                                                     shape = RoundedCornerShape(24.dp),
                                                     // Same directional style as the like/⋯ pill, a touch thicker. The default
                                                     // width of 0.5.dp becomes a ~2px stroke (HighlightModifier: ceil(width.toPx()) * 2),
@@ -664,7 +664,7 @@ fun AlbumScreen(
                                                     onClick = { albumBottomSheetShow = true },
                                                 ) {
                                                     Icon(
-                                                        imageVector = SimpIcons.MoreVert,
+                                                        imageVector = OmniIcons.MoreVert,
                                                         contentDescription = "More",
                                                         tint = Color.White,
                                                     )
@@ -705,7 +705,7 @@ fun AlbumScreen(
                                                         contentAlignment = Alignment.Center,
                                                     ) {
                                                         Icon(
-                                                            imageVector = SimpIcons.Shuffle,
+                                                            imageVector = OmniIcons.Shuffle,
                                                             contentDescription = "Shuffle",
                                                             tint = Color.White,
                                                             modifier = Modifier.size(22.dp),
@@ -732,7 +732,7 @@ fun AlbumScreen(
                                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                                             Icon(
                                                                 imageVector =
-                                                                    if (isThisPlaying) SimpIcons.Pause else SimpIcons.PlayArrow,
+                                                                    if (isThisPlaying) OmniIcons.Pause else OmniIcons.PlayArrow,
                                                                 contentDescription = null,
                                                                 tint = Color.Black,
                                                                 modifier = Modifier.size(22.dp),
@@ -807,7 +807,7 @@ fun AlbumScreen(
                                                                         contentAlignment = Alignment.Center,
                                                                     ) {
                                                                         Icon(
-                                                                            imageVector = SimpIcons.DownloadForOffline,
+                                                                            imageVector = OmniIcons.DownloadForOffline,
                                                                             tint = Color.White,
                                                                             contentDescription = "Download",
                                                                             modifier = Modifier.size(22.dp),
@@ -955,7 +955,7 @@ fun AlbumScreen(
                         navigationIcon = {
                             Box(Modifier.padding(horizontal = 5.dp)) {
                                 RippleIconButton(
-                                    SimpIcons.ArrowBackIosNew,
+                                    OmniIcons.ArrowBackIosNew,
                                     Modifier
                                         .size(32.dp),
                                     true,

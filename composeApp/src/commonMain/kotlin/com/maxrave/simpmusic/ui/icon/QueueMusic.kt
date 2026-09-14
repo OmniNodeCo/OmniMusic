@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 @Suppress("CheckReturnValue")
-val SimpIcons.QueueMusic: ImageVector
+val OmniIcons.QueueMusic: ImageVector
   get() {
     if (_QueueMusic != null) {
       return _QueueMusic!!

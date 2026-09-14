@@ -84,7 +84,7 @@ import com.maxrave.simpmusic.ui.icon.DragHandle
 import com.maxrave.simpmusic.ui.icon.MoreVert
 import com.maxrave.simpmusic.ui.icon.PushPin
 import com.maxrave.simpmusic.ui.icon.QueueMusic
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.LocalForceDarkText
 import com.maxrave.simpmusic.ui.theme.seed
 import com.maxrave.simpmusic.ui.theme.typo
@@ -161,7 +161,7 @@ fun SongFullWidthItems(
                 ) {
                     Icon(
                         tint = contentColor,
-                        imageVector = SimpIcons.QueueMusic,
+                        imageVector = OmniIcons.QueueMusic,
                         contentDescription = stringResource(Res.string.add_to_queue),
                     )
                 }
@@ -250,7 +250,7 @@ fun SongFullWidthItems(
                         ) {
                             if (isSelected) {
                                 Icon(
-                                    imageVector = SimpIcons.Check,
+                                    imageVector = OmniIcons.Check,
                                     contentDescription = null,
                                     tint = Color.Black,
                                     modifier = Modifier.size(14.dp),
@@ -331,7 +331,7 @@ fun SongFullWidthItems(
                         ) {
                             Row {
                                 Icon(
-                                    imageVector = SimpIcons.DownloadForOffline,
+                                    imageVector = OmniIcons.DownloadForOffline,
                                     tint = contentColor,
                                     contentDescription = "",
                                     modifier = Modifier.size(16.dp).padding(2.dp),
@@ -377,7 +377,7 @@ fun SongFullWidthItems(
                 // Hidden while selecting: the per-item menu moves up to the selection app bar,
                 // so one tap cannot mean both "act on this song" and "pick this song".
                 if (onMoreClickListener != null && !selectionMode) {
-                    RippleIconButton(imageVector = SimpIcons.MoreVert, fillMaxSize = false, tint = contentColor) {
+                    RippleIconButton(imageVector = OmniIcons.MoreVert, fillMaxSize = false, tint = contentColor) {
                         if (itemVideoId.isNotBlank()) onMoreClickListener.invoke(itemVideoId)
                     }
                 }
@@ -387,7 +387,7 @@ fun SongFullWidthItems(
                     exit = fadeOut() + shrinkHorizontally(),
                 ) {
                     Icon(
-                        SimpIcons.DragHandle,
+                        OmniIcons.DragHandle,
                         contentDescription = null,
                         tint = contentColor,
                         modifier = Modifier.padding(horizontal = 8.dp),
@@ -492,7 +492,7 @@ fun SuggestItems(
                 )
             }
             RippleIconButton(
-                imageVector = SimpIcons.Add,
+                imageVector = OmniIcons.Add,
                 fillMaxSize = false,
                 onClick =
                     onAddClickListener ?: {
@@ -629,7 +629,7 @@ fun PlaylistFullWidthItems(
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     if (shouldPin) {
                         Image(
-                            imageVector = SimpIcons.PushPin,
+                            imageVector = OmniIcons.PushPin,
                             contentDescription = null,
                             colorFilter = ColorFilter.tint(if (forceDark) Color.Cyan else MaterialTheme.colorScheme.primary),
                             modifier =

@@ -94,7 +94,7 @@ import com.maxrave.simpmusic.ui.icon.ContentCopy
 import com.maxrave.simpmusic.ui.icon.Logout
 import com.maxrave.simpmusic.ui.icon.Settings
 import com.maxrave.simpmusic.ui.icon.Share
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.home.ListenTogetherSettingsDestination
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.ListenTogetherViewModel
@@ -435,7 +435,7 @@ private fun CreditFooter() {
 }
 
 /** Prefix for the share button; the code alone means nothing to the recipient. */
-private const val SHARE_PREFIX = "Join my SimpMusic room with code "
+private const val SHARE_PREFIX = "Join my OmniMusic room with code "
 
 // ───────────────────────────────── structure ─────────────────────────────────
 
@@ -453,7 +453,7 @@ private fun BoxScope.BackButton(
     // refract — and keeps it reachable once the page has scrolled, which the in-flow one did not.
     LiquidGlassIconButton(
         backdrop = backdrop,
-        imageVector = SimpIcons.ArrowBackIosNew,
+        imageVector = OmniIcons.ArrowBackIosNew,
         // NOT the default Color.White: every other caller sits on a ForceDark screen, but this page
         // follows the theme — at light theme a white glyph sits on light glass (or on the light
         // fallback pill) and disappears. onSurface flips with the scheme.
@@ -639,12 +639,12 @@ private fun RoomCodePoster(
                 // A silent clipboard write is indistinguishable from a dead button, and this one
                 // is the whole point of the screen — the tick is the only proof it did anything.
                 Crossfade(targetState = copied, label = "ltCopied") { done ->
-                    GlyphButton(if (done) SimpIcons.Check else SimpIcons.ContentCopy) {
+                    GlyphButton(if (done) OmniIcons.Check else OmniIcons.ContentCopy) {
                         onCopyCode()
                         copied = true
                     }
                 }
-                GlyphButton(SimpIcons.Share, onShareCode)
+                GlyphButton(OmniIcons.Share, onShareCode)
             }
         }
     }
@@ -719,7 +719,7 @@ private fun ErrorCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(message, style = typo().bodyMedium, color = MaterialTheme.colorScheme.error, modifier = Modifier.weight(1f))
-            Icon(SimpIcons.Close, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
+            Icon(OmniIcons.Close, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
         }
     }
 }
@@ -747,8 +747,8 @@ private fun JoinRequests(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                ActionGlyph(SimpIcons.Check, MaterialTheme.colorScheme.primary) { onApprove(request.userId) }
-                ActionGlyph(SimpIcons.Close, MaterialTheme.colorScheme.error) { onReject(request.userId) }
+                ActionGlyph(OmniIcons.Check, MaterialTheme.colorScheme.primary) { onApprove(request.userId) }
+                ActionGlyph(OmniIcons.Close, MaterialTheme.colorScheme.error) { onReject(request.userId) }
             }
         }
     }
@@ -789,8 +789,8 @@ private fun Suggestions(
                         maxLines = 1,
                     )
                 }
-                ActionGlyph(SimpIcons.Check, MaterialTheme.colorScheme.primary) { onApprove(suggestion.suggestionId) }
-                ActionGlyph(SimpIcons.Close, MaterialTheme.colorScheme.error) { onReject(suggestion.suggestionId) }
+                ActionGlyph(OmniIcons.Check, MaterialTheme.colorScheme.primary) { onApprove(suggestion.suggestionId) }
+                ActionGlyph(OmniIcons.Close, MaterialTheme.colorScheme.error) { onReject(suggestion.suggestionId) }
             }
         }
     }
@@ -877,7 +877,7 @@ private fun Members(
                 }
                 if (manageable) {
                     Icon(
-                        SimpIcons.ArrowForwardIos,
+                        OmniIcons.ArrowForwardIos,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(14.dp),
@@ -905,14 +905,14 @@ private fun FooterActions(
     ) {
         if (onLeave != null) {
             TextAction(
-                icon = SimpIcons.Logout,
+                icon = OmniIcons.Logout,
                 text = stringResource(Res.string.lt_leave_room),
                 color = MaterialTheme.colorScheme.error,
                 onClick = onLeave,
             )
         }
         TextAction(
-            icon = SimpIcons.Settings,
+            icon = OmniIcons.Settings,
             text = stringResource(Res.string.settings),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             onClick = onSettings,

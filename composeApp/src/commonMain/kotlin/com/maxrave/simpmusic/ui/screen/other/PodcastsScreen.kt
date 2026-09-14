@@ -84,7 +84,7 @@ import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
 import com.maxrave.simpmusic.ui.icon.PlayCircle
 import com.maxrave.simpmusic.ui.icon.Share
 import com.maxrave.simpmusic.ui.icon.Shuffle
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.list.ArtistDestination
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.PodcastUIEvent
@@ -208,7 +208,7 @@ fun PodcastScreen(
                                             .windowInsetsPadding(WindowInsets.statusBars),
                                 ) {
                                     RippleIconButton(
-                                        imageVector = SimpIcons.ArrowBackIosNew,
+                                        imageVector = OmniIcons.ArrowBackIosNew,
                                     ) {
                                         navController.navigateUp()
                                     }
@@ -317,7 +317,7 @@ fun PodcastScreen(
                                             ) {
                                                 // Play button
                                                 RippleIconButton(
-                                                    imageVector = SimpIcons.PlayCircle,
+                                                    imageVector = OmniIcons.PlayCircle,
                                                     fillMaxSize = true,
                                                     modifier = Modifier.size(36.dp),
                                                 ) {
@@ -343,7 +343,7 @@ fun PodcastScreen(
                                                 // Shuffle
                                                 RippleIconButton(
                                                     modifier = Modifier.size(36.dp),
-                                                    imageVector = SimpIcons.Shuffle,
+                                                    imageVector = OmniIcons.Shuffle,
                                                     fillMaxSize = true,
                                                 ) {
                                                     viewModel.onUIEvent(PodcastUIEvent.Shuffle(id))
@@ -354,7 +354,7 @@ fun PodcastScreen(
                                                 // More options
                                                 RippleIconButton(
                                                     modifier = Modifier.size(36.dp),
-                                                    imageVector = SimpIcons.Share,
+                                                    imageVector = OmniIcons.Share,
                                                     fillMaxSize = true,
                                                 ) {
                                                     viewModel.onUIEvent(PodcastUIEvent.Share(id))
@@ -445,7 +445,7 @@ fun PodcastScreen(
                         navigationIcon = {
                             Box(Modifier.padding(horizontal = 5.dp)) {
                                 RippleIconButton(
-                                    SimpIcons.ArrowBackIosNew,
+                                    OmniIcons.ArrowBackIosNew,
                                     Modifier.size(32.dp),
                                     true,
                                 ) {

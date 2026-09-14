@@ -43,7 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.maxrave.simpmusic.ui.component.RippleIconButton
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.LastfmLoginState
 import com.maxrave.simpmusic.viewModel.LogInViewModel
@@ -66,10 +66,10 @@ import simpmusic.composeapp.generated.resources.scrobbling_info
 private val CONTENT_MAX_WIDTH = 420.dp
 
 /**
- * Last.fm's desktop auth flow, which is what SimpMusic uses on every platform.
+ * Last.fm's desktop auth flow, which is what OmniMusic uses on every platform.
  *
  * There is no WebView here on purpose — unlike the Discord and Spotify screens, this never sees the
- * user's password. SimpMusic asks Last.fm for a request token, sends the user to Last.fm's own page
+ * user's password. OmniMusic asks Last.fm for a request token, sends the user to Last.fm's own page
  * in their browser, and trades the approved token for a session key when they come back.
  *
  * @param token supplied when the user returns through the `wordbyword://lastfm-auth` callback; the
@@ -242,7 +242,7 @@ fun LastfmLoginScreen(
             navigationIcon = {
                 Box(Modifier.padding(horizontal = 5.dp)) {
                     RippleIconButton(
-                        SimpIcons.ArrowBackIosNew,
+                        OmniIcons.ArrowBackIosNew,
                         Modifier.size(32.dp),
                         true,
                     ) {

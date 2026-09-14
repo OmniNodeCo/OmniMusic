@@ -1105,7 +1105,7 @@ class SharedViewModel(
         duration: Int, // 0 if translated lyrics
         inputLyrics: Lyrics?,
         isTranslatedLyrics: Boolean,
-        lyricsProvider: LyricsProvider = LyricsProvider.SIMPMUSIC,
+        lyricsProvider: LyricsProvider = LyricsProvider.OMNIMUSIC,
     ) {
         if (inputLyrics == null) {
             _nowPlayingScreenData.update {
@@ -1198,7 +1198,7 @@ class SharedViewModel(
                         )
                         log("Removed out-of-sync translated lyrics for $videoId")
                         val simpMusicLyricsId = lyrics.simpMusicLyrics?.id
-                        if (lyricsProvider == LyricsProvider.SIMPMUSIC && !simpMusicLyricsId.isNullOrEmpty()) {
+                        if (lyricsProvider == LyricsProvider.OMNIMUSIC && !simpMusicLyricsId.isNullOrEmpty()) {
                             viewModelScope.launch {
                                 lyricsCanvasRepository
                                     .voteSimpMusicTranslatedLyrics(
@@ -1207,11 +1207,11 @@ class SharedViewModel(
                                     ).collectLatest {
                                         when (it) {
                                             is Resource.Error -> {
-                                                Logger.w(tag, "Vote SimpMusic Translated Lyrics Error ${it.message}")
+                                                Logger.w(tag, "Vote OmniMusic Translated Lyrics Error ${it.message}")
                                             }
 
                                             is Resource.Success -> {
-                                                Logger.d(tag, "Vote SimpMusic Translated Lyrics Success")
+                                                Logger.d(tag, "Vote OmniMusic Translated Lyrics Success")
                                             }
                                         }
                                     }
@@ -1229,16 +1229,16 @@ class SharedViewModel(
             }
         }
 
-        val shouldSendLyricsToSimpMusic =
+        val shouldSendLyricsToOmniMusic =
             runBlocking {
                 dataStoreManager.helpBuildLyricsDatabase.first() == TRUE
             } &&
-                lyricsProvider != LyricsProvider.SIMPMUSIC
+                lyricsProvider != LyricsProvider.OMNIMUSIC
         if (_nowPlayingState.value?.songEntity?.videoId == videoId) {
             val track = _nowPlayingState.value?.track
             when (isTranslatedLyrics) {
                 true -> {
-                    if (lyricsProvider == LyricsProvider.SIMPMUSIC) {
+                    if (lyricsProvider == LyricsProvider.OMNIMUSIC) {
                         _translatedVoteState.value =
                             VoteData(
                                 id = lyrics.simpMusicLyrics?.id ?: "",
@@ -1254,7 +1254,7 @@ class SharedViewModel(
                                 ),
                         )
                     }
-                    if (shouldSendLyricsToSimpMusic && track != null) {
+                    if (shouldSendLyricsToOmniMusic && track != null) {
                         viewModelScope.launch {
                             lyricsCanvasRepository
                                 .insertSimpMusicTranslatedLyrics(
@@ -1265,11 +1265,11 @@ class SharedViewModel(
                                 ).collect {
                                     when (it) {
                                         is Resource.Error -> {
-                                            log("Insert SimpMusic Translated Lyrics Error ${it.message}")
+                                            log("Insert OmniMusic Translated Lyrics Error ${it.message}")
                                         }
 
                                         is Resource.Success -> {
-                                            log("Insert SimpMusic Translated Lyrics Success")
+                                            log("Insert OmniMusic Translated Lyrics Success")
                                         }
                                     }
                                 }
@@ -1278,7 +1278,7 @@ class SharedViewModel(
                 }
 
                 false -> {
-                    if (lyricsProvider == LyricsProvider.SIMPMUSIC) {
+                    if (lyricsProvider == LyricsProvider.OMNIMUSIC) {
                         _lyricsVoteState.value =
                             VoteData(
                                 id = lyrics.simpMusicLyrics?.id ?: "",
@@ -1306,7 +1306,7 @@ class SharedViewModel(
                             ),
                         )
                     }
-                    if (shouldSendLyricsToSimpMusic && track != null) {
+                    if (shouldSendLyricsToOmniMusic && track != null) {
                         viewModelScope.launch {
                             lyricsCanvasRepository
                                 .insertSimpMusicLyrics(
@@ -1317,11 +1317,11 @@ class SharedViewModel(
                                 ).collect {
                                     when (it) {
                                         is Resource.Error -> {
-                                            Logger.w(tag, "Insert SimpMusic Lyrics Error ${it.message}")
+                                            Logger.w(tag, "Insert OmniMusic Lyrics Error ${it.message}")
                                         }
 
                                         is Resource.Success -> {
-                                            Logger.d(tag, "Insert SimpMusic Lyrics Success")
+                                            Logger.d(tag, "Insert OmniMusic Lyrics Success")
                                         }
                                     }
                                 }
@@ -1359,7 +1359,7 @@ class SharedViewModel(
             val lyricsProvider = dataStoreManager.lyricsProvider.first()
             when (lyricsProvider) {
                 DataStoreManager.SIMPMUSIC -> {
-                    getSimpMusicLyrics(
+                    getOmniMusicLyrics(
                         videoId,
                         song,
                         (artist ?: ""),
@@ -1395,28 +1395,28 @@ class SharedViewModel(
         }
     }
 
-    private suspend fun getSimpMusicLyrics(
+    private suspend fun getOmniMusicLyrics(
         videoId: String,
         song: SongEntity,
         artist: String?,
         duration: Int,
     ) {
-        lyricsCanvasRepository.getSimpMusicLyrics(videoId).collectLatest {
-            Logger.w(tag, "Get SimpMusic Lyrics for $videoId: $it")
+        lyricsCanvasRepository.getOmniMusicLyrics(videoId).collectLatest {
+            Logger.w(tag, "Get OmniMusic Lyrics for $videoId: $it")
             val data = it.data
             if (it is Resource.Success && data != null) {
-                Logger.d(tag, "Get SimpMusic Lyrics Success")
+                Logger.d(tag, "Get OmniMusic Lyrics Success")
                 updateLyrics(
                     videoId,
                     duration,
                     data,
                     false,
-                    LyricsProvider.SIMPMUSIC,
+                    LyricsProvider.OMNIMUSIC,
                 )
                 insertLyrics(
                     data.toLyricsEntity(videoId),
                 )
-                getSimpMusicTranslatedLyrics(
+                getOmniMusicTranslatedLyrics(
                     videoId,
                     data,
                 )
@@ -1476,7 +1476,7 @@ class SharedViewModel(
                     }
 
                     else -> {
-                        getSimpMusicLyrics(
+                        getOmniMusicLyrics(
                             videoId,
                             song,
                             (artist ?: ""),
@@ -1569,7 +1569,7 @@ class SharedViewModel(
 
                         else -> {
                             log("Get BetterLyrics Error: ${res.message}")
-                            getSimpMusicLyrics(
+                            getOmniMusicLyrics(
                                 song.videoId,
                                 song,
                                 artist,
@@ -1581,20 +1581,20 @@ class SharedViewModel(
         }
     }
 
-    private suspend fun getSimpMusicTranslatedLyrics(
+    private suspend fun getOmniMusicTranslatedLyrics(
         videoId: String,
         lyrics: Lyrics,
     ) {
         val translationLanguage =
             dataStoreManager.translationLanguage.first()
-        lyricsCanvasRepository.getSimpMusicTranslatedLyrics(videoId, translationLanguage).collectLatest { response ->
+        lyricsCanvasRepository.getOmniMusicTranslatedLyrics(videoId, translationLanguage).collectLatest { response ->
             val data = response.data
             when (response) {
                 is Resource.Success if (data != null) -> {
-                    // If SimpMusic translated lyrics are RICH_SYNCED (word-by-word),
+                    // If OmniMusic translated lyrics are RICH_SYNCED (word-by-word),
                     // convert to LINE_SYNCED, downvote, and fallback to AI translation
                     if (data.syncType == "RICH_SYNCED") {
-                        Logger.w(tag, "SimpMusic translated lyrics are RICH_SYNCED, downvoting and falling back to AI")
+                        Logger.w(tag, "OmniMusic translated lyrics are RICH_SYNCED, downvoting and falling back to AI")
                         val simpMusicLyricsId = data.simpMusicLyrics?.id
                         if (!simpMusicLyricsId.isNullOrEmpty()) {
                             viewModelScope.launch {
@@ -1611,19 +1611,19 @@ class SharedViewModel(
                         // Fallback to AI translation
                         getAITranslationLyrics(videoId, lyrics)
                     } else {
-                        Logger.d(tag, "Get SimpMusic Translated Lyrics Success")
+                        Logger.d(tag, "Get OmniMusic Translated Lyrics Success")
                         updateLyrics(
                             videoId,
                             0,
                             data,
                             true,
-                            LyricsProvider.SIMPMUSIC,
+                            LyricsProvider.OMNIMUSIC,
                         )
                     }
                 }
 
                 else -> {
-                    Logger.w(tag, "Get SimpMusic Translated Lyrics Error: ${response.message}")
+                    Logger.w(tag, "Get OmniMusic Translated Lyrics Error: ${response.message}")
                     getAITranslationLyrics(
                         videoId,
                         lyrics,
@@ -1959,7 +1959,7 @@ class SharedViewModel(
     val lyricsVoteState: StateFlow<VoteData?> = _lyricsVoteState.asStateFlow()
 
     /**
-     * Vote for SimpMusic original lyrics (upvote or downvote)
+     * Vote for OmniMusic original lyrics (upvote or downvote)
      * @param upvote true for upvote, false for downvote
      */
     fun voteLyrics(upvote: Boolean) {
@@ -1967,8 +1967,8 @@ class SharedViewModel(
         val lyricsProvider = lyricsData?.lyricsProvider
         val simpMusicLyricsId = lyricsData?.lyrics?.simpMusicLyrics?.id ?: return
 
-        if (lyricsProvider != LyricsProvider.SIMPMUSIC || simpMusicLyricsId.isEmpty()) {
-            Logger.w(tag, "Cannot vote: not a SimpMusic lyrics or missing ID")
+        if (lyricsProvider != LyricsProvider.OMNIMUSIC || simpMusicLyricsId.isEmpty()) {
+            Logger.w(tag, "Cannot vote: not a OmniMusic lyrics or missing ID")
             return
         }
 
@@ -1985,7 +1985,7 @@ class SharedViewModel(
                 ).collectLatest { result ->
                     when (result) {
                         is Resource.Error -> {
-                            Logger.w(tag, "Vote SimpMusic Lyrics Error ${result.message}")
+                            Logger.w(tag, "Vote OmniMusic Lyrics Error ${result.message}")
                             _lyricsVoteState.update {
                                 it?.copy(
                                     state = VoteState.Error(result.message ?: "Unknown error"),
@@ -1994,7 +1994,7 @@ class SharedViewModel(
                         }
 
                         is Resource.Success -> {
-                            Logger.d(tag, "Vote SimpMusic Lyrics Success")
+                            Logger.d(tag, "Vote OmniMusic Lyrics Success")
                             _lyricsVoteState.update {
                                 it?.copy(
                                     state = VoteState.Success(upvote),
@@ -2014,7 +2014,7 @@ class SharedViewModel(
     }
 
     /**
-     * Vote for SimpMusic translated lyrics (upvote or downvote)
+     * Vote for OmniMusic translated lyrics (upvote or downvote)
      * @param upvote true for upvote, false for downvote
      */
     fun voteTranslatedLyrics(upvote: Boolean) {
@@ -2022,8 +2022,8 @@ class SharedViewModel(
         val lyricsProvider = translatedLyrics?.second
         val simpMusicLyricsId = translatedLyrics?.first?.simpMusicLyrics?.id ?: return
 
-        if (lyricsProvider != LyricsProvider.SIMPMUSIC || simpMusicLyricsId.isEmpty()) {
-            Logger.w(tag, "Cannot vote: not a SimpMusic translated lyrics or missing ID")
+        if (lyricsProvider != LyricsProvider.OMNIMUSIC || simpMusicLyricsId.isEmpty()) {
+            Logger.w(tag, "Cannot vote: not a OmniMusic translated lyrics or missing ID")
             return
         }
 
@@ -2040,7 +2040,7 @@ class SharedViewModel(
                 ).collectLatest { result ->
                     when (result) {
                         is Resource.Error -> {
-                            Logger.w(tag, "Vote SimpMusic Translated Lyrics Error ${result.message}")
+                            Logger.w(tag, "Vote OmniMusic Translated Lyrics Error ${result.message}")
                             _translatedVoteState.update {
                                 it?.copy(
                                     state = VoteState.Error(result.message ?: "Unknown error"),
@@ -2049,7 +2049,7 @@ class SharedViewModel(
                         }
 
                         is Resource.Success -> {
-                            Logger.d(tag, "Vote SimpMusic Translated Lyrics Success")
+                            Logger.d(tag, "Vote OmniMusic Translated Lyrics Success")
                             _translatedVoteState.update {
                                 it?.copy(
                                     state = VoteState.Success(upvote),
@@ -2110,7 +2110,7 @@ sealed class UIEvent {
 }
 
 enum class LyricsProvider {
-    SIMPMUSIC,
+    OMNIMUSIC,
     YOUTUBE,
     SPOTIFY,
     LRCLIB,

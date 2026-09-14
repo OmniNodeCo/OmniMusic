@@ -92,7 +92,7 @@ import com.maxrave.simpmusic.ui.screen.player.content.applemusic.AppleMusicTypog
 import com.maxrave.simpmusic.ui.icon.Forward5
 import com.maxrave.simpmusic.ui.icon.Fullscreen
 import com.maxrave.simpmusic.ui.icon.Replay5
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.Subtitles
 import com.maxrave.simpmusic.ui.icon.SubtitlesOff
 import com.maxrave.simpmusic.ui.screen.player.content.applemusic.AppleMusicView
@@ -859,7 +859,7 @@ private fun AppleMusicArtworkPage(
                                         onClick = { actions.onEnterFullscreenVideo() },
                                         modifier = Modifier.align(Alignment.TopEnd),
                                     ) {
-                                        Icon(imageVector = SimpIcons.Fullscreen, contentDescription = "", tint = Color.White)
+                                        Icon(imageVector = OmniIcons.Fullscreen, contentDescription = "", tint = Color.White)
                                     }
                                     Row(
                                         modifier = Modifier.align(Alignment.Center).fillMaxWidth(),
@@ -870,7 +870,7 @@ private fun AppleMusicArtworkPage(
                                             modifier = Modifier.size(48.dp).clip(CircleShape),
                                         ) {
                                             Icon(
-                                                imageVector = SimpIcons.Replay5,
+                                                imageVector = OmniIcons.Replay5,
                                                 contentDescription = "",
                                                 tint = Color.White,
                                                 modifier = Modifier.size(36.dp).alpha(0.8f),
@@ -881,7 +881,7 @@ private fun AppleMusicArtworkPage(
                                             modifier = Modifier.size(48.dp).clip(CircleShape),
                                         ) {
                                             Icon(
-                                                imageVector = SimpIcons.Forward5,
+                                                imageVector = OmniIcons.Forward5,
                                                 contentDescription = "",
                                                 tint = Color.White,
                                                 modifier = Modifier.size(36.dp).alpha(0.8f),
@@ -894,7 +894,7 @@ private fun AppleMusicArtworkPage(
                                             modifier = Modifier.align(Alignment.BottomEnd),
                                         ) {
                                             Icon(
-                                                imageVector = if (showSubtitle) SimpIcons.SubtitlesOff else SimpIcons.Subtitles,
+                                                imageVector = if (showSubtitle) OmniIcons.SubtitlesOff else OmniIcons.Subtitles,
                                                 contentDescription = "",
                                                 tint = Color.White,
                                             )

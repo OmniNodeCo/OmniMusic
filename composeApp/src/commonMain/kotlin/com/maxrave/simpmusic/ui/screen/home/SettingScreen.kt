@@ -130,7 +130,7 @@ import com.maxrave.simpmusic.ui.icon.Close
 import com.maxrave.simpmusic.ui.icon.Error
 import com.maxrave.simpmusic.ui.icon.PeopleAlt
 import com.maxrave.simpmusic.ui.icon.PlaylistAdd
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.home.CreditDestination
 import com.maxrave.simpmusic.ui.navigation.destination.login.DiscordLoginDestination
 import com.maxrave.simpmusic.ui.navigation.destination.login.LastfmLoginDestination
@@ -376,7 +376,7 @@ import simpmusic.composeapp.generated.resources.send_back_listening_data_to_goog
 import simpmusic.composeapp.generated.resources.set
 import simpmusic.composeapp.generated.resources.settings
 import simpmusic.composeapp.generated.resources.signed_in
-import simpmusic.composeapp.generated.resources.simpmusic_lyrics
+import simpmusic.composeapp.generated.resources.omnimusic_lyrics
 import simpmusic.composeapp.generated.resources.skip_no_music_part
 import simpmusic.composeapp.generated.resources.skip_silent
 import simpmusic.composeapp.generated.resources.skip_sponsor_part_of_video
@@ -1548,7 +1548,7 @@ fun SettingScreen(
                     title = stringResource(Res.string.main_lyrics_provider),
                     subtitle =
                         when (mainLyricsProvider) {
-                            DataStoreManager.SIMPMUSIC -> stringResource(Res.string.simpmusic_lyrics)
+                            DataStoreManager.SIMPMUSIC -> stringResource(Res.string.omnimusic_lyrics)
                             DataStoreManager.YOUTUBE -> stringResource(Res.string.youtube_transcript)
                             DataStoreManager.LRCLIB -> stringResource(Res.string.lrclib)
                             DataStoreManager.BETTER_LYRICS -> stringResource(Res.string.better_lyrics)
@@ -1563,7 +1563,7 @@ fun SettingScreen(
                                         listSelect =
                                             listOf(
                                                 (mainLyricsProvider == DataStoreManager.SIMPMUSIC) to
-                                                    runBlocking { getString(Res.string.simpmusic_lyrics) },
+                                                    runBlocking { getString(Res.string.omnimusic_lyrics) },
                                                 (mainLyricsProvider == DataStoreManager.YOUTUBE) to
                                                     runBlocking { getString(Res.string.youtube_transcript) },
                                                 (mainLyricsProvider == DataStoreManager.LRCLIB) to runBlocking { getString(Res.string.lrclib) },
@@ -1575,7 +1575,7 @@ fun SettingScreen(
                                     runBlocking { getString(Res.string.change) } to { state ->
                                         viewModel.setLyricsProvider(
                                             when (state.selectOne?.getSelected()) {
-                                                runBlocking { getString(Res.string.simpmusic_lyrics) } -> DataStoreManager.SIMPMUSIC
+                                                runBlocking { getString(Res.string.omnimusic_lyrics) } -> DataStoreManager.SIMPMUSIC
                                                 runBlocking { getString(Res.string.youtube_transcript) } -> DataStoreManager.YOUTUBE
                                                 runBlocking { getString(Res.string.lrclib) } -> DataStoreManager.LRCLIB
                                                 runBlocking { getString(Res.string.better_lyrics) } -> DataStoreManager.BETTER_LYRICS
@@ -2591,21 +2591,8 @@ fun SettingScreen(
                         }
                     },
                 )
-                val beforeUrl = stringResource(Res.string.import_data_intro).substringBefore("https://www.simpmusic.org/tools")
-                val afterUrl = stringResource(Res.string.import_data_intro).substringAfter("https://www.simpmusic.org/tools")
                 Text(
-                    buildAnnotatedString {
-                        append(beforeUrl)
-                        withLink(
-                            LinkAnnotation.Url(
-                                "https://www.simpmusic.org/tools",
-                                TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary)),
-                            ),
-                        ) {
-                            append("https://www.simpmusic.org/tools")
-                        }
-                        append(afterUrl)
-                    },
+                    text = stringResource(Res.string.import_data_intro),
                     style = typo().bodySmall,
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
                 )
@@ -2637,7 +2624,7 @@ fun SettingScreen(
                         if (updateChannel == DataStoreManager.FDROID) {
                             "F-Droid"
                         } else {
-                            "SimpMusic GitHub Release"
+                            "OmniMusic GitHub Release"
                         },
                     onClick = {
                         viewModel.setAlertData(
@@ -2648,7 +2635,7 @@ fun SettingScreen(
                                         listSelect =
                                             listOf(
                                                 (updateChannel == DataStoreManager.FDROID) to "F-Droid",
-                                                (updateChannel == DataStoreManager.GITHUB) to "SimpMusic GitHub Release",
+                                                (updateChannel == DataStoreManager.GITHUB) to "OmniMusic GitHub Release",
                                             ),
                                     ),
                                 confirm =
@@ -2656,7 +2643,7 @@ fun SettingScreen(
                                         viewModel.setUpdateChannel(
                                             when (state.selectOne?.getSelected()) {
                                                 "F-Droid" -> DataStoreManager.FDROID
-                                                "SimpMusic GitHub Release" -> DataStoreManager.GITHUB
+                                                "OmniMusic GitHub Release" -> DataStoreManager.GITHUB
                                                 else -> DataStoreManager.GITHUB
                                             },
                                         )
@@ -2882,7 +2869,7 @@ fun SettingScreen(
                                         .align(Alignment.CenterStart)
                                         .fillMaxHeight(),
                             ) {
-                                Icon(SimpIcons.Close, null, tint = MaterialTheme.colorScheme.onSurface)
+                                Icon(OmniIcons.Close, null, tint = MaterialTheme.colorScheme.onSurface)
                             }
                             Text(
                                 stringResource(Res.string.youtube_account),
@@ -2928,8 +2915,8 @@ fun SettingScreen(
                                                 .data(it.thumbnailUrl)
                                                 .crossfade(550)
                                                 .build(),
-                                        placeholder = rememberVectorPainter(SimpIcons.PeopleAlt),
-                                        error = rememberVectorPainter(SimpIcons.PeopleAlt),
+                                        placeholder = rememberVectorPainter(OmniIcons.PeopleAlt),
+                                        error = rememberVectorPainter(OmniIcons.PeopleAlt),
                                         contentDescription = it.name,
                                         modifier =
                                             Modifier
@@ -2967,14 +2954,14 @@ fun SettingScreen(
                     item {
                         Column {
                             ActionButton(
-                                icon = SimpIcons.PeopleAlt,
+                                icon = OmniIcons.PeopleAlt,
                                 text = Res.string.guest,
                             ) {
                                 viewModel.setUsedAccount(null)
                                 showYouTubeAccountDialog = false
                             }
                             ActionButton(
-                                icon = SimpIcons.Close,
+                                icon = OmniIcons.Close,
                                 text = Res.string.log_out,
                             ) {
                                 viewModel.setBasicAlertData(
@@ -2991,7 +2978,7 @@ fun SettingScreen(
                                 )
                             }
                             ActionButton(
-                                icon = SimpIcons.PlaylistAdd,
+                                icon = OmniIcons.PlaylistAdd,
                                 text = Res.string.add_an_account,
                             ) {
                                 showYouTubeAccountDialog = false
@@ -3049,7 +3036,7 @@ fun SettingScreen(
                                 },
                                 trailingIcon = {
                                     if (!verify.first) {
-                                        SimpIcons.Error
+                                        OmniIcons.Error
                                     }
                                 },
                                 modifier =
@@ -3263,7 +3250,7 @@ fun SettingScreen(
                             navigationIcon = {
                                 Box(Modifier.padding(horizontal = 5.dp)) {
                                     RippleIconButton(
-                                        SimpIcons.ArrowBackIosNew,
+                                        OmniIcons.ArrowBackIosNew,
                                         Modifier
                                             .size(32.dp),
                                         true,
@@ -3308,7 +3295,7 @@ fun SettingScreen(
             navigationIcon = {
                 Box(Modifier.padding(horizontal = 5.dp)) {
                     RippleIconButton(
-                        SimpIcons.ArrowBackIosNew,
+                        OmniIcons.ArrowBackIosNew,
                         Modifier
                             .size(32.dp),
                         true,

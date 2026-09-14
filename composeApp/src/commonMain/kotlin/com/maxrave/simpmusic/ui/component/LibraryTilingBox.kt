@@ -22,7 +22,7 @@ import com.maxrave.simpmusic.extension.NonLazyGrid
 import com.maxrave.simpmusic.ui.icon.Downloading
 import com.maxrave.simpmusic.ui.icon.Favorite
 import com.maxrave.simpmusic.ui.icon.Insights
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.TrendingUp
 import com.maxrave.simpmusic.ui.navigation.destination.library.LibraryDynamicPlaylistDestination
 import com.maxrave.simpmusic.ui.screen.library.LibraryDynamicPlaylistType
@@ -148,28 +148,28 @@ data class LibraryTilingState(
             LibraryTilingState(
                 title = Res.string.favorite,
                 containerColor = Color(0xffff99ae),
-                icon = SimpIcons.Favorite,
+                icon = OmniIcons.Favorite,
                 iconColor = Color(0xffD10000),
             )
         val Followed =
             LibraryTilingState(
                 title = Res.string.followed,
                 containerColor = Color(0xffFFEB3B),
-                icon = SimpIcons.Insights,
+                icon = OmniIcons.Insights,
                 iconColor = Color.Black,
             )
         val MostPlayed =
             LibraryTilingState(
                 title = Res.string.most_played,
                 containerColor = Color(0xff00BCD4),
-                icon = SimpIcons.TrendingUp,
+                icon = OmniIcons.TrendingUp,
                 iconColor = Color.Black,
             )
         val Downloaded =
             LibraryTilingState(
                 title = Res.string.downloaded,
                 containerColor = Color(0xff4CAF50),
-                icon = SimpIcons.Downloading,
+                icon = OmniIcons.Downloading,
                 iconColor = Color.Black,
             )
     }

@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
 
 // External volume changes (hardware keys, another app) aren't observable without registering a
 // broadcast receiver for ACTION_VOLUME_CHANGED; a cheap 1s poll picks them up without that extra
-// lifecycle to manage — see CLAUDE.md's brief for this control (Apple Music style volume row).
+// lifecycle to manage — this backs the Apple Music style volume row.
 private const val POLL_INTERVAL_MS = 1000L
 
 private fun AudioManager.currentVolumeFraction(): Float {

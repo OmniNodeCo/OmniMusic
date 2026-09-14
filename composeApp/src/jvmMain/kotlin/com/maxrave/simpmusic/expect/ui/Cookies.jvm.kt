@@ -62,7 +62,7 @@ actual fun PlatformWebView(
             )
             Button(
                 onClick = {
-                    openUrl("https://www.simpmusic.org/blogs/en/how-to-log-in-on-desktop-app")
+                    openUrl("https://www.omnimusic.org/blogs/en/how-to-log-in-on-desktop-app")
                 },
             ) {
                 Text(
@@ -98,7 +98,7 @@ actual fun DiscordWebView(
             )
             Button(
                 onClick = {
-                    openUrl("https://www.simpmusic.org/blogs/en/how-to-log-in-to-Discord-on-desktop-app")
+                    openUrl("https://www.omnimusic.org/blogs/en/how-to-log-in-to-Discord-on-desktop-app")
                 },
             ) {
                 Text(

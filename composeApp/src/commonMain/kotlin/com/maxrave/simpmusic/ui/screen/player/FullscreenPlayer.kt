@@ -78,7 +78,7 @@ import com.maxrave.simpmusic.ui.icon.MoreVert
 import com.maxrave.simpmusic.ui.icon.Pause
 import com.maxrave.simpmusic.ui.icon.PlayArrow
 import com.maxrave.simpmusic.ui.icon.Replay5
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.SkipNext
 import com.maxrave.simpmusic.ui.icon.SkipPrevious
 import com.maxrave.simpmusic.ui.icon.Subtitles
@@ -237,7 +237,7 @@ fun FullscreenPlayer(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Icon(
-                                    SimpIcons.KeyboardDoubleArrowLeft,
+                                    OmniIcons.KeyboardDoubleArrowLeft,
                                     "",
                                     tint = Color.White,
                                 )
@@ -295,7 +295,7 @@ fun FullscreenPlayer(
                                 )
                                 Spacer(Modifier.width(4.dp))
                                 Icon(
-                                    SimpIcons.KeyboardDoubleArrowRight,
+                                    OmniIcons.KeyboardDoubleArrowRight,
                                     "",
                                     tint = Color.White,
                                 )
@@ -353,7 +353,7 @@ fun FullscreenPlayer(
                             navigationIcon = {
                                 Box(Modifier.padding(horizontal = 5.dp)) {
                                     RippleIconButton(
-                                        SimpIcons.ArrowBackIosNew,
+                                        OmniIcons.ArrowBackIosNew,
                                         Modifier
                                             .size(32.dp),
                                         true,
@@ -364,7 +364,7 @@ fun FullscreenPlayer(
                             },
                             actions = {
                                 RippleIconButton(
-                                    SimpIcons.MoreVert,
+                                    OmniIcons.MoreVert,
                                 ) {
                                     showBottom = true
                                 }
@@ -395,7 +395,7 @@ fun FullscreenPlayer(
                                 },
                             ) {
                                 Icon(
-                                    imageVector = SimpIcons.SkipPrevious,
+                                    imageVector = OmniIcons.SkipPrevious,
                                     tint = if (controllerState.isPreviousAvailable) Color.White else Color.DarkGray,
                                     contentDescription = "",
                                     modifier =
@@ -420,7 +420,7 @@ fun FullscreenPlayer(
                                 },
                             ) {
                                 Icon(
-                                    imageVector = SimpIcons.Replay5,
+                                    imageVector = OmniIcons.Replay5,
                                     tint = Color.White,
                                     contentDescription = "",
                                     modifier =
@@ -447,7 +447,7 @@ fun FullscreenPlayer(
                                 Crossfade(controllerState.isPlaying) {
                                     if (it) {
                                         Icon(
-                                            imageVector = SimpIcons.Pause,
+                                            imageVector = OmniIcons.Pause,
                                             tint = Color.White,
                                             contentDescription = "",
                                             modifier =
@@ -456,7 +456,7 @@ fun FullscreenPlayer(
                                         )
                                     } else {
                                         Icon(
-                                            imageVector = SimpIcons.PlayArrow,
+                                            imageVector = OmniIcons.PlayArrow,
                                             tint = Color.White,
                                             contentDescription = "",
                                             modifier =
@@ -483,7 +483,7 @@ fun FullscreenPlayer(
                                 },
                             ) {
                                 Icon(
-                                    imageVector = SimpIcons.Forward5,
+                                    imageVector = OmniIcons.Forward5,
                                     tint = Color.White,
                                     contentDescription = "",
                                     modifier =
@@ -509,7 +509,7 @@ fun FullscreenPlayer(
                                 },
                             ) {
                                 Icon(
-                                    imageVector = SimpIcons.SkipNext,
+                                    imageVector = OmniIcons.SkipNext,
                                     tint = if (controllerState.isNextAvailable) Color.White else Color.DarkGray,
                                     contentDescription = "",
                                     modifier =
@@ -697,7 +697,7 @@ fun FullscreenPlayer(
                                         Crossfade(shouldShowSubtitle) {
                                             if (it) {
                                                 Icon(
-                                                    imageVector = SimpIcons.SubtitlesOff,
+                                                    imageVector = OmniIcons.SubtitlesOff,
                                                     tint = Color.White,
                                                     contentDescription = "",
                                                     modifier =
@@ -706,7 +706,7 @@ fun FullscreenPlayer(
                                                 )
                                             } else {
                                                 Icon(
-                                                    imageVector = SimpIcons.Subtitles,
+                                                    imageVector = OmniIcons.Subtitles,
                                                     tint = Color.White,
                                                     contentDescription = "",
                                                     modifier =
@@ -734,7 +734,7 @@ fun FullscreenPlayer(
                                         },
                                     ) {
                                         Icon(
-                                            imageVector = SimpIcons.FullscreenExit,
+                                            imageVector = OmniIcons.FullscreenExit,
                                             tint = Color.White,
                                             contentDescription = "",
                                             modifier =

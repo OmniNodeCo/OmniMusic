@@ -101,7 +101,7 @@ import com.maxrave.simpmusic.ui.component.selection.SongSelectionTopAppBar
 import com.maxrave.simpmusic.ui.component.selection.rememberSongSelectionState
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
 import com.maxrave.simpmusic.ui.icon.KeyboardArrowDown
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.home.RecentlySongsDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.WrappedDestination
 import com.maxrave.simpmusic.ui.navigation.destination.library.LibraryDynamicPlaylistDestination
@@ -439,7 +439,7 @@ fun AnalyticsScreen(
         val pillGutter = if (isPortrait) 16.dp else LANDSCAPE_GUTTER
         LiquidGlassIconButton(
             backdrop = headerBackdrop,
-            imageVector = SimpIcons.ArrowBackIosNew,
+            imageVector = OmniIcons.ArrowBackIosNew,
             shape = RoundedCornerShape(24.dp),
             // A 48dp circle catches only a short arc of the default directional sweep and reads
             // as rimless; 1.dp is the smallest step that stays visible without looking a border.
@@ -502,7 +502,7 @@ private fun DayRangePill(
         ) {
             Text(text = label, style = typo().labelSmall, color = Color.White, maxLines = 1)
             Icon(
-                imageVector = SimpIcons.KeyboardArrowDown,
+                imageVector = OmniIcons.KeyboardArrowDown,
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier.size(18.dp),
@@ -826,14 +826,14 @@ private fun PeriodNavigator(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = if (gutter == 0.dp) Arrangement.spacedBy(14.dp) else Arrangement.SpaceBetween,
     ) {
-        StepArrow(SimpIcons.ArrowBackIosNew, enabled = true) { onStep(-1) }
+        StepArrow(OmniIcons.ArrowBackIosNew, enabled = true) { onStep(-1) }
         Text(
             text = if (start != null && end != null) formatPeriodSpan(start, end) else "",
             style = typo().bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
         )
-        StepArrow(SimpIcons.ArrowForwardIos, enabled = uiState.canStepForward) { onStep(1) }
+        StepArrow(OmniIcons.ArrowForwardIos, enabled = uiState.canStepForward) { onStep(1) }
     }
 }
 

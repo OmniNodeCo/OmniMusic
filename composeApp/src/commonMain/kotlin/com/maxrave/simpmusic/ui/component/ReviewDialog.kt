@@ -40,7 +40,7 @@ fun ReviewDialog(
         confirmButton = {
             TextButton(onClick = {
                 onDoneReview.invoke()
-                uriHandler.openUri("https://github.com/maxrave-dev/SimpMusic")
+                uriHandler.openUri("https://github.com/maxrave-dev/OmniMusic")
             }) {
                 Text(
                     stringResource(Res.string.give_a_star),
@@ -63,22 +63,22 @@ fun ReviewDialog(
         },
         title = {
             Text(
-                stringResource(Res.string.enjoying_simpmusic),
+                stringResource(Res.string.enjoying_omnimusic),
                 style = typo().labelSmall,
             )
         },
         text = {
             Text(
                 buildAnnotatedString {
-                    append(stringResource(Res.string.if_you_enjoy_using_simpmusic_star_simpmusic_on_github_or_leave_a_review_on))
+                    append(stringResource(Res.string.if_you_enjoy_using_omnimusic_star_omnimusic_on_github_or_leave_a_review_on))
                     withLink(
                         LinkAnnotation.Url(
-                            "https://www.producthunt.com/products/simpmusic",
+                            "https://www.producthunt.com/products/omnimusic",
                             TextLinkStyles(style = SpanStyle(textDecoration = TextDecoration.Underline, color = seed)),
                         ) {
                             onDoneReview.invoke()
                             onDismissRequest.invoke()
-                            uriHandler.openUri("https://www.producthunt.com/products/simpmusic")
+                            uriHandler.openUri("https://www.producthunt.com/products/omnimusic")
                         },
                     ) {
                         append(" ProductHunt")

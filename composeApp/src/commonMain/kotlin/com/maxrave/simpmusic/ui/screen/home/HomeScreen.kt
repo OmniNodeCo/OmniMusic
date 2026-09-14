@@ -127,7 +127,7 @@ import com.maxrave.simpmusic.ui.icon.Groups
 import com.maxrave.simpmusic.ui.icon.History
 import com.maxrave.simpmusic.ui.icon.Notifications
 import com.maxrave.simpmusic.ui.icon.Settings
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.home.HomeDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.ListenTogetherDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.MoodDestination
@@ -928,15 +928,15 @@ fun HomeTopAppBar(navController: NavController) {
             }
         },
         actions = {
-            RippleIconButton(imageVector = SimpIcons.Notifications, tint = MaterialTheme.colorScheme.onBackground) {
+            RippleIconButton(imageVector = OmniIcons.Notifications, tint = MaterialTheme.colorScheme.onBackground) {
                 navController.navigate(NotificationDestination)
             }
-            RippleIconButton(imageVector = SimpIcons.History, tint = MaterialTheme.colorScheme.onBackground) {
+            RippleIconButton(imageVector = OmniIcons.History, tint = MaterialTheme.colorScheme.onBackground) {
                 navController.navigate(RecentlySongsDestination)
             }
             // Fourth button, immediately before Settings — the position the design canvas fixes.
             ListenTogetherIconButton { navController.navigate(ListenTogetherDestination) }
-            RippleIconButton(imageVector = SimpIcons.Settings, tint = MaterialTheme.colorScheme.onBackground) {
+            RippleIconButton(imageVector = OmniIcons.Settings, tint = MaterialTheme.colorScheme.onBackground) {
                 navController.navigate(SettingsDestination)
             }
         },

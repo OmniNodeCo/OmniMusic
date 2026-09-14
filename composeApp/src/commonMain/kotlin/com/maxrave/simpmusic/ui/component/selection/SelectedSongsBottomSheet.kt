@@ -30,7 +30,7 @@ import com.maxrave.simpmusic.ui.icon.Download
 import com.maxrave.simpmusic.ui.icon.Favorite
 import com.maxrave.simpmusic.ui.icon.PlaylistAdd
 import com.maxrave.simpmusic.ui.icon.QueueMusic
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.SkipNext
 import com.maxrave.simpmusic.ui.theme.typo
 import kotlinx.coroutines.launch
@@ -121,31 +121,31 @@ fun SelectedSongsBottomSheet(
                     )
                     if (onPlayNext != null) {
                         ActionButton(
-                            icon = SimpIcons.SkipNext,
+                            icon = OmniIcons.SkipNext,
                             text = Res.string.play_next,
                         ) { hideThen(onPlayNext) }
                     }
                     if (onAddToQueue != null) {
                         ActionButton(
-                            icon = SimpIcons.QueueMusic,
+                            icon = OmniIcons.QueueMusic,
                             text = Res.string.add_to_queue,
                         ) { hideThen(onAddToQueue) }
                     }
                     if (onAddToPlaylist != null) {
                         ActionButton(
-                            icon = SimpIcons.PlaylistAdd,
+                            icon = OmniIcons.PlaylistAdd,
                             text = Res.string.add_to_a_playlist,
                         ) { hideThen(onAddToPlaylist) }
                     }
                     if (onDownload != null) {
                         ActionButton(
-                            icon = SimpIcons.Download,
+                            icon = OmniIcons.Download,
                             text = Res.string.download,
                         ) { hideThen(onDownload) }
                     }
                     if (onAddToFavorite != null) {
                         ActionButton(
-                            icon = SimpIcons.Favorite,
+                            icon = OmniIcons.Favorite,
                             text = Res.string.favorite,
                         ) { hideThen(onAddToFavorite) }
                     }

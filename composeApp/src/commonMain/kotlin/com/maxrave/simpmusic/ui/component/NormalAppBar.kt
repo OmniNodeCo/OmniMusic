@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
 import com.maxrave.simpmusic.ui.icon.MoreVert
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import org.jetbrains.compose.resources.painterResource
 import simpmusic.composeapp.generated.resources.Res
 
@@ -57,7 +57,7 @@ fun NormalAppBarPreview() {
         leftIcon = {
             IconButton(onClick = { }) {
                 Icon(
-                    SimpIcons.ArrowBackIosNew,
+                    OmniIcons.ArrowBackIosNew,
                     contentDescription = "Back",
                 )
             }
@@ -65,7 +65,7 @@ fun NormalAppBarPreview() {
         rightIcon = {
             IconButton(onClick = { }) {
                 Icon(
-                    SimpIcons.MoreVert,
+                    OmniIcons.MoreVert,
                     contentDescription = "Back",
                 )
             }

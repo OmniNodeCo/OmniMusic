@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maxrave.simpmusic.ui.icon.Check
 import com.maxrave.simpmusic.ui.icon.KeyboardArrowDown
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.EQUALIZER_BAND_LABELS
 import com.maxrave.simpmusic.viewModel.SettingsViewModel
@@ -150,7 +150,7 @@ fun EqualizerSection(viewModel: SettingsViewModel = koinViewModel()) {
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Icon(
-                        imageVector = SimpIcons.KeyboardArrowDown,
+                        imageVector = OmniIcons.KeyboardArrowDown,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp),
@@ -169,7 +169,7 @@ fun EqualizerSection(viewModel: SettingsViewModel = koinViewModel()) {
                                 // instead of shifting sideways as the tick moves.
                                 if (preset.name == activePreset?.name) {
                                     Icon(
-                                        imageVector = SimpIcons.Check,
+                                        imageVector = OmniIcons.Check,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.size(18.dp),

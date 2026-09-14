@@ -1,4 +1,4 @@
-name: Build APK for Release (Full & FOSS) && Desktop app release
+name: Release OmniMusic (Android Full & FOSS + Desktop)
 
 on:
   workflow_dispatch:
@@ -55,7 +55,7 @@ jobs:
         env:
           BASE_64_SIGNING_KEY: ${{ secrets.BASE_64_SIGNING_KEY }}
         run:
-          echo $BASE_64_SIGNING_KEY | base64 -d > simpmusic.jks
+          echo $BASE_64_SIGNING_KEY | base64 -d > omnimusic.jks
 
       - name: Update build product flavor
         run: |
@@ -97,7 +97,7 @@ jobs:
         env:
           BASE_64_SIGNING_KEY: ${{ secrets.BASE_64_SIGNING_KEY }}
         run:
-          echo $BASE_64_SIGNING_KEY | base64 -d > simpmusic.jks
+          echo $BASE_64_SIGNING_KEY | base64 -d > omnimusic.jks
 
       - name: Update build product flavor
         run: |
@@ -220,7 +220,7 @@ jobs:
           signing_key: ${{ secrets.CONVEYOR_SIGNING_KEY }}
 
       - name: Stage AppImage into output/ for upload
-        run: cp desktopApp/build/appimage/conveyor/SimpMusic-*.AppImage output/
+        run: cp desktopApp/build/appimage/conveyor/OmniMusic-*.AppImage output/
 
       - name: Show built artifacts
         run: ls -lh output/
@@ -229,7 +229,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: desktop-appimage
-          path: output/SimpMusic-*.AppImage
+          path: output/OmniMusic-*.AppImage
 
       - name: Upload macOS zips to run artifacts
         uses: actions/upload-artifact@v4
@@ -237,7 +237,7 @@ jobs:
           name: desktop-mac-zips
           path: output/*.zip
 
-      # Bundle Windows installer = install.bat + simpmusic.crt + msix.
+      # Bundle Windows installer = install.bat + omnimusic.crt + msix.
       # Conveyor's default .exe wrapper + .appinstaller fetch URLs from
       # `site.base-url` (GitHub Releases /latest/download/) which 404 for
       # unreleased builds, so we ship our own scripts/windows/install.bat
@@ -251,23 +251,23 @@ jobs:
       - name: Bundle Windows offline installer
         run: |
           set -euo pipefail
-          if [ ! -f output/simpmusic.crt ]; then
-            echo "::error::output/simpmusic.crt missing — Conveyor signing must have failed"
+          if [ ! -f output/omnimusic.crt ]; then
+            echo "::error::output/omnimusic.crt missing — Conveyor signing must have failed"
             exit 1
           fi
-          msix=$(ls output/simpmusic-*.x64.msix 2>/dev/null | head -1)
+          msix=$(ls output/omnimusic-*.x64.msix 2>/dev/null | head -1)
           if [ -z "$msix" ]; then
-            echo "::error::No simpmusic-*.x64.msix found in output/"
+            echo "::error::No omnimusic-*.x64.msix found in output/"
             exit 1
           fi
           mkdir -p installers/
           stage="$(mktemp -d)"
           cp scripts/windows/install.bat "$stage/"
-          cp output/simpmusic.crt        "$stage/"
+          cp output/omnimusic.crt        "$stage/"
           cp "$msix"                      "$stage/"
           ( cd "$stage" && zip -q -j \
-            "${GITHUB_WORKSPACE}/installers/SimpMusic-Windows-installer.zip" \
-            install.bat simpmusic.crt "$(basename "$msix")" )
+            "${GITHUB_WORKSPACE}/installers/OmniMusic-Windows-installer.zip" \
+            install.bat omnimusic.crt "$(basename "$msix")" )
           rm -rf "$stage"
           ls -lh installers/
 
@@ -275,7 +275,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: desktop-windows
-          path: installers/SimpMusic-Windows-installer.zip
+          path: installers/OmniMusic-Windows-installer.zip
 
   wrap-mac-dmg:
     name: Wrap macOS .zip → .dmg (installer UX)
@@ -320,14 +320,14 @@ jobs:
           set -euo pipefail
           mkdir -p dist
           shopt -s nullglob
-          for zip in mac-zips/simpmusic-*-mac-*.zip; do
+          for zip in mac-zips/omnimusic-*-mac-*.zip; do
             arch="$(basename "$zip" | sed -nE 's/.*-mac-([a-z0-9]+)\.zip/\1/p')"
             [[ -z "$arch" ]] && { echo "Cannot infer arch from $zip" >&2; exit 1; }
             workdir="$(mktemp -d)"
             unzip -q "$zip" -d "$workdir"
             app="$(find "$workdir" -maxdepth 2 -type d -name '*.app' | head -1)"
             [[ -d "$app" ]] || { echo "No .app inside $zip" >&2; exit 1; }
-            out="dist/SimpMusic-${VERSION}-mac-${arch}.dmg"
+            out="dist/OmniMusic-${VERSION}-mac-${arch}.dmg"
             scripts/wrap-mac-dmg.sh \
               "$app" \
               build/dmg/dmg-bg-1400x800.png \

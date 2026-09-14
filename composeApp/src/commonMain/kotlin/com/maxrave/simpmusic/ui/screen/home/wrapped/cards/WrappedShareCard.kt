@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.maxrave.simpmusic.ui.icon.Download
 import com.maxrave.simpmusic.ui.icon.Share
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.screen.home.wrapped.WrappedTokens
 import com.maxrave.simpmusic.ui.screen.home.wrapped.formatCount
 import com.maxrave.simpmusic.ui.screen.home.wrapped.wholeMinutes
@@ -336,8 +336,8 @@ private fun PosterLabel(
  * the ink the panel writes in (`onSurface`) and the logo prints back through it in the panel's own
  * ground (`surface`), which is what keeps the mark readable whatever the artwork seeded.
  *
- * `Res.drawable.mono` is the app's logo, not an icon: `SimpIcons` is the Material Symbols set and
- * has no wordmark in it, and CLAUDE.md keeps the two logos as drawables on purpose. This is the
+ * `Res.drawable.mono` is the app's logo, not an icon: `OmniIcons` is the Material Symbols set and
+ * has no wordmark in it, and the two logos are deliberately kept as separate drawables. This is the
  * only `painterResource` left in the file.
  */
 @Composable
@@ -376,7 +376,7 @@ private fun PosterSignature(wrapped: WrappedYear) {
             Text(
                 // A brand name, not copy — it is spelled this way in every language, exactly as
                 // the lyrics share card spells it, and set in the same muted weight it uses there.
-                text = "SimpMusic",
+                text = "OmniMusic",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -417,14 +417,14 @@ private fun ShareActions(
             shape = CircleShape,
             contentPadding = ACTION_CONTENT_PADDING,
         ) {
-            ActionContent(SimpIcons.Download, stringResource(Res.string.wrapped_save))
+            ActionContent(OmniIcons.Download, stringResource(Res.string.wrapped_save))
         }
         FilledTonalButton(
             onClick = onShare,
             shape = CircleShape,
             contentPadding = ACTION_CONTENT_PADDING,
         ) {
-            ActionContent(SimpIcons.Share, stringResource(Res.string.wrapped_share))
+            ActionContent(OmniIcons.Share, stringResource(Res.string.wrapped_share))
         }
     }
 }

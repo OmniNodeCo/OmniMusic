@@ -31,7 +31,7 @@ WORKDIR /build
 # libplacebo — mpv 0.41 hard-requires >=6.338.2; 22.04 ships 4.192.
 #
 # Built WITHOUT vulkan/shaderc/glslang/d3d11. Those exist to compile shaders for
-# hardware renderers; SimpMusic drives mpv through the software render API
+# hardware renderers; OmniMusic drives mpv through the software render API
 # (MPV_RENDER_API_TYPE_SW), so none of it is reachable. Dropping them also drops
 # libshaderc/libglslang/libSPIRV-Tools from the closure — the single biggest
 # chunk of the old AppImage-derived bundle.
@@ -53,7 +53,7 @@ RUN git clone --depth 1 --branch v7.351.0 --recursive \
 # FFmpeg — 22.04 ships 4.4, mpv 0.41 needs libavcodec >=60.31 (FFmpeg 6.1+).
 #
 # Decoders/demuxers are trimmed to what YouTube Music actually serves, plus the
-# protocol stack for https. Encoders are dropped entirely: SimpMusic only ever
+# protocol stack for https. Encoders are dropped entirely: OmniMusic only ever
 # plays back.
 #
 # The filter whitelist is the ONLY place a filter can go missing: Linux is the

@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.maxrave.domain.data.entities.AlbumEntity
@@ -54,7 +53,7 @@ import com.maxrave.logger.Logger
 import com.maxrave.simpmusic.extension.angledGradientBackground
 import com.maxrave.simpmusic.extension.isScrollingUp
 import com.maxrave.simpmusic.ui.icon.Add
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.list.AlbumDestination
 import com.maxrave.simpmusic.ui.navigation.destination.list.LocalPlaylistDestination
 import com.maxrave.simpmusic.ui.navigation.destination.list.PlaylistDestination
@@ -169,7 +168,7 @@ internal inline fun <reified T> GridLibraryPlaylist(
                                     ) {
                                         Icon(
                                             modifier = Modifier.size(84.dp),
-                                            imageVector = SimpIcons.Add,
+                                            imageVector = OmniIcons.Add,
                                             tint = Color.White,
                                             contentDescription = null,
                                         )
@@ -272,19 +271,6 @@ internal inline fun <reified T> GridLibraryPlaylist(
                             },
                             data = item,
                             thumbSize = 132.dp,
-                        )
-                    }
-
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        val uriHandler = LocalUriHandler.current
-                        SimpMusicChartButton(
-                            modifier =
-                                Modifier.wrapContentWidth().padding(
-                                    vertical = 16.dp,
-                                ),
-                            onClick = {
-                                uriHandler.openUri("https://chart.simpmusic.org")
-                            },
                         )
                     }
 

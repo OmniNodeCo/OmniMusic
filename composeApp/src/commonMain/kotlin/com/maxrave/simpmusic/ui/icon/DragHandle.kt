@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 @Suppress("CheckReturnValue")
-val SimpIcons.DragHandle: ImageVector
+val OmniIcons.DragHandle: ImageVector
   get() {
     if (_DragHandle != null) {
       return _DragHandle!!

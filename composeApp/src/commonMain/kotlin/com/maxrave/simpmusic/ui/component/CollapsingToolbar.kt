@@ -73,7 +73,7 @@ import com.maxrave.simpmusic.extension.rgbFactor
 import com.maxrave.simpmusic.extension.smoothScrimBrush
 import com.maxrave.simpmusic.extension.toSquareThumbnailUrl
 import com.maxrave.simpmusic.ui.icon.ArrowBackIosNew
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.painterResource
@@ -214,7 +214,7 @@ fun CollapsingToolbarParallaxEffect(
                                 ),
                         ),
                 ) {
-                    Icon(SimpIcons.ArrowBackIosNew, "Back")
+                    Icon(OmniIcons.ArrowBackIosNew, "Back")
                 }
             }
         }
@@ -361,7 +361,7 @@ private fun Toolbar(
                             .size(24.dp),
                 ) {
                     Icon(
-                        imageVector = SimpIcons.ArrowBackIosNew,
+                        imageVector = OmniIcons.ArrowBackIosNew,
                         contentDescription = null,
                         tint = Color.White,
                     )

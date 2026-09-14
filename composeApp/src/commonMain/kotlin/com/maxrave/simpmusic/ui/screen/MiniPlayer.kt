@@ -130,7 +130,7 @@ import com.maxrave.simpmusic.ui.component.rememberHolderPainter
 import com.maxrave.simpmusic.ui.icon.Close
 import com.maxrave.simpmusic.ui.icon.PictureInPictureAlt
 import com.maxrave.simpmusic.ui.icon.QueueMusic
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.VolumeOff
 import com.maxrave.simpmusic.ui.icon.VolumeUp
 import com.maxrave.simpmusic.ui.theme.LocalIsDarkTheme
@@ -912,7 +912,7 @@ fun MiniPlayer(
                         },
                     ) {
                         Icon(
-                            imageVector = SimpIcons.QueueMusic,
+                            imageVector = OmniIcons.QueueMusic,
                             tint = textColor,
                             contentDescription = "",
                         )
@@ -921,7 +921,7 @@ fun MiniPlayer(
                     if (getPlatform() == Platform.Desktop) {
                         IconButton(onClick = { toggleMiniPlayer() }) {
                             Icon(
-                                imageVector = SimpIcons.PictureInPictureAlt,
+                                imageVector = OmniIcons.PictureInPictureAlt,
                                 tint = textColor,
                                 contentDescription = "Mini Player",
                             )
@@ -974,9 +974,9 @@ fun MiniPlayer(
                             Icon(
                                 imageVector =
                                     if (controllerState.volume > 0f) {
-                                        SimpIcons.VolumeUp
+                                        OmniIcons.VolumeUp
                                     } else {
-                                        SimpIcons.VolumeOff
+                                        OmniIcons.VolumeOff
                                     },
                                 tint = textColor,
                                 contentDescription = if (controllerState.volume > 0f) "Mute" else "Unmute",
@@ -1100,9 +1100,9 @@ fun MiniPlayer(
                                     Icon(
                                         imageVector =
                                             if (controllerState.volume > 0f) {
-                                                SimpIcons.VolumeUp
+                                                OmniIcons.VolumeUp
                                             } else {
-                                                SimpIcons.VolumeOff
+                                                OmniIcons.VolumeOff
                                             },
                                         tint = textColor.copy(alpha = 0.7f),
                                         contentDescription = null,
@@ -1113,7 +1113,7 @@ fun MiniPlayer(
                         }
                     }
                     IconButton(onClick = { onClose() }) {
-                        Icon(SimpIcons.Close, "", tint = textColor)
+                        Icon(OmniIcons.Close, "", tint = textColor)
                     }
                 }
             }

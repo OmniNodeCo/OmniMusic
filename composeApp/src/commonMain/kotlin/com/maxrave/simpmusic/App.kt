@@ -65,7 +65,6 @@ import com.maxrave.domain.manager.DataStoreManager.Values.TRUE
 import com.maxrave.logger.Logger
 import com.maxrave.simpmusic.expect.Orientation
 import com.maxrave.simpmusic.expect.currentOrientation
-import com.maxrave.simpmusic.expect.openUrl
 import com.maxrave.simpmusic.expect.ui.layerBackdrop
 import com.maxrave.simpmusic.expect.ui.rememberBackdrop
 import com.maxrave.simpmusic.extension.copy
@@ -73,7 +72,7 @@ import com.maxrave.simpmusic.ui.component.AppBottomNavigationBar
 import com.maxrave.simpmusic.ui.component.AppNavigationRail
 import com.maxrave.simpmusic.ui.component.LiquidGlassAppBottomNavigationBar
 import com.maxrave.simpmusic.ui.icon.ArrowForwardIos
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.home.AnalyticsDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.HomeDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.NotificationDestination
@@ -208,7 +207,7 @@ fun App(
         val data = intent.data
         Logger.d("MainActivity", "onCreate: $data")
         if (data != null) {
-            if (data == "simpmusic://notification".toUri()) {
+            if (data == "omnimusic://notification".toUri()) {
                 viewModel.setIntent(null)
                 navController.navigate(
                     NotificationDestination,
@@ -216,7 +215,7 @@ fun App(
             } else if (data.scheme == "wordbyword" && data.host == "lastfm-auth") {
                 // Last.fm sends the user back here after they approve access, carrying the request
                 // token: wordbyword://lastfm-auth?token=xxx. The callback is fixed on the API
-                // account, which is why the scheme is not "simpmusic".
+                // account, which is why the scheme is not "omnimusic".
                 val token = data.getQueryParameter("token")
                 Logger.d("MainActivity", "Last.fm callback, token present: ${!token.isNullOrEmpty()}")
                 viewModel.setIntent(null)
@@ -225,23 +224,23 @@ fun App(
                 // of it. The token is handed straight to the shared view model, and the screen
                 // closes itself when it sees a session key appear.
                 token?.let { viewModel.completeLastfmLogin(it) }
-            } else if (data.host == "simpmusic.org" || data.scheme == "simpmusic") {
-                // https://simpmusic.org/app/watch?v=VIDEO_ID
-                // https://simpmusic.org/app/playlist?list=PLAYLIST_ID
-                // https://simpmusic.org/app/channel/CHANNEL_ID
-                // simpmusic://watch?v=VIDEO_ID  (host="watch", no path)
-                // simpmusic://playlist?list=PLAYLIST_ID
-                // simpmusic://channel/CHANNEL_ID
+            } else if (data.host == "omnimusic.org" || data.scheme == "omnimusic") {
+                // https://omnimusic.org/app/watch?v=VIDEO_ID
+                // https://omnimusic.org/app/playlist?list=PLAYLIST_ID
+                // https://omnimusic.org/app/channel/CHANNEL_ID
+                // omnimusic://watch?v=VIDEO_ID  (host="watch", no path)
+                // omnimusic://playlist?list=PLAYLIST_ID
+                // omnimusic://channel/CHANNEL_ID
                 val segments = data.pathSegments
-                // For simpmusic.org: segments = ["app", "watch"] → appPath = segments[1]
-                // For simpmusic://: host IS the appPath (e.g. host="watch"), segments = []
+                // For omnimusic.org: segments = ["app", "watch"] → appPath = segments[1]
+                // For omnimusic://: host IS the appPath (e.g. host="watch"), segments = []
                 val appPath =
-                    if (data.scheme == "simpmusic") {
+                    if (data.scheme == "omnimusic") {
                         data.host
                     } else {
                         segments.getOrNull(1)
                     }
-                Logger.d("MainActivity", "simpmusic.org deep link, appPath: $appPath")
+                Logger.d("MainActivity", "omnimusic.org deep link, appPath: $appPath")
                 viewModel.setIntent(null)
                 when (appPath) {
                     "watch" -> {
@@ -263,10 +262,10 @@ fun App(
                     }
 
                     "channel", "c" -> {
-                        // simpmusic://channel/UCxxx → segments = ["UCxxx"]
-                        // simpmusic.org/app/channel/UCxxx → segments = ["app", "channel", "UCxxx"]
+                        // omnimusic://channel/UCxxx → segments = ["UCxxx"]
+                        // omnimusic.org/app/channel/UCxxx → segments = ["app", "channel", "UCxxx"]
                         val artistId =
-                            if (data.scheme == "simpmusic") {
+                            if (data.scheme == "omnimusic") {
                                 segments.firstOrNull()
                             } else {
                                 segments.getOrNull(2)
@@ -286,8 +285,8 @@ fun App(
                         }
                     }
 
-                    // simpmusic://library                     → the Library tab
-                    // simpmusic://library?type=favorite       → one of its collections
+                    // omnimusic://library                     → the Library tab
+                    // omnimusic://library?type=favorite       → one of its collections
                     // Added for the Playlists widget, whose shortcuts have to reach these
                     // screens from the home screen without the app already running.
                     "library" -> {
@@ -678,7 +677,7 @@ fun App(
                                                 navController = navController,
                                                 sharedViewModel = viewModel,
                                                 isExpanded = true,
-                                                dismissIcon = SimpIcons.ArrowForwardIos,
+                                                dismissIcon = OmniIcons.ArrowForwardIos,
                                             ) {
                                                 isShowNowPlaylistScreen = false
                                             }
@@ -748,20 +747,8 @@ fun App(
                             shouldShowUpdateDialog = false
                             viewModel.showedUpdateDialog = false
                         },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    shouldShowUpdateDialog = false
-                                    viewModel.showedUpdateDialog = false
-                                    openUrl("https://simpmusic.org/download")
-                                },
-                            ) {
-                                Text(
-                                    stringResource(Res.string.download),
-                                    style = typo().bodySmall,
-                                )
-                            }
-                        },
+                        // No download action: the update dialog no longer links out to an
+                        // external download page. Cancel is the only dismissal.
                         dismissButton = {
                             TextButton(
                                 onClick = {

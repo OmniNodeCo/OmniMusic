@@ -81,7 +81,7 @@ import com.maxrave.simpmusic.ui.component.selection.SongSelectionTopAppBar
 import com.maxrave.simpmusic.ui.component.selection.rememberSongSelectionState
 import com.maxrave.simpmusic.ui.icon.Groups
 import com.maxrave.simpmusic.ui.icon.PeopleAlt
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.navigation.destination.home.ListenTogetherDestination
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.LibraryViewModel
@@ -113,7 +113,7 @@ import simpmusic.composeapp.generated.resources.no_playlists_added
 import simpmusic.composeapp.generated.resources.no_playlists_downloaded
 import simpmusic.composeapp.generated.resources.playlist_name
 import simpmusic.composeapp.generated.resources.playlist_name_cannot_be_empty
-import simpmusic.composeapp.generated.resources.simpmusic_charts
+import simpmusic.composeapp.generated.resources.omnimusic_charts
 import simpmusic.composeapp.generated.resources.wrapped
 import simpmusic.composeapp.generated.resources.your_library
 import simpmusic.composeapp.generated.resources.your_playlists
@@ -483,8 +483,8 @@ fun LibraryScreen(
                                 .data(accountThumbnail)
                                 .crossfade(550)
                                 .build(),
-                        placeholder = rememberVectorPainter(SimpIcons.PeopleAlt),
-                        error = rememberVectorPainter(SimpIcons.PeopleAlt),
+                        placeholder = rememberVectorPainter(OmniIcons.PeopleAlt),
+                        error = rememberVectorPainter(OmniIcons.PeopleAlt),
                         contentDescription = null,
                         modifier =
                             Modifier
@@ -554,7 +554,7 @@ fun LibraryScreen(
                             LibraryChipType.FAVORITE_PLAYLIST -> stringResource(Res.string.favorite_playlists)
                             LibraryChipType.DOWNLOADED_PLAYLIST -> stringResource(Res.string.downloaded_playlists)
                             LibraryChipType.FAVORITE_PODCAST -> stringResource(Res.string.favorite_podcasts)
-                            LibraryChipType.CHART -> stringResource(Res.string.simpmusic_charts)
+                            LibraryChipType.CHART -> stringResource(Res.string.omnimusic_charts)
                             LibraryChipType.WRAPPED -> stringResource(Res.string.wrapped)
                         },
                 ) {

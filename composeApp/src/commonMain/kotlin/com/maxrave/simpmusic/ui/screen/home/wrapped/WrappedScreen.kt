@@ -69,7 +69,7 @@ import com.maxrave.simpmusic.ui.component.capture.rememberCaptureController
 import com.maxrave.simpmusic.ui.component.liquidGlass
 import com.maxrave.simpmusic.ui.icon.Close
 import com.maxrave.simpmusic.ui.icon.Share
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.screen.home.wrapped.cards.WrappedBiggestDayCard
 import com.maxrave.simpmusic.ui.screen.home.wrapped.cards.WrappedClockCard
 import com.maxrave.simpmusic.ui.screen.home.wrapped.cards.WrappedDecadesCard
@@ -107,7 +107,7 @@ import simpmusic.composeapp.generated.resources.wrapped_year
 import kotlin.random.Random
 
 /**
- * SimpMusic Wrapped: the year told as a story reel.
+ * OmniMusic Wrapped: the year told as a story reel.
  *
  * The screen is a shell around cards it does not draw. Everything constant lives here — the
  * progress segments, the year label, the close button, the footer, the timer, the capture — and
@@ -507,7 +507,7 @@ private fun WrappedHeader(
             )
             LiquidGlassIconButton(
                 backdrop = backdrop,
-                imageVector = SimpIcons.Close,
+                imageVector = OmniIcons.Close,
                 tint = MaterialTheme.colorScheme.onSurface,
                 // Round buttons need the rim named: Highlight's default is a DIRECTIONAL sweep that
                 // an elongated pill catches along its long edge and a circle barely catches at all.
@@ -565,7 +565,7 @@ private fun WrappedFooter(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = SimpIcons.Share,
+                imageVector = OmniIcons.Share,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(15.dp),
@@ -614,7 +614,7 @@ private fun rememberWrappedShare(
     // reel must not silently overwrite the first.
     val fileName =
         remember(wrapped.year) {
-            "SimpMusic_Wrapped_${wrapped.year}_${Random.nextInt(100_000, 999_999)}.png"
+            "OmniMusic_Wrapped_${wrapped.year}_${Random.nextInt(100_000, 999_999)}.png"
         }
 
     // Only saving can be refused; sharing goes through the app's own cache and needs nothing. On

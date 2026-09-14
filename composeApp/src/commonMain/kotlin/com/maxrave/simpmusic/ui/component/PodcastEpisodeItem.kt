@@ -29,7 +29,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.maxrave.domain.data.model.podcast.PodcastBrowse
 import com.maxrave.simpmusic.ui.icon.MoreVert
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.painterResource
 import simpmusic.composeapp.generated.resources.Res
@@ -126,7 +126,7 @@ fun PodcastEpisodeFullWidthItem(
             }
 
             if (onMoreClickListener != null) {
-                RippleIconButton(imageVector = SimpIcons.MoreVert, fillMaxSize = false) {
+                RippleIconButton(imageVector = OmniIcons.MoreVert, fillMaxSize = false) {
                     onMoreClickListener.invoke()
                 }
             }

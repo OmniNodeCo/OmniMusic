@@ -69,7 +69,7 @@ import com.maxrave.simpmusic.ui.component.RichSyncLyricsLineItem
 import com.maxrave.simpmusic.ui.component.RippleIconButton
 import com.maxrave.simpmusic.ui.icon.Favorite
 import com.maxrave.simpmusic.ui.icon.FavoriteBorder
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.SkipNext
 import com.maxrave.simpmusic.ui.icon.SkipPrevious
 import com.maxrave.simpmusic.ui.icon.VolumeOff
@@ -201,7 +201,7 @@ fun CompactMiniLayout(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     RippleIconButton(
-                        imageVector = SimpIcons.SkipPrevious,
+                        imageVector = OmniIcons.SkipPrevious,
                         modifier = Modifier.size(28.dp),
                         tint = if (controllerState.isPreviousAvailable) Color.White else Color.Gray,
                         onClick = {
@@ -218,7 +218,7 @@ fun CompactMiniLayout(
                     )
 
                     RippleIconButton(
-                        imageVector = SimpIcons.SkipNext,
+                        imageVector = OmniIcons.SkipNext,
                         modifier = Modifier.size(28.dp),
                         tint = if (controllerState.isNextAvailable) Color.White else Color.Gray,
                         onClick = {
@@ -317,9 +317,9 @@ fun MediumMiniLayout(
                                 Icon(
                                     imageVector =
                                         if (controllerState.isLiked) {
-                                            SimpIcons.Favorite
+                                            OmniIcons.Favorite
                                         } else {
-                                            SimpIcons.FavoriteBorder
+                                            OmniIcons.FavoriteBorder
                                         },
                                     contentDescription = "Like",
                                     tint =
@@ -334,7 +334,7 @@ fun MediumMiniLayout(
                         }
 
                         RippleIconButton(
-                            imageVector = SimpIcons.SkipPrevious,
+                            imageVector = OmniIcons.SkipPrevious,
                             modifier = Modifier.size(28.dp),
                             tint = if (controllerState.isPreviousAvailable) Color.White else Color.Gray,
                             onClick = {
@@ -351,7 +351,7 @@ fun MediumMiniLayout(
                         )
 
                         RippleIconButton(
-                            imageVector = SimpIcons.SkipNext,
+                            imageVector = OmniIcons.SkipNext,
                             modifier = Modifier.size(28.dp),
                             tint = if (controllerState.isNextAvailable) Color.White else Color.Gray,
                             onClick = {
@@ -379,9 +379,9 @@ fun MediumMiniLayout(
                                 Icon(
                                     imageVector =
                                         if (controllerState.volume > 0f) {
-                                            SimpIcons.VolumeUp
+                                            OmniIcons.VolumeUp
                                         } else {
-                                            SimpIcons.VolumeOff
+                                            OmniIcons.VolumeOff
                                         },
                                     contentDescription = if (controllerState.volume > 0f) "Mute" else "Unmute",
                                     tint = Color.White.copy(alpha = 0.7f),
@@ -624,9 +624,9 @@ fun SquareMiniLayout(
                     Icon(
                         imageVector =
                             if (controllerState.isLiked) {
-                                SimpIcons.Favorite
+                                OmniIcons.Favorite
                             } else {
-                                SimpIcons.FavoriteBorder
+                                OmniIcons.FavoriteBorder
                             },
                         contentDescription = "Like",
                         tint =
@@ -641,7 +641,7 @@ fun SquareMiniLayout(
 
                 // Previous
                 RippleIconButton(
-                    imageVector = SimpIcons.SkipPrevious,
+                    imageVector = OmniIcons.SkipPrevious,
                     modifier = Modifier.size(36.dp),
                     tint = if (controllerState.isPreviousAvailable) Color.White else Color.Gray,
                     onClick = {
@@ -660,7 +660,7 @@ fun SquareMiniLayout(
 
                 // Next
                 RippleIconButton(
-                    imageVector = SimpIcons.SkipNext,
+                    imageVector = OmniIcons.SkipNext,
                     modifier = Modifier.size(36.dp),
                     tint = if (controllerState.isNextAvailable) Color.White else Color.Gray,
                     onClick = {
@@ -683,9 +683,9 @@ fun SquareMiniLayout(
                     Icon(
                         imageVector =
                             if (controllerState.volume > 0f) {
-                                SimpIcons.VolumeUp
+                                OmniIcons.VolumeUp
                             } else {
-                                SimpIcons.VolumeOff
+                                OmniIcons.VolumeOff
                             },
                         contentDescription = if (controllerState.volume > 0f) "Mute" else "Unmute",
                         tint = Color.White.copy(alpha = 0.7f),
@@ -823,9 +823,9 @@ fun ExpandedMiniLayout(
                             Icon(
                                 imageVector =
                                     if (controllerState.isLiked) {
-                                        SimpIcons.Favorite
+                                        OmniIcons.Favorite
                                     } else {
-                                        SimpIcons.FavoriteBorder
+                                        OmniIcons.FavoriteBorder
                                     },
                                 contentDescription = "Like",
                                 tint =
@@ -839,7 +839,7 @@ fun ExpandedMiniLayout(
                         }
 
                         RippleIconButton(
-                            imageVector = SimpIcons.SkipPrevious,
+                            imageVector = OmniIcons.SkipPrevious,
                             modifier = Modifier.size(28.dp),
                             tint = if (controllerState.isPreviousAvailable) Color.White else Color.Gray,
                             onClick = {
@@ -858,7 +858,7 @@ fun ExpandedMiniLayout(
                         )
 
                         RippleIconButton(
-                            imageVector = SimpIcons.SkipNext,
+                            imageVector = OmniIcons.SkipNext,
                             modifier = Modifier.size(32.dp),
                             tint = if (controllerState.isNextAvailable) Color.White else Color.Gray,
                             onClick = {
@@ -881,9 +881,9 @@ fun ExpandedMiniLayout(
                             Icon(
                                 imageVector =
                                     if (controllerState.volume > 0f) {
-                                        SimpIcons.VolumeUp
+                                        OmniIcons.VolumeUp
                                     } else {
-                                        SimpIcons.VolumeOff
+                                        OmniIcons.VolumeOff
                                     },
                                 contentDescription = if (controllerState.volume > 0f) "Mute" else "Unmute",
                                 tint = Color.White.copy(alpha = 0.7f),

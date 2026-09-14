@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import com.maxrave.simpmusic.ui.icon.Close
 import com.maxrave.simpmusic.ui.icon.MoreVert
 import com.maxrave.simpmusic.ui.icon.SelectAll
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
 import simpmusic.composeapp.generated.resources.Res
@@ -54,7 +54,7 @@ fun SongSelectionTopAppBar(
         navigationIcon = {
             IconButton(onClick = { state.exit() }) {
                 Icon(
-                    imageVector = SimpIcons.Close,
+                    imageVector = OmniIcons.Close,
                     contentDescription = stringResource(Res.string.exit_selection),
                 )
             }
@@ -69,7 +69,7 @@ fun SongSelectionTopAppBar(
         actions = {
             IconButton(onClick = onSelectAll) {
                 Icon(
-                    imageVector = SimpIcons.SelectAll,
+                    imageVector = OmniIcons.SelectAll,
                     contentDescription = stringResource(Res.string.select_all),
                 )
             }
@@ -78,7 +78,7 @@ fun SongSelectionTopAppBar(
             if (state.count > 0) {
                 IconButton(onClick = onOpenActions) {
                     Icon(
-                        imageVector = SimpIcons.MoreVert,
+                        imageVector = OmniIcons.MoreVert,
                         contentDescription = null,
                     )
                 }

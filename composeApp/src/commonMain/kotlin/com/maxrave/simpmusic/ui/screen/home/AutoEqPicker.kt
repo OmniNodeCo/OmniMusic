@@ -35,7 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maxrave.simpmusic.ui.icon.DownloadForOffline
 import com.maxrave.simpmusic.ui.icon.DownloadForOfflineOutlined
 import com.maxrave.simpmusic.ui.icon.KeyboardArrowDown
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.AutoEqStatus
 import com.maxrave.simpmusic.viewModel.AutoEqViewModel
@@ -100,7 +100,7 @@ fun AutoEqPicker(
                     },
             )
             Icon(
-                imageVector = SimpIcons.KeyboardArrowDown,
+                imageVector = OmniIcons.KeyboardArrowDown,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp),
@@ -188,9 +188,9 @@ fun AutoEqPicker(
                                     Icon(
                                         imageVector =
                                             if (downloaded) {
-                                                SimpIcons.DownloadForOffline
+                                                OmniIcons.DownloadForOffline
                                             } else {
-                                                SimpIcons.DownloadForOfflineOutlined
+                                                OmniIcons.DownloadForOfflineOutlined
                                             },
                                         contentDescription = null,
                                         tint =

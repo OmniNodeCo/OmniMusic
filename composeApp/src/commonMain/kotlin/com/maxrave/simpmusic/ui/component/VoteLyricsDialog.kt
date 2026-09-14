@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.ThumbDown
 import com.maxrave.simpmusic.ui.icon.ThumbUp
 import com.maxrave.simpmusic.ui.theme.typo
@@ -128,7 +128,7 @@ private fun VoteRow(
 
                 is VoteState.Success -> {
                     Icon(
-                        imageVector = if (voteState.state.upvote) SimpIcons.ThumbUp else SimpIcons.ThumbDown,
+                        imageVector = if (voteState.state.upvote) OmniIcons.ThumbUp else OmniIcons.ThumbDown,
                         contentDescription = null,
                         tint = Color.Cyan,
                         modifier = Modifier.size(24.dp),
@@ -152,7 +152,7 @@ private fun VoteRow(
                             modifier = Modifier.size(36.dp),
                         ) {
                             Icon(
-                                imageVector = SimpIcons.ThumbUp,
+                                imageVector = OmniIcons.ThumbUp,
                                 contentDescription = stringResource(Res.string.upvote),
                                 modifier = Modifier.size(20.dp),
                             )
@@ -162,7 +162,7 @@ private fun VoteRow(
                             modifier = Modifier.size(36.dp),
                         ) {
                             Icon(
-                                imageVector = SimpIcons.ThumbDown,
+                                imageVector = OmniIcons.ThumbDown,
                                 contentDescription = stringResource(Res.string.downvote),
                                 modifier = Modifier.size(20.dp),
                             )

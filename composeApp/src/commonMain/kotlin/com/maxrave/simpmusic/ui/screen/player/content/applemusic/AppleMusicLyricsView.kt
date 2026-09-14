@@ -51,7 +51,7 @@ import com.maxrave.simpmusic.ui.component.lyrics.ShareLyricsSheet
 import com.maxrave.simpmusic.ui.component.lyrics.toShareLyricsLines
 import com.maxrave.simpmusic.ui.icon.OpenInFull
 import com.maxrave.simpmusic.ui.icon.Share
-import com.maxrave.simpmusic.ui.icon.SimpIcons
+import com.maxrave.simpmusic.ui.icon.OmniIcons
 import com.maxrave.simpmusic.ui.icon.ThumbsUpDown
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentActions
 import com.maxrave.simpmusic.ui.screen.player.content.NowPlayingContentState
@@ -67,7 +67,7 @@ import simpmusic.composeapp.generated.resources.ai_translated
 import simpmusic.composeapp.generated.resources.line_synced
 import simpmusic.composeapp.generated.resources.lyrics_provider_betterlyrics
 import simpmusic.composeapp.generated.resources.lyrics_provider_lrc
-import simpmusic.composeapp.generated.resources.lyrics_provider_simpmusic
+import simpmusic.composeapp.generated.resources.lyrics_provider_omnimusic
 import simpmusic.composeapp.generated.resources.lyrics_provider_youtube
 import simpmusic.composeapp.generated.resources.offline_mode
 import simpmusic.composeapp.generated.resources.rich_synced
@@ -213,7 +213,7 @@ internal fun AppleMusicLyricsView(
                                 )
                             }
                             // One line per fact, not one line joined by a bullet. "Word by word"
-                            // and "Lyrics provided by SimpMusic Lyrics" are two different things,
+                            // and "Lyrics provided by OmniMusic Lyrics" are two different things,
                             // and glued together they make a single line long enough to run the
                             // width of the screen.
                             //
@@ -250,15 +250,15 @@ internal fun AppleMusicLyricsView(
                         modifier = Modifier.padding(end = 20.dp, bottom = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        // Only when the lyrics (or the translation) actually came from SimpMusic
+                        // Only when the lyrics (or the translation) actually came from OmniMusic
                         // Lyrics — the sole provider that accepts a vote. Classic and M3E have
                         // always gated theirs; this one did not, so it invited a rating on
                         // YouTube/LRCLIB/Spotify lyrics that had nowhere to go.
                         if (lyricsData.canVote()) {
-                            AppleMusicFloatingCircleButton(icon = SimpIcons.ThumbsUpDown, onClick = { actions.onShowVoteDialog() })
+                            AppleMusicFloatingCircleButton(icon = OmniIcons.ThumbsUpDown, onClick = { actions.onShowVoteDialog() })
                         }
-                        AppleMusicFloatingCircleButton(icon = SimpIcons.Share, onClick = { showShareSheet = true })
-                        AppleMusicFloatingCircleButton(icon = SimpIcons.OpenInFull, onClick = { actions.onShowFullscreenLyrics() })
+                        AppleMusicFloatingCircleButton(icon = OmniIcons.Share, onClick = { showShareSheet = true })
+                        AppleMusicFloatingCircleButton(icon = OmniIcons.OpenInFull, onClick = { actions.onShowFullscreenLyrics() })
                     }
                 }
             }
@@ -339,7 +339,7 @@ private fun appleMusicLyricsSyncText(lyricsData: NowPlayingScreenData.LyricsData
 @Composable
 private fun appleMusicLyricsProviderText(lyricsData: NowPlayingScreenData.LyricsData): String =
     when (lyricsData.lyricsProvider) {
-        LyricsProvider.SIMPMUSIC -> stringResource(Res.string.lyrics_provider_simpmusic)
+        LyricsProvider.OMNIMUSIC -> stringResource(Res.string.lyrics_provider_omnimusic)
         LyricsProvider.LRCLIB -> stringResource(Res.string.lyrics_provider_lrc)
         LyricsProvider.YOUTUBE -> stringResource(Res.string.lyrics_provider_youtube)
         LyricsProvider.SPOTIFY -> stringResource(Res.string.spotify_lyrics_provider)
