@@ -117,9 +117,9 @@ import org.koin.compose.koinInject
 import omnimusic.composeapp.generated.resources.Res
 import omnimusic.composeapp.generated.resources.cancel
 import omnimusic.composeapp.generated.resources.do_not_show_again
-import omnimusic.composeapp.generated.resources.download
 import omnimusic.composeapp.generated.resources.good_night
 import omnimusic.composeapp.generated.resources.notification
+import omnimusic.composeapp.generated.resources.ok
 import omnimusic.composeapp.generated.resources.settings
 import omnimusic.composeapp.generated.resources.sleep_timer_off
 import omnimusic.composeapp.generated.resources.this_app_needs_to_access_your_notification
@@ -747,9 +747,12 @@ fun App(
                             shouldShowUpdateDialog = false
                             viewModel.showedUpdateDialog = false
                         },
-                        // No download action: the update dialog no longer links out to an
-                        // external download page. Cancel is the only dismissal.
-                        dismissButton = {
+                        // The dialog used to offer a Download button that opened the
+                        // upstream project's download page. That external link is gone, so
+                        // acknowledging is the only action left. Note that `confirmButton`
+                        // is a required parameter of AlertDialog, so it cannot simply be
+                        // dropped when its action is removed.
+                        confirmButton = {
                             TextButton(
                                 onClick = {
                                     shouldShowUpdateDialog = false
@@ -757,7 +760,7 @@ fun App(
                                 },
                             ) {
                                 Text(
-                                    stringResource(Res.string.cancel),
+                                    stringResource(Res.string.ok),
                                     style = typo().bodySmall,
                                 )
                             }
