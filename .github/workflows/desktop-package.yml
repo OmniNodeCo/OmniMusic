@@ -146,9 +146,24 @@ jobs:
           CONVEYOR_AGREE_TO_LICENSE: 1
         run: |
           set -euo pipefail
+          # `tee` keeps the failure readable: the raw job log lives on a blob
+          # host that is awkward to fetch from a sandbox, whereas an
+          # annotation is retrievable straight from the REST API.
           "$CONVEYOR_BIN" --cache-dir=.conveyor/cache \
             "-Kapp.signing-key=$SIGNING_KEY" \
-            -Kapp.machines=linux.amd64.glibc make linux-app
+            -Kapp.machines=linux.amd64.glibc make linux-app 2>&1 | tee conveyor.log
+
+      - name: Surface Conveyor failure as an annotation
+        if: failure()
+        run: |
+          if [ ! -f conveyor.log ]; then
+            echo "::error::conveyor.log not found - Conveyor never produced output"
+            exit 0
+          fi
+          msg=$(tail -n 45 conveyor.log | tail -c 3000 \
+                | sed -e 's/%/%25/g' -e 's/\r//g' \
+                | awk '{if (NR>1) printf "%%0A"; printf "%s", $0}')
+          echo "::error title=Conveyor failed (last 45 lines)::${msg}"
 
       - name: Wrap Linux app tree → AppImage
         run: ./gradlew :desktopApp:packageConveyorAppImage --no-configuration-cache
@@ -253,7 +268,19 @@ jobs:
           set -euo pipefail
           "$CONVEYOR_BIN" --cache-dir=.conveyor/cache \
             "-Kapp.signing-key=$SIGNING_KEY" \
-            '-Kapp.machines=[mac.amd64,mac.aarch64]' make site
+            '-Kapp.machines=[mac.amd64,mac.aarch64]' make site 2>&1 | tee conveyor.log
+
+      - name: Surface Conveyor failure as an annotation
+        if: failure()
+        run: |
+          if [ ! -f conveyor.log ]; then
+            echo "::error::conveyor.log not found - Conveyor never produced output"
+            exit 0
+          fi
+          msg=$(tail -n 45 conveyor.log | tail -c 3000 \
+                | sed -e 's/%/%25/g' -e 's/\r//g' \
+                | awk '{if (NR>1) printf "%%0A"; printf "%s", $0}')
+          echo "::error title=Conveyor failed (last 45 lines)::${msg}"
 
       - name: Show built artifacts
         run: ls -lh output/
@@ -353,11 +380,23 @@ jobs:
           case "$CONVEYOR_BIN" in
             *.bat|*.cmd) cmd //c "$CONVEYOR_BIN" --cache-dir=.conveyor/cache \
                            "-Kapp.signing-key=$SIGNING_KEY" \
-                           -Kapp.machines=windows.amd64 make site ;;
+                           -Kapp.machines=windows.amd64 make site 2>&1 | tee conveyor.log ;;
             *)           "$CONVEYOR_BIN" --cache-dir=.conveyor/cache \
                            "-Kapp.signing-key=$SIGNING_KEY" \
-                           -Kapp.machines=windows.amd64 make site ;;
+                           -Kapp.machines=windows.amd64 make site 2>&1 | tee conveyor.log ;;
           esac
+
+      - name: Surface Conveyor failure as an annotation
+        if: failure()
+        run: |
+          if [ ! -f conveyor.log ]; then
+            echo "::error::conveyor.log not found - Conveyor never produced output"
+            exit 0
+          fi
+          msg=$(tail -n 45 conveyor.log | tail -c 3000 \
+                | sed -e 's/%/%25/g' -e 's/\r//g' \
+                | awk '{if (NR>1) printf "%%0A"; printf "%s", $0}')
+          echo "::error title=Conveyor failed (last 45 lines)::${msg}"
 
       # Bundle Windows installer = install.bat + omnimusic.crt + msix.
       # Conveyor's default .exe wrapper + .appinstaller fetch URLs from
