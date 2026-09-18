@@ -3,6 +3,8 @@ package co.omnimusic.app.ui
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import co.omnimusic.app.KeyAction
 
 /**

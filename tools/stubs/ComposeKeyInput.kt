@@ -37,6 +37,23 @@ class KeyEventType private constructor() {
     }
 }
 
-class KeyEvent(val key: Key, val type: KeyEventType)
+/**
+ * The real `KeyEvent` is a value class wrapping a platform event, and `key`, `type`,
+ * `utf16CodePoint` and the modifier flags are *extension properties* on it — so a caller has to
+ * import them explicitly. Modelling them as constructor parameters here instead let `KeyMapping.kt`
+ * type-check against the stub while failing against real Compose, which is the one thing these
+ * stubs are supposed to prevent. The shape below mirrors KeyEvent.kt in
+ * compose-multiplatform-core.
+ */
+class NativeKeyEvent
+
+@JvmInline
+value class KeyEvent(val nativeKeyEvent: NativeKeyEvent)
+
+val KeyEvent.key: Key
+    get() = Key.Spacebar
+
+val KeyEvent.type: KeyEventType
+    get() = KeyEventType.KeyDown
 
 fun Modifier.onPreviewKeyEvent(onKeyEvent: (KeyEvent) -> Boolean): Modifier = this
