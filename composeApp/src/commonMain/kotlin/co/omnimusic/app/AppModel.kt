@@ -42,6 +42,13 @@ class AppModel(private val environment: AppEnvironment) {
     var searchResults by mutableStateOf<Load<SearchResult>?>(null)
         private set
 
+    /** Whether the current search has another page of tracks behind it. */
+    var canLoadMoreResults by mutableStateOf(false)
+        private set
+
+    /** Opaque cursor for that next page, as handed back by the provider. */
+    private var searchCursor: String? = null
+
     var album by mutableStateOf<Load<Pair<Album, List<Track>>>?>(null)
         private set
 
@@ -169,11 +176,49 @@ class AppModel(private val environment: AppEnvironment) {
 
     fun runSearch(query: String) {
         searchQuery = query
+        searchCursor = null
+        canLoadMoreResults = false
         if (query.isBlank()) {
             searchResults = null
             return
         }
-        background { searchResults = environment.repository.search(query, limit = 12) }
+        background {
+            val result = environment.repository.search(query, limit = SEARCH_PAGE_SIZE)
+            searchResults = result
+            searchCursor = (result as? Load.Success)?.value?.tracks?.nextCursor
+            canLoadMoreResults = searchCursor != null
+        }
+    }
+
+    /**
+     * Appends the next page of tracks to the results on screen.
+     *
+     * A catalog search is paged server-side; without this the app shows the first twelve tracks and
+     * silently pretends that is everything the service has.
+     */
+    fun loadMoreResults() {
+        val cursor = searchCursor ?: return
+        val query = searchQuery
+        val current = (searchResults as? Load.Success)?.value ?: return
+        background {
+            when (val page = environment.repository.searchTracks(query, cursor = cursor, limit = SEARCH_PAGE_SIZE)) {
+                is Load.Failure -> notice = "Could not load more results: ${page.error}"
+                is Load.Success -> {
+                    val merged = current.tracks.items + page.value.items
+                    searchCursor = page.value.nextCursor
+                    canLoadMoreResults = searchCursor != null
+                    searchResults = Load.Success(
+                        current.copy(
+                            tracks = Page(
+                                items = merged,
+                                total = maxOf(current.tracks.total, merged.size),
+                                nextCursor = page.value.nextCursor,
+                            )
+                        )
+                    )
+                }
+            }
+        }
     }
 
     /**
@@ -390,5 +435,8 @@ class AppModel(private val environment: AppEnvironment) {
     companion object {
         /** How many recent plays the history tab shows. */
         const val HISTORY_LIMIT = 30
+
+        /** Tracks per search page; "load more" fetches the next one. */
+        const val SEARCH_PAGE_SIZE = 12
     }
 }

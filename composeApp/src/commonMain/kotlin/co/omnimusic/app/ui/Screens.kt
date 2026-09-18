@@ -118,6 +118,14 @@ fun SearchScreen(model: AppModel) {
                                 }
                             }
                         }
+                        if (model.canLoadMoreResults) {
+                            item {
+                                OutlinedButton(
+                                    onClick = model::loadMoreResults,
+                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                ) { Text("Load more tracks") }
+                            }
+                        }
                         if (search.artists.items.isNotEmpty()) {
                             item { SectionHeader("Artists") }
                             items(search.artists.items, key = { "r${it.id}" }) { artist ->

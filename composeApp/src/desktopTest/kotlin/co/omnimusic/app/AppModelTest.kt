@@ -178,6 +178,59 @@ class AppModelTest {
         assertIs<Load.Success<*>>(model.searchResults)
     }
 
+    fun testLoadMoreAppendsTheNextPageOfTracks() {
+        catalog.searchPool = pagedPool
+        val model = model()
+        model.runSearch("Song")
+        val first = resultsOf(model)
+        assertEquals(AppModel.SEARCH_PAGE_SIZE, first.size)
+        assertTrue(model.canLoadMoreResults)
+
+        model.loadMoreResults()
+        assertEquals(AppModel.SEARCH_PAGE_SIZE * 2, resultsOf(model).size)
+        assertEquals(first, resultsOf(model).take(AppModel.SEARCH_PAGE_SIZE))
+
+        model.loadMoreResults()
+        assertEquals(pagedPool.size, resultsOf(model).size)
+        assertFalse(model.canLoadMoreResults)
+
+        // Exhausted: a further call must not duplicate or drop anything.
+        model.loadMoreResults()
+        assertEquals(pagedPool.size, resultsOf(model).size)
+    }
+
+    fun testANewSearchResetsPagination() {
+        catalog.searchPool = pagedPool
+        val model = model()
+        model.runSearch("Song")
+        model.loadMoreResults()
+        assertEquals(AppModel.SEARCH_PAGE_SIZE * 2, resultsOf(model).size)
+
+        model.runSearch("Song")
+        assertEquals(AppModel.SEARCH_PAGE_SIZE, resultsOf(model).size)
+        assertTrue(model.canLoadMoreResults)
+    }
+
+    fun testLoadMoreFailureKeepsTheResultsAlreadyOnScreen() {
+        catalog.searchPool = pagedPool
+        val model = model()
+        model.runSearch("Song")
+        catalog.failSearchTracksWith = "page 2 exploded"
+        model.loadMoreResults()
+        assertEquals(AppModel.SEARCH_PAGE_SIZE, resultsOf(model).size)
+        assertContains(model.notice.orEmpty(), "Could not load more results")
+    }
+
+    fun testBlankSearchAlsoClearsPagination() {
+        catalog.searchPool = pagedPool
+        val model = model()
+        model.runSearch("Song")
+        assertTrue(model.canLoadMoreResults)
+        model.runSearch("  ")
+        assertFalse(model.canLoadMoreResults)
+        assertNull(model.searchResults)
+    }
+
     fun testReopeningSearchReRunsTheLastQuery() {
         val model = model()
         model.searchQuery = "starboy"
@@ -560,6 +613,18 @@ private fun track(id: String, title: String, artist: String): Track = Track(
     streamUrl = "https://example.test/$id.mp3",
 )
 
+/**
+ * A result set long enough to page through: three pages of [AppModel.SEARCH_PAGE_SIZE] would be 36,
+ * so 30 gives a full page, a full page and a partial one — the case that usually breaks paging.
+ */
+private val pagedPool: List<Track> = (1..30).map { index ->
+    val padded = if (index < 10) "0$index" else index.toString()
+    track("p$padded", "Song $padded", "Various Artists")
+}
+
+private fun resultsOf(model: AppModel): List<Track> =
+    (model.searchResults as? Load.Success)?.value?.tracks?.items.orEmpty()
+
 private class FakeCatalog(private val tracks: List<Track>) : MusicProvider {
 
     var homeFeedCalls = 0
@@ -568,14 +633,31 @@ private class FakeCatalog(private val tracks: List<Track>) : MusicProvider {
     var failHomeWith: String? = null
     var failAlbumWith: String? = null
     var failRadioWith: String? = null
+    var failSearchTracksWith: String? = null
     var radioResult: List<Track> = emptyList()
+
+    /**
+     * What search pages through. Separate from [tracks] so a paging test can have a long result
+     * set without every other test suddenly seeing a bigger home feed and album.
+     */
+    var searchPool: List<Track> = tracks
 
     override val id: String = "fake"
     override val displayName: String = "Fake Catalog"
 
     override fun searchTracks(query: String, cursor: String?, limit: Int): Page<Track> {
         searchCalls++
-        return Page(tracks.filter { it.title.contains(query, ignoreCase = true) })
+        failSearchTracksWith?.let { throw ApiError(it) }
+        val matching = searchPool.filter { query.isBlank() || it.title.contains(query, ignoreCase = true) }
+        val start = cursor?.toIntOrNull() ?: 0
+        if (start > matching.size) throw ApiError("bad cursor: $cursor")
+        val slice = matching.drop(start).take(limit)
+        val nextStart = start + slice.size
+        return Page(
+            items = slice,
+            total = matching.size,
+            nextCursor = if (nextStart < matching.size) nextStart.toString() else null,
+        )
     }
 
     override fun searchAlbums(query: String, cursor: String?, limit: Int): Page<Album> =
