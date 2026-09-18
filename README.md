@@ -90,6 +90,21 @@ Two design rules make the core testable on a machine with no sound card and no n
 ./gradlew :composeApp:assembleDebug
 ```
 
+### Cutting a release
+
+The four installers are built by CI on every push, but they only become something downloadable
+when a tag is pushed:
+
+```bash
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+That runs `.github/workflows/release.yml`, which builds `assembleRelease` plus the three native
+packages and publishes them as a GitHub release. The APK is signed with the debug key — the release
+build type points at `signingConfigs.debug` so the artifact installs out of the box — so replace
+that with a real signing config before publishing anywhere public. Running the workflow manually
+(`workflow_dispatch`) produces a prerelease named after the commit rather than a version.
+
 ### Everything, without Gradle
 
 The core, the UI state holder and every test can be built and run with nothing but a JRE and
