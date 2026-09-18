@@ -1,0 +1,70 @@
+{
+  "data": [
+    {
+      "id": 3135554,
+      "readable": true,
+      "title": "Aerodynamic",
+      "title_short": "Aerodynamic",
+      "title_version": "",
+      "link": "https://www.deezer.com/track/3135554",
+      "duration": 212,
+      "rank": 765541,
+      "explicit_lyrics": false,
+      "explicit_content_lyrics": 0,
+      "explicit_content_cover": 0,
+      "md5_image": "5718f7c81c27e0b2417e2a4c45224f8a",
+      "artist": {
+        "id": 27,
+        "name": "Daft Punk",
+        "tracklist": "https://api.deezer.com/artist/27/top?limit=50",
+        "type": "artist"
+      },
+      "album": {
+        "id": 302127,
+        "title": "Discovery",
+        "cover": "https://api.deezer.com/album/302127/image",
+        "cover_small": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/56x56-000000-80-0-0.jpg",
+        "cover_medium": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/250x250-000000-80-0-0.jpg",
+        "cover_big": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/500x500-000000-80-0-0.jpg",
+        "cover_xl": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/1000x1000-000000-80-0-0.jpg",
+        "md5_image": "5718f7c81c27e0b2417e2a4c45224f8a",
+        "tracklist": "https://api.deezer.com/album/302127/tracks",
+        "type": "album"
+      },
+      "type": "track"
+    },
+    {
+      "id": 3135555,
+      "readable": true,
+      "title": "Digital Love",
+      "title_short": "Digital Love",
+      "title_version": "",
+      "link": "https://www.deezer.com/track/3135555",
+      "duration": 301,
+      "rank": 758096,
+      "explicit_lyrics": false,
+      "explicit_content_lyrics": 0,
+      "explicit_content_cover": 0,
+      "md5_image": "5718f7c81c27e0b2417e2a4c45224f8a",
+      "artist": {
+        "id": 27,
+        "name": "Daft Punk",
+        "tracklist": "https://api.deezer.com/artist/27/top?limit=50",
+        "type": "artist"
+      },
+      "album": {
+        "id": 302127,
+        "title": "Discovery",
+        "cover": "https://api.deezer.com/album/302127/image",
+        "cover_small": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/56x56-000000-80-0-0.jpg",
+        "cover_medium": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/250x250-000000-80-0-0.jpg",
+        "cover_big": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/500x500-000000-80-0-0.jpg",
+        "cover_xl": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/1000x1000-000000-80-0-0.jpg",
+        "md5_image": "5718f7c81c27e0b2417e2a4c45224f8a",
+        "tracklist": "https://api.deezer.com/album/302127/tracks",
+        "type": "album"
+      },
+      "type": "track"
+    }
+  ]
+}

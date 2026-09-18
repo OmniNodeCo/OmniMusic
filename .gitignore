@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+build/
+local.properties
+.kotlin/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+
+# Local toolchain (tools/setup-toolchain.sh defaults to ~/.cache/omnimusic; this covers the case
+# where OMNIMUSIC_TOOLCHAIN is pointed inside the checkout)
+.toolchain/

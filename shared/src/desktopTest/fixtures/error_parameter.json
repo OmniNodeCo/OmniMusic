@@ -1,0 +1,7 @@
+{
+  "error": {
+    "type": "ParameterException",
+    "code": 800,
+    "message": "wrong parameter"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "data": [
+    {
+      "id": 302127,
+      "title": "Discovery",
+      "cover": "https://api.deezer.com/album/302127/image",
+      "cover_small": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/56x56-000000-80-0-0.jpg",
+      "cover_medium": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/250x250-000000-80-0-0.jpg",
+      "cover_big": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/500x500-000000-80-0-0.jpg",
+      "cover_xl": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/1000x1000-000000-80-0-0.jpg",
+      "md5_image": "5718f7c81c27e0b2417e2a4c45224f8a",
+      "tracklist": "https://api.deezer.com/album/302127/tracks",
+      "type": "album",
+      "nb_tracks": 14,
+      "release_date": "2001-03-07",
+      "genre_id": 106,
+      "record_type": "album",
+      "artist": {
+        "id": 27,
+        "name": "Daft Punk",
+        "tracklist": "https://api.deezer.com/artist/27/top?limit=50",
+        "type": "artist"
+      }
+    },
+    {
+      "id": 6575789,
+      "title": "Random Access Memories",
+      "cover": "https://api.deezer.com/album/6575789/image",
+      "cover_small": "https://cdn-images.dzcdn.net/images/cover/311bba0fc112d15f72c8b5a65f0456c1/56x56-000000-80-0-0.jpg",
+      "cover_medium": "https://cdn-images.dzcdn.net/images/cover/311bba0fc112d15f72c8b5a65f0456c1/250x250-000000-80-0-0.jpg",
+      "cover_big": "https://cdn-images.dzcdn.net/images/cover/311bba0fc112d15f72c8b5a65f0456c1/500x500-000000-80-0-0.jpg",
+      "cover_xl": "https://cdn-images.dzcdn.net/images/cover/311bba0fc112d15f72c8b5a65f0456c1/1000x1000-000000-80-0-0.jpg",
+      "md5_image": "311bba0fc112d15f72c8b5a65f0456c1",
+      "tracklist": "https://api.deezer.com/album/6575789/tracks",
+      "type": "album",
+      "nb_tracks": 13,
+      "release_date": "2013-05-17",
+      "genre_id": 106,
+      "record_type": "album",
+      "artist": {
+        "id": 27,
+        "name": "Daft Punk",
+        "tracklist": "https://api.deezer.com/artist/27/top?limit=50",
+        "type": "artist"
+      }
+    }
+  ],
+  "total": 42,
+  "next": "https://api.deezer.com/search/album?q=daft%20punk&limit=2&index=2"
+}

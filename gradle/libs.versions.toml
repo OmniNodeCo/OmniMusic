@@ -1,0 +1,22 @@
+[versions]
+# Pinned here so every module moves together. These are the versions the Gradle build was written
+# against; bump them as a set rather than one at a time.
+kotlin = "2.1.20"
+composeMultiplatform = "1.8.2"
+agp = "8.7.3"
+androidx-activityCompose = "1.10.1"
+androidCompileSdk = "35"
+androidTargetSdk = "35"
+androidMinSdk = "26"
+jvmTarget = "17"
+
+[libraries]
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+
+[plugins]
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }

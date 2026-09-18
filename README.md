@@ -1,1 +1,140 @@
 # OmniMusic
+
+A music app in the spirit of [SimpMusic](https://github.com/maxrave-dev/SimpMusic) — browse a
+catalog, search it, build playlists, and play — written entirely in **Kotlin** with
+**Compose Multiplatform**, targeting **Android** and **desktop (Windows, macOS, Linux)**.
+
+There is no Python and no HTML anywhere in this repository.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  composeApp  (Compose Multiplatform UI, shared 100% between targets)    │
+│    commonMain: App.kt · AppModel.kt · screens · theme                   │
+│    androidMain: MainActivity, MediaPlayer output, SharedPreferences     │
+│    desktopMain: main(), Java Sound output, config-dir store             │
+├─────────────────────────────────────────────────────────────────────────┤
+│  shared  (pure Kotlin, zero third-party dependencies)                   │
+│    model · json · provider(Deezer) · repo · player · audio · store      │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## What it does
+
+| Area | Behaviour |
+| --- | --- |
+| Browse | Trending tracks, albums and genres on a home feed (`/chart`, `/genre`) |
+| Search | Tracks, albums and artists in one call; each facet fails independently |
+| Detail | Album with track list (falls back to `/album/{id}/tracks`), artist top tracks |
+| Radio | "Start a radio" from any seed track |
+| Playback | Queue, next/previous, shuffle (a real play order, so *previous* works), repeat off/all/one, seek, volume |
+| Playlists | Create, rename, delete, add/dedupe, reorder — persisted as JSON |
+| History | On-device play counts, recents, top tracks and top artists. Nothing leaves the device |
+| Lyrics | Synced lyrics from LRCLIB, highlighted line by line, with an unsynced fallback |
+| Resume | The queue, cursor, position, shuffle/repeat and volume survive a restart |
+| Offline filter | Instant filtering of the queue and saved playlists over what is already in memory |
+| Caching | 5-minute TTL cache in the repository, so navigating back does not re-fetch |
+
+The catalog backend is **Deezer's public REST API**: no API key, no OAuth, and a 30-second MP3
+preview per track that the player streams. Lyrics come from **LRCLIB**, also keyless. Swapping in
+another service means implementing `MusicProvider` or `LyricsProvider` (one interface each) and
+nothing else.
+
+## Layout
+
+```
+shared/src/commonMain/kotlin/co/omnimusic/core/
+  json/        Json.kt JsonParser.kt JsonWriter.kt     dependency-free JSON model, parser, writer
+  model/       Track Album Artist Genre Playlist Page Load
+  net/         HttpFetcher                              the only seam to the network
+  provider/    MusicProvider, deezer/DeezerProvider, deezer/DeezerJson
+  repo/        MusicRepository, MemoryCache
+  player/      PlaybackEngine, PlayState, RepeatMode    queue + transport state machine
+  audio/       AudioOutput, WavCodec                    platform audio seam + RIFF/WAVE codec
+  lyrics/      LrcParser, Lyrics, LrcLibProvider, LyricsLibrary
+  store/       KeyValueStore, PlaylistStore, PlaylistJson, TrackJson, PlaybackStateStore,
+               ListeningHistory
+  util/        Strings.kt (formatting, URL building, search folding), LocalFilter, Guard
+shared/src/desktopMain/   JdkHttpFetcher, JvmKeyValueStore, JavaSoundAudioOutput
+shared/src/desktopTest/   tests against recorded API responses + fixtures/
+shared/src/commonTest/    tests for everything platform-independent
+composeApp/src/commonMain/  App.kt AppModel.kt ui/ theme/
+composeApp/src/androidMain/ MainActivity.kt AndroidPlatform.kt AndroidManifest.xml
+composeApp/src/desktopMain/ Main.kt
+tools/           Gradle-free build: setup-toolchain.sh, run-tests.sh, run-demo.sh
+```
+
+Two design rules make the core testable on a machine with no sound card and no network:
+
+1. **No third-party dependencies in `shared`.** The JSON parser, the WAV codec and the persistence
+   codec are all hand-written, so the module compiles with a bare `kotlinc`.
+2. **No platform APIs and no threads in `shared`.** Networking is an injected `HttpFetcher`, locking
+   is an injected `Guard`, and the playback engine has no timer — its host ticks it with
+   `advance(deltaMillis)` once per frame, which makes the whole transport deterministic.
+
+## Building and running
+
+### Desktop
+
+```bash
+./gradlew :composeApp:run                             # debug window
+./gradlew :composeApp:packageDistributionForCurrentOS # .deb / .dmg / .msi
+```
+
+### Android
+
+```bash
+./gradlew :composeApp:assembleDebug
+```
+
+### The core, without Gradle
+
+The core and its tests can be built and run with nothing but a JRE and `kotlinc` — no Android SDK,
+no Maven Central. This is what CI runs first, and what you want when you are changing engine or
+parser logic:
+
+```bash
+./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
+./tools/run-tests.sh         # compile shared + tests, run 110 tests
+./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
+```
+
+The demo defaults to the live API; add `--fixtures shared/src/desktopTest/fixtures` to replay
+recorded responses instead, which works offline.
+
+```bash
+./tools/run-demo.sh --fixtures shared/src/desktopTest/fixtures --silent session
+```
+
+## Verification status
+
+Be precise about what has actually been executed, because it is not everything:
+
+**Verified in this repository** — `./tools/run-tests.sh` compiles `shared/src/commonMain`,
+`shared/src/desktopMain`, `shared/src/commonTest` and `shared/src/desktopTest` with kotlinc
+(Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **149 tests, all passing**. They cover the JSON
+parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
+playback engine (shuffle order, repeat modes, seek clamping, dead-stream skipping, queue mutation,
+session restore), the LRC parser (centisecond and millisecond fractions, `[offset:]`, multi-timestamp
+lines, metadata tags), the playlist, history and playback-state stores (including corrupt data on
+disk), the TTL cache, the local filter, the Deezer mappers, and the repository. The provider, repository and lyrics tests run against
+**recorded Deezer and LRCLIB responses** captured from the live APIs, not invented shapes. `./tools/run-demo.sh` runs the
+same core end to end and writes real playlist and history JSON to disk.
+
+**Not verified here** — the Gradle build, the Compose UI and the Android layer. This sandbox has no
+Android SDK and cannot reach `repo1.maven.org` or `services.gradle.org`, so `./gradlew` cannot run
+at all. `composeApp/` and the Gradle scripts are written against Compose Multiplatform 1.8.2 /
+Kotlin 2.1.20 / AGP 8.7.3 (pinned in `gradle/libs.versions.toml`) but have never been compiled.
+Expect to adjust those versions on a first build. There is also no Gradle wrapper jar committed —
+run `gradle wrapper` once, as CI does.
+
+## Known limitations
+
+- **Desktop MP3 playback needs a codec.** The JDK decodes WAV/AIFF/AU only, and Deezer previews are
+  MP3. `JavaSoundAudioOutput` fails loudly with an explanation; uncomment the two `mp3spi` lines in
+  `composeApp/build.gradle.kts` to enable it.
+- **No cover art yet.** `Artwork` paints a deterministic gradient from the entity id. Adding Coil
+  means replacing the body of that one composable.
+- **Previews are 30 seconds.** That is what a keyless API gives you.
+- **Lyrics are line-level, not word-level**, and LRCLIB's coverage is community-driven, so plenty of
+  tracks simply have none. Translations and romanization are not implemented.
+- **Playback is not a foreground service on Android**, so it stops when the activity is destroyed.
