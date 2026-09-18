@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.omnimusic.app.AppModel
@@ -59,7 +60,9 @@ fun HomeScreen(model: AppModel) {
                     item {
                         LazyRow(contentPadding = PaddingValues(horizontal = 16.dp)) {
                             items(feed.genres, key = { it.id }) { genre ->
-                                GenreChip(genre = genre, onClick = { model.runSearch(genre.name) })
+                                // searchFor, not runSearch: the results have to be shown too,
+                                // otherwise tapping a genre on the home screen looks like a no-op.
+                                GenreChip(genre = genre, onClick = { model.searchFor(genre.name) })
                             }
                         }
                     }
@@ -283,6 +286,58 @@ fun LibraryScreen(model: AppModel) {
                 }
             }
             item { Spacer(Modifier.height(96.dp)) }
+        }
+    }
+}
+
+/**
+ * What has been played, from the local history store — the one screen that works with no network
+ * at all. The store keeps ids, titles and play counts but not playable streams, so tapping an entry
+ * searches for it rather than pretending it can be replayed directly.
+ */
+@Composable
+fun HistoryScreen(model: AppModel) {
+    val entries = model.historyRecent
+    Column(Modifier.fillMaxSize()) {
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Recently played",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f),
+            )
+            if (entries.isNotEmpty()) {
+                TextButton(onClick = model::clearHistory) { Text("Clear") }
+            }
+        }
+        if (entries.isEmpty()) {
+            Message("Nothing has been played yet.")
+        } else {
+            LazyColumn(Modifier.weight(1f)) {
+                items(entries, key = { it.trackId }) { entry ->
+                    Column(
+                        Modifier.fillMaxWidth()
+                            .clickable { model.searchFor("${entry.title} ${entry.artistName}") }
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                    ) {
+                        Text(
+                            text = entry.title,
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            text = "${entry.artistName} · ${entry.plays} " +
+                                if (entry.plays == 1) "play" else "plays",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+                item { Spacer(Modifier.height(96.dp)) }
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ import co.omnimusic.app.theme.OmniMusicTheme
 import co.omnimusic.app.ui.AlbumScreen
 import co.omnimusic.app.ui.Artwork
 import co.omnimusic.app.ui.ArtistScreen
+import co.omnimusic.app.ui.HistoryScreen
 import co.omnimusic.app.ui.HomeScreen
 import co.omnimusic.app.ui.LibraryScreen
 import co.omnimusic.app.ui.SearchScreen
@@ -59,6 +60,7 @@ fun App(environment: AppEnvironment, model: AppModel = remember { AppModel(envir
                         Screen.Home -> HomeScreen(model)
                         Screen.Search -> SearchScreen(model)
                         Screen.Library -> LibraryScreen(model)
+                        Screen.History -> HistoryScreen(model)
                         is Screen.Album -> AlbumScreen(model, screen.id)
                         is Screen.Artist -> ArtistScreen(model)
                     }
@@ -106,6 +108,7 @@ private fun TopBar(model: AppModel) {
             NavTab("Home", model.screen is Screen.Home) { model.goHome() }
             NavTab("Search", model.screen is Screen.Search) { model.goSearch() }
             NavTab("Library", model.screen is Screen.Library) { model.goLibrary() }
+            NavTab("History", model.screen is Screen.History) { model.goHistory() }
         }
     }
 }
@@ -287,12 +290,18 @@ private fun NowPlayingPanel(model: AppModel) {
             val queue = model.queue()
             LazyColumn(Modifier.weight(1f)) {
                 items(queue.size) { index ->
-                    TrackRow(
-                        index = index + 1,
-                        track = queue[index],
-                        isCurrent = index == state.queueIndex,
-                        onClick = { model.play(queue, index) },
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TrackRow(
+                            index = index + 1,
+                            track = queue[index],
+                            isCurrent = index == state.queueIndex,
+                            onClick = { model.play(queue, index) },
+                            modifier = Modifier.weight(1f),
+                        )
+                        IconButton(onClick = { model.removeFromQueue(index) }) {
+                            Text("×", fontSize = 18.sp)
+                        }
+                    }
                 }
             }
         }

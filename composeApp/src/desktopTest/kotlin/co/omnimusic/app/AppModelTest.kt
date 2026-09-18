@@ -169,6 +169,15 @@ class AppModelTest {
         assertEquals(0, catalog.searchCalls)
     }
 
+    fun testSearchForAlsoLeavesTheCurrentScreen() {
+        val model = model()
+        assertIs<Screen.Home>(model.screen)
+        model.searchFor("Pop")
+        assertIs<Screen.Search>(model.screen)
+        assertEquals("Pop", model.searchQuery)
+        assertIs<Load.Success<*>>(model.searchResults)
+    }
+
     fun testReopeningSearchReRunsTheLastQuery() {
         val model = model()
         model.searchQuery = "starboy"
@@ -330,6 +339,21 @@ class AppModelTest {
         assertEquals(1_700_000_000_000L, entry.lastPlayedAt)
     }
 
+    fun testRemoveFromQueueDropsTheEntryAndRepersists() {
+        val model = model()
+        model.play(listOf(trackOne, trackTwo))
+        assertTrue(model.removeFromQueue(1))
+        assertEquals(listOf("One More Time"), model.queue().map { it.title })
+        assertEquals(1, playbackState.restore()?.tracks?.size)
+    }
+
+    fun testRemoveFromQueueRejectsAnOutOfRangeIndex() {
+        val model = model()
+        model.play(listOf(trackOne))
+        assertFalse(model.removeFromQueue(7))
+        assertEquals(1, model.queue().size)
+    }
+
     fun testPausingPersistsThePositionForTheNextLaunch() {
         val model = model()
         model.play(listOf(trackOne, trackTwo))
@@ -347,6 +371,67 @@ class AppModelTest {
         assertNotNull(model.notice)
         model.dismissNotice()
         assertNull(model.notice)
+    }
+
+    // ----------------------------------------------------------------------------------------
+    // History
+    // ----------------------------------------------------------------------------------------
+
+    fun testHistoryTabShowsRecentPlaysNewestFirst() {
+        val model = model()
+        model.goHistory()
+        assertIs<Screen.History>(model.screen)
+        assertTrue(model.historyRecent.isEmpty())
+
+        model.play(listOf(trackOne, trackTwo))
+        model.next()
+        model.goHome()
+        model.goHistory()
+        assertEquals(listOf("Starboy", "One More Time"), model.historyRecent.map { it.title })
+        assertEquals(1, model.historyRecent.first().plays)
+    }
+
+    fun testHistoryListRefreshesWhilePlaying() {
+        val model = model()
+        model.goHistory()
+        model.play(listOf(trackOne, trackTwo))
+        // No re-navigation: the list has to follow along, or the tab goes stale on screen.
+        assertEquals(listOf("One More Time"), model.historyRecent.map { it.title })
+    }
+
+    fun testPlayCountsAccumulateInHistory() {
+        val model = model()
+        model.play(listOf(trackOne))
+        model.play(listOf(trackOne))
+        model.goHistory()
+        assertEquals(2, model.historyRecent.single().plays)
+    }
+
+    fun testClearHistoryEmptiesTheListAndAnnouncesIt() {
+        val model = model()
+        model.play(listOf(trackOne))
+        model.goHistory()
+        assertEquals(1, model.historyRecent.size)
+        model.clearHistory()
+        assertTrue(model.historyRecent.isEmpty())
+        assertContains(model.notice.orEmpty(), "history cleared")
+        // The store is the source of truth, not just the snapshot in memory.
+        assertTrue(history.recent(10).isEmpty())
+    }
+
+    fun testRestoringASessionDoesNotAddAHistoryEntry() {
+        val model = model(
+            seedPersisted = PersistedPlayback(
+                tracks = listOf(trackOne, trackTwo),
+                index = 0,
+                positionMillis = 1_000,
+                shuffleEnabled = false,
+                repeatMode = RepeatMode.OFF,
+                volume = 1f,
+            )
+        )
+        model.goHistory()
+        assertTrue(model.historyRecent.isEmpty())
     }
 
     // ----------------------------------------------------------------------------------------

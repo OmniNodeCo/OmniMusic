@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import co.omnimusic.core.AppEnvironment
 import co.omnimusic.core.lyrics.Lyrics
 import co.omnimusic.core.model.*
+import co.omnimusic.core.store.ListeningHistory
 import co.omnimusic.core.util.LocalFilter
 import co.omnimusic.core.player.PlayState
 import co.omnimusic.core.player.PlaybackListener
@@ -15,6 +16,7 @@ sealed interface Screen {
     data object Home : Screen
     data object Search : Screen
     data object Library : Screen
+    data object History : Screen
     data class Album(val id: String, val title: String) : Screen
     data class Artist(val id: String, val name: String) : Screen
 }
@@ -58,6 +60,15 @@ class AppModel(private val environment: AppEnvironment) {
     /** Draft name in the library screen's "new playlist" field. */
     var newPlaylistName by mutableStateOf("")
 
+    /**
+     * Recently played entries, newest first.
+     *
+     * The history store is not observable, so this is a snapshot refreshed when the tab is opened
+     * and whenever a track starts — otherwise the list would sit stale on screen while playing.
+     */
+    var historyRecent by mutableStateOf<List<ListeningHistory.Entry>>(emptyList())
+        private set
+
     var nowPlayingExpanded by mutableStateOf(false)
 
     var notice by mutableStateOf<String?>(null)
@@ -90,6 +101,7 @@ class AppModel(private val environment: AppEnvironment) {
                 // saved position with 0 before the seek lands.
                 if (!restoring) {
                     history.recordPlay(track, playedAt = currentTimeMillis())
+                    refreshHistory()
                     persistSession()
                 }
             }
@@ -125,6 +137,11 @@ class AppModel(private val environment: AppEnvironment) {
         refreshPlaylists()
     }
 
+    fun goHistory() {
+        screen = Screen.History
+        refreshHistory()
+    }
+
     fun openAlbum(id: String, title: String) {
         screen = Screen.Album(id, title)
         album = null
@@ -157,6 +174,18 @@ class AppModel(private val environment: AppEnvironment) {
             return
         }
         background { searchResults = environment.repository.search(query, limit = 12) }
+    }
+
+    /**
+     * Search *and* show the results.
+     *
+     * [runSearch] alone only fills state, which is right for the search box (it is already on that
+     * screen) and wrong for every other entry point: a genre chip on the home screen that calls it
+     * appears to do nothing, because the app never leaves the screen it was on.
+     */
+    fun searchFor(query: String) {
+        screen = Screen.Search
+        runSearch(query)
     }
 
     fun startRadio(seedTrackId: String) {
@@ -215,6 +244,21 @@ class AppModel(private val environment: AppEnvironment) {
     }
 
     // ----------------------------------------------------------------------------------------
+    // History
+    // ----------------------------------------------------------------------------------------
+
+    /** Re-reads the history store into observable state. */
+    fun refreshHistory() {
+        historyRecent = environment.history.recent(HISTORY_LIMIT)
+    }
+
+    fun clearHistory() {
+        environment.history.clear()
+        refreshHistory()
+        notice = "Listening history cleared"
+    }
+
+    // ----------------------------------------------------------------------------------------
     // Transport
     // ----------------------------------------------------------------------------------------
 
@@ -244,6 +288,13 @@ class AppModel(private val environment: AppEnvironment) {
     fun setVolume(volume: Float) = environment.engine.setVolume(volume)
 
     fun queue(): List<Track> = environment.engine.queueSnapshot()
+
+    /**
+     * Drops a queue entry. The engine remaps its cursor when something ahead of the current track
+     * disappears, and the saved session has to follow or a restart would resurrect the old queue.
+     */
+    fun removeFromQueue(index: Int): Boolean =
+        environment.engine.removeFromQueue(index).also { removed -> if (removed) persistSession() }
 
     fun dismissNotice() {
         notice = null
@@ -334,5 +385,10 @@ class AppModel(private val environment: AppEnvironment) {
                 notice = e.message ?: "Unexpected error"
             }
         }
+    }
+
+    companion object {
+        /** How many recent plays the history tab shows. */
+        const val HISTORY_LIMIT = 30
     }
 }
