@@ -4,7 +4,6 @@ import co.omnimusic.core.json.get
 import co.omnimusic.core.json.JsonParser
 import co.omnimusic.core.json.JsonWriter
 import co.omnimusic.core.json.asObjectOrNull
-import co.omnimusic.core.json.asStringOrNull
 import co.omnimusic.core.json.Json
 import co.omnimusic.core.json.jsonNumber
 import co.omnimusic.core.json.jsonObject
@@ -58,7 +57,10 @@ class JvmKeyValueStore(private val file: Path) : KeyValueStore {
         val root = JsonParser.parseOrNull(raw).asObjectOrNull() ?: return
         val entries = root["entries"].asObjectOrNull() ?: return
         for ((key, value) in entries.fields) {
-            value.asStringOrNull()?.let { values[key] = it }
+            // Strictly strings, via Json.Str rather than asStringOrNull(): that helper also coerces
+            // numbers and booleans, which is what an API mapper wants and not what a store does.
+            // A value this store did not write is treated as absent, not silently turned into text.
+            (value as? Json.Str)?.let { values[key] = it.value }
         }
     }
 
