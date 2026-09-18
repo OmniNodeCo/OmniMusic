@@ -25,7 +25,9 @@ import co.omnimusic.core.util.Guard
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /** Builds the graph Android needs. Called once from `MainActivity.onCreate`. */
 fun androidEnvironment(context: Context): AppEnvironment {
@@ -112,20 +114,51 @@ class MediaPlayerAudioOutput : AudioOutput {
         stop()
         val url = (source as? AudioSource.Remote)?.url
             ?: throw UnsupportedAudioException("Android output streams URLs only; got ${source::class.simpleName}")
-        player = MediaPlayer().apply {
+        val candidate = MediaPlayer().apply {
             setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build()
             )
-            try {
-                setDataSource(url)
-                prepare()
-            } catch (e: IOException) {
-                throw AudioSourceException("could not open $url", e)
-            }
         }
+
+        // `setDataSource(url)` opens the connection and `prepare()` blocks reading from it. Both are
+        // network I/O, and the engine calls this straight from the click handler that started
+        // playback — so on Android's main thread it throws NetworkOnMainThreadException before a
+        // single sample is decoded. Every route into playback hits it: play, next, previous, resume
+        // after a stall, and auto-advance when a track ends. Doing the blocking work on this thread
+        // and having the caller wait for it fixes all of them at the boundary, and keeps the
+        // engine's synchronous prepare/play contract — and therefore its error handling, which
+        // reports the failure and skips to the next track — exactly as it is.
+        //
+        // The caller still blocks, so a stalled network can ANR. The alternative is prepareAsync()
+        // with an auto-start listener, which needs an error channel back into the engine that
+        // AudioOutput does not have; Media3 handles all of this properly and is the real fix.
+        val finished = CountDownLatch(1)
+        var failure: Throwable? = null
+        val worker = Thread({
+            try {
+                candidate.setDataSource(url)
+                candidate.prepare()
+            } catch (e: Exception) {
+                failure = e
+            } finally {
+                finished.countDown()
+            }
+        }, "OmniMusic-media")
+        worker.start()
+
+        if (!finished.await(PREPARE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
+            candidate.runCatching { release() }
+            throw AudioSourceException("timed out opening $url after ${PREPARE_TIMEOUT_MILLIS}ms")
+        }
+        val error = failure
+        if (error != null) {
+            candidate.runCatching { release() }
+            throw AudioSourceException("could not open $url: ${error.message}", error)
+        }
+        player = candidate
         prepared = true
     }
 
@@ -158,4 +191,13 @@ class MediaPlayerAudioOutput : AudioOutput {
     }
 
     override fun isReady(): Boolean = prepared
+
+    private companion object {
+        /**
+         * How long to wait for a stream to open before giving up on it. Long enough for a cold CDN
+         * connection, short enough that a dead URL fails over to the next track rather than hanging
+         * the player indefinitely.
+         */
+        const val PREPARE_TIMEOUT_MILLIS = 15_000L
+    }
 }
