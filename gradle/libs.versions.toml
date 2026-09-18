@@ -3,6 +3,7 @@
 # against; bump them as a set rather than one at a time.
 kotlin = "2.1.20"
 composeMultiplatform = "1.8.2"
+coil = "3.3.0"
 agp = "8.7.3"
 androidx-activityCompose = "1.10.1"
 androidCompileSdk = "35"
@@ -13,6 +14,11 @@ jvmTarget = "17"
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+# Cover art. coil-compose is the AsyncImage composable; the network artifact is what actually
+# fetches a URL — without it AsyncImage renders nothing and fails silently, which is the step that
+# gets missed. Both coordinates verified against Maven Central.
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

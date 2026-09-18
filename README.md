@@ -187,8 +187,14 @@ Deezer and LRCLIB, and audio output have never been exercised end to end.
   that conversion is the step usually missed, and the reason "I added the MP3 library" still fails.
   The conversion *decision* is unit-tested here; actually decoding an MP3 has never been run in
   this environment, because it needs both the dependency and a sound card.
-- **No cover art yet.** `Artwork` paints a deterministic gradient from the entity id. Adding Coil
-  means replacing the body of that one composable.
+- **Cover art is loaded but has never been seen load.** `Artwork` renders a Coil `AsyncImage` over a
+  deterministic gradient derived from the entity id; the gradient stays underneath as the
+  placeholder, the no-artwork case and the offline case. The catalog only sometimes has an image —
+  an artist nested in a track carries no picture — so the fallback is a normal state, not an error.
+  Both coordinates are verified to exist on Maven Central and CI compiles against them, but no
+  window has ever been opened here, so the one failure mode that matters has not been observed:
+  drop `coil-network-okhttp` and `AsyncImage` renders the placeholder forever without reporting
+  anything.
 - **Previews are 30 seconds.** That is what a keyless API gives you.
 - **Lyrics are line-level, not word-level**, and LRCLIB's coverage is community-driven, so plenty of
   tracks simply have none. Translations and romanization are not implemented.

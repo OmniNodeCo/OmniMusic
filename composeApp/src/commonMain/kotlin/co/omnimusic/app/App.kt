@@ -142,7 +142,12 @@ private fun MiniPlayer(model: AppModel) {
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Artwork(seed = track.album?.id ?: track.id, initials = track.title, Modifier.size(44.dp))
+                Artwork(
+                    seed = track.album?.id ?: track.id,
+                    initials = track.title,
+                    imageUrl = track.album?.imageUrl ?: track.artist.imageUrl,
+                    modifier = Modifier.size(44.dp),
+                )
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(track.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -188,6 +193,7 @@ private fun NowPlayingPanel(model: AppModel) {
             Artwork(
                 seed = track.album?.id ?: track.id,
                 initials = track.album?.title ?: track.title,
+                imageUrl = track.album?.imageUrl ?: track.artist.imageUrl,
                 modifier = Modifier.fillMaxWidth().height(240.dp),
             )
             Spacer(Modifier.height(16.dp))

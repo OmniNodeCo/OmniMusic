@@ -158,7 +158,12 @@ fun AlbumScreen(model: AppModel, albumId: String) {
             LazyColumn(Modifier.fillMaxSize()) {
                 item {
                     Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Artwork(seed = album.id, initials = album.title, Modifier.size(120.dp))
+                        Artwork(
+                            seed = album.id,
+                            initials = album.title,
+                            imageUrl = album.imageUrl,
+                            modifier = Modifier.size(120.dp),
+                        )
                         Spacer(Modifier.width(16.dp))
                         Column(Modifier.weight(1f)) {
                             Text(album.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)

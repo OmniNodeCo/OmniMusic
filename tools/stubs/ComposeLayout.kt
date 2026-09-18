@@ -26,6 +26,12 @@ interface RowScope {
 
 interface BoxScope {
     fun Modifier.align(alignment: Alignment): Modifier
+
+    /**
+     * Box-scope only, like `align`. It sizes a child to the Box's own measured size rather than to
+     * the incoming constraints, which is what lets artwork sit exactly on top of its placeholder.
+     */
+    fun Modifier.matchParentSize(): Modifier
 }
 
 @Composable

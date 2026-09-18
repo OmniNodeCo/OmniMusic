@@ -31,15 +31,18 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(libs.coil.compose)
             implementation(project(":shared"))
         }
 
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
+            implementation(libs.coil.network.okhttp)
         }
 
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(libs.coil.network.okhttp)
             // The JDK decodes WAV/AIFF/AU only, and music APIs hand back MP3 previews, so desktop
             // playback needs a Java Sound SPI. Both coordinates verified against Maven Central.
             // JavaSoundAudioOutput converts whatever the SPI returns to PCM via PcmConversion;

@@ -12,24 +12,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.omnimusic.app.theme.accentFor
+import coil3.compose.AsyncImage
 import co.omnimusic.core.model.Album
 import co.omnimusic.core.model.Genre
 import co.omnimusic.core.model.Track
 
 /**
- * Artwork placeholder.
+ * Cover art, with a deterministic gradient behind it.
  *
- * No image loader is wired in, so this paints a deterministic gradient derived from the entity id.
- * Dropping in Coil (`io.coil-kt.coil3:coil-compose`) means replacing the body of this composable
- * with an `AsyncImage` and nothing else.
+ * The gradient and initials are not a "no image loader yet" placeholder: they stay underneath the
+ * real artwork, so they are what shows while a request is in flight, when a release genuinely has no
+ * cover, and when the machine is offline. Painting them first is also what stops a grid of cards
+ * from shifting height as images arrive.
+ *
+ * [imageUrl] is optional because the catalog only sometimes has one — an artist inside a track has
+ * no picture, and a hand-made playlist entry may have neither album nor art.
  */
 @Composable
-fun Artwork(seed: String, initials: String, modifier: Modifier = Modifier) {
+fun Artwork(
+    seed: String,
+    initials: String,
+    imageUrl: String? = null,
+    modifier: Modifier = Modifier,
+) {
     val accent = accentFor(seed)
     Box(
         modifier = modifier
@@ -45,6 +56,14 @@ fun Artwork(seed: String, initials: String, modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
         )
+        if (imageUrl != null) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize(),
+            )
+        }
     }
 }
 
@@ -74,6 +93,7 @@ fun TrackRow(
         Artwork(
             seed = track.album?.id ?: track.id,
             initials = track.album?.title ?: track.title,
+            imageUrl = track.album?.imageUrl ?: track.artist.imageUrl,
             modifier = Modifier.size(44.dp),
         )
         Spacer(Modifier.width(12.dp))
@@ -114,6 +134,7 @@ fun AlbumCard(album: Album, onClick: () -> Unit, modifier: Modifier = Modifier) 
         Artwork(
             seed = album.id,
             initials = album.title,
+            imageUrl = album.imageUrl,
             modifier = Modifier.size(140.dp),
         )
         Spacer(Modifier.height(6.dp))
