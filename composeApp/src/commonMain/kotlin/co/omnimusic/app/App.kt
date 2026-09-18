@@ -50,11 +50,14 @@ fun App(environment: AppEnvironment, model: AppModel = remember { AppModel(envir
                 bottomBar = { MiniPlayer(model) },
             ) { padding ->
                 Box(Modifier.padding(padding)) {
-                    when (model.screen) {
+                    // Read once: `screen` is a delegated property, so the compiler will not smart
+                    // cast `model.screen` across the branches below.
+                    val screen = model.screen
+                    when (screen) {
                         Screen.Home -> HomeScreen(model)
                         Screen.Search -> SearchScreen(model)
                         Screen.Library -> LibraryScreen(model)
-                        is Screen.Album -> AlbumScreen(model, model.screen.id)
+                        is Screen.Album -> AlbumScreen(model, screen.id)
                         is Screen.Artist -> ArtistScreen(model)
                     }
                 }
@@ -66,10 +69,14 @@ fun App(environment: AppEnvironment, model: AppModel = remember { AppModel(envir
         }
 
         model.notice?.let { text ->
-            Snackbar(
-                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 96.dp),
-                action = { TextButton(onClick = model::dismissNotice) { Text("Dismiss") } },
-            ) { Text(text) }
+            // `align` is a BoxScope modifier, so the overlay needs a Box to hang from; the
+            // theme/surface above is not one.
+            Box(Modifier.fillMaxSize()) {
+                Snackbar(
+                    modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 96.dp),
+                    action = { TextButton(onClick = model::dismissNotice) { Text("Dismiss") } },
+                ) { Text(text) }
+            }
         }
     }
 }

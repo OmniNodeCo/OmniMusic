@@ -18,6 +18,8 @@ jobs:
         run: ./tools/setup-toolchain.sh
       - name: Run core tests
         run: ./tools/run-tests.sh
+      - name: Type-check the Compose UI against the compile-only stubs
+        run: ./tools/check-ui.sh
       - name: Smoke-test the CLI demo against recorded fixtures
         run: ./tools/run-demo.sh --fixtures shared/src/desktopTest/fixtures --silent session
 

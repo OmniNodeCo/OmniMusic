@@ -60,7 +60,8 @@ shared/src/commonTest/    tests for everything platform-independent
 composeApp/src/commonMain/  App.kt AppModel.kt ui/ theme/
 composeApp/src/androidMain/ MainActivity.kt AndroidPlatform.kt AndroidManifest.xml
 composeApp/src/desktopMain/ Main.kt
-tools/           Gradle-free build: setup-toolchain.sh, run-tests.sh, run-demo.sh
+tools/           Gradle-free build: setup-toolchain.sh, run-tests.sh, check-ui.sh, run-demo.sh
+                 stubs/       compile-only Compose/Android declarations for check-ui.sh
 ```
 
 Two design rules make the core testable on a machine with no sound card and no network:
@@ -94,9 +95,16 @@ parser logic:
 
 ```bash
 ./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
-./tools/run-tests.sh         # compile shared + tests, run 110 tests
+./tools/run-tests.sh         # compile shared + tests, run 149 tests
+./tools/check-ui.sh          # type-check composeApp/ against compile-only Compose stubs
 ./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
 ```
+
+`check-ui.sh` deserves a caveat of its own, spelled out in [`tools/stubs/README.md`](tools/stubs/README.md):
+it compiles `commonMain` + `desktopMain` + `androidMain` of `composeApp` against hand-written
+declarations of the Compose API surface the app touches, because the real artifacts cannot be
+downloaded here. It catches real mistakes — the first run found four — but it proves nothing about
+rendering or behaviour, since the stub bodies are empty.
 
 The demo defaults to the live API; add `--fixtures shared/src/desktopTest/fixtures` to replay
 recorded responses instead, which works offline.
@@ -120,12 +128,21 @@ disk), the TTL cache, the local filter, the Deezer mappers, and the repository. 
 **recorded Deezer and LRCLIB responses** captured from the live APIs, not invented shapes. `./tools/run-demo.sh` runs the
 same core end to end and writes real playlist and history JSON to disk.
 
-**Not verified here** — the Gradle build, the Compose UI and the Android layer. This sandbox has no
+**Type-checked, but never run** — the Compose UI. `./tools/check-ui.sh` compiles
+`composeApp/src/{commonMain,desktopMain,androidMain}` with kotlinc against the compile-only
+declarations in `tools/stubs/` (see that folder's README for exactly what that does and does not
+prove). Its first run found four genuine bugs, all now fixed: `Modifier.align(Alignment.BottomCenter)`
+on the snackbar outside a `BoxScope`; `Modifier.clickable(onClick, onLongClick)`, where `clickable`
+has no `onLongClick` and `combinedClickable` was meant; a smart cast on the delegated `model.screen`
+property; and a named `selector` argument passed to `LocalFilter.filter`'s `vararg selectors`. No
+composable in this project has ever been composed or drawn.
+
+**Not verified here** — the Gradle build and the Android layer at runtime. This sandbox has no
 Android SDK and cannot reach `repo1.maven.org` or `services.gradle.org`, so `./gradlew` cannot run
 at all. `composeApp/` and the Gradle scripts are written against Compose Multiplatform 1.8.2 /
-Kotlin 2.1.20 / AGP 8.7.3 (pinned in `gradle/libs.versions.toml`) but have never been compiled.
-Expect to adjust those versions on a first build. There is also no Gradle wrapper jar committed —
-run `gradle wrapper` once, as CI does.
+Kotlin 2.1.20 / AGP 8.7.3 (pinned in `gradle/libs.versions.toml`). Expect to adjust those versions
+on a first build, and expect the stub check to have missed anything the stubs mis-model. There is
+also no Gradle wrapper jar committed — run `gradle wrapper` once, as CI does.
 
 ## Known limitations
 

@@ -258,14 +258,21 @@ class AppModel(private val environment: AppEnvironment) {
         environment.playbackState.save(environment.engine.snapshotForPersistence())
     }
 
-    /** Playlists matching the library filter box, matched on name and contents. */
+    /**
+     * Playlists matching the library filter box, matched on name and contents. The selector is
+     * passed positionally: a vararg of function types cannot take a trailing lambda.
+     */
     fun filteredPlaylists(): List<Playlist> = LocalFilter.filter(
-        items = playlists,
-        query = libraryFilter,
-        selector = { playlist -> buildString {
-            append(playlist.name)
-            playlist.tracks.forEach { track -> append(' ').append(track.title).append(' ').append(track.artistName) }
-        } },
+        playlists,
+        libraryFilter,
+        { playlist ->
+            buildString {
+                append(playlist.name)
+                playlist.tracks.forEach { track ->
+                    append(' ').append(track.title).append(' ').append(track.artistName)
+                }
+            }
+        },
     )
 
     // ----------------------------------------------------------------------------------------
