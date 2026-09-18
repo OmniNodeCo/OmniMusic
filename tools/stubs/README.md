@@ -17,6 +17,14 @@ faithful as the signature that was copied, so a parameter that exists in real Co
 missing here produces a false "unresolved reference", and one that is mis-typed here can hide a
 real bug. Treat a failure in this check as a lead to verify against the real API, not as proof.
 
+There is one whole class of error this check *cannot* catch, and no amount of stub fidelity will
+fix it: **composable-context violations**. `@Composable` is only enforced by the Compose compiler
+plugin, which `check-ui.sh` does not run — here it is an inert annotation. So calling `remember { }`
+inside a `LaunchedEffect` block, or calling a composable from an ordinary function, type-checks
+perfectly against these stubs and then fails the real build with "@Composable invocations can only
+happen from the context of a @Composable function". That is not a stub gap to close; it is a
+boundary of what plain kotlinc can check. CI is the only thing that catches it.
+
 ## Fidelity rules for adding to these files
 
 - Copy the real signature, including parameter names, order and defaults, from the Compose

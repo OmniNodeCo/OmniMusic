@@ -37,11 +37,13 @@ import co.omnimusic.core.AppEnvironment
 @Composable
 fun App(environment: AppEnvironment, model: AppModel = remember { AppModel(environment) }) {
     OmniMusicTheme {
+        // Created in the composable body, not inside the effect: the LaunchedEffect block is a
+        // suspend lambda, and `remember` is only callable from a composable context.
+        val throttle = remember { TickThrottle(TICK_INTERVAL_MILLIS) }
         LaunchedEffect(Unit) {
             var previous = -1L
             // Frame timestamps come from the frame clock, but the transport is only advanced on
             // the throttle's cadence — see TickThrottle for why that matters.
-            val throttle = remember { TickThrottle(TICK_INTERVAL_MILLIS) }
             while (true) {
                 withFrameNanos { now ->
                     if (previous >= 0L && now > previous) {

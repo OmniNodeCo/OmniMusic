@@ -150,7 +150,10 @@ then compiled the same sources against **real Compose Multiplatform 1.8.2** for 
 found a fifth, which the stubs had hidden: `KeyEvent` is a value class and `key`/`type` are
 *extension properties*, so importing `KeyEvent` alone leaves them unresolved. The stub now mirrors
 the real declaration, and deleting those two imports makes `check-ui.sh` fail at the same two
-positions CI reported. No composable in this project has ever been composed or drawn.
+positions CI reported. A sixth came later and is a boundary rather than a stub gap: `remember { }`
+inside a `LaunchedEffect` block. `@Composable` is only enforced by the Compose compiler plugin,
+which `check-ui.sh` does not run, so composable-context violations cannot be caught locally at all.
+No composable in this project has ever been composed or drawn.
 
 Two of the bugs found were behavioural, not typographical, and both broke session resume:
 
