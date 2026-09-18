@@ -22,6 +22,9 @@ kotlin {
 
     sourceSets {
         val desktopMain by getting
+        // Declared, not inferred: without this the generated accessor is not in scope here and
+        // `implementation(...)` below resolves against the wrong receiver (CI caught that).
+        val desktopTest by getting
 
         commonMain.dependencies {
             implementation(compose.runtime)
