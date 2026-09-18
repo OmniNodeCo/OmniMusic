@@ -39,9 +39,15 @@ fun App(environment: AppEnvironment, model: AppModel = remember { AppModel(envir
     OmniMusicTheme {
         LaunchedEffect(Unit) {
             var previous = -1L
+            // Frame timestamps come from the frame clock, but the transport is only advanced on
+            // the throttle's cadence — see TickThrottle for why that matters.
+            val throttle = remember { TickThrottle(TICK_INTERVAL_MILLIS) }
             while (true) {
                 withFrameNanos { now ->
-                    if (previous >= 0L) model.tick((now - previous) / 1_000_000L)
+                    if (previous >= 0L && now > previous) {
+                        val due = throttle.advance((now - previous) / 1_000_000L)
+                        if (due > 0) model.tick(due)
+                    }
                     previous = now
                 }
             }
@@ -327,6 +333,15 @@ private fun NowPlayingPanel(model: AppModel) {
         }
     }
 }
+
+/**
+ * How often the transport is advanced, in milliseconds.
+ *
+ * The frame callback runs at display rate; this is the cadence at which it actually moves the
+ * clock. 250 ms is smooth for a progress bar and a twentieth of the invalidations a per-frame tick
+ * would cause.
+ */
+private const val TICK_INTERVAL_MILLIS = 250L
 
 @Composable
 private fun Message2(text: String) {
