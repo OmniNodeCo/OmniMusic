@@ -42,55 +42,74 @@ class PlaybackEngine(
     private var positionMillis = 0L
     private var playing = false
 
-    val currentTrack: Track? get() = if (cursor < 0) null else queue.getOrNull(order.getOrNull(cursor) ?: -1)
+    val currentTrack: Track?
+        get() = exclusive { if (cursor < 0) null else queue.getOrNull(order.getOrNull(cursor) ?: -1) }
 
-    val isPlaying: Boolean get() = playing
+    val isPlaying: Boolean get() = exclusive { playing }
 
     val durationMillis: Long get() = (currentTrack?.durationSeconds ?: 0) * 1000L
 
-    fun queueSnapshot(): List<Track> = queue.toList()
+    fun queueSnapshot(): List<Track> = exclusive { queue.toList() }
 
     /** Tracks in the order they will actually be played. */
-    fun playOrderSnapshot(): List<Track> = order.mapNotNull { queue.getOrNull(it) }
+    fun playOrderSnapshot(): List<Track> = exclusive { order.mapNotNull { queue.getOrNull(it) } }
 
-    fun state(): PlayState = PlayState(
-        track = currentTrack,
-        isPlaying = playing,
-        positionMillis = positionMillis,
-        durationMillis = durationMillis,
-        queueIndex = order.getOrNull(cursor) ?: -1,
-        queueSize = queue.size,
-        shuffleEnabled = shuffleEnabled,
-        repeatMode = repeatMode,
-        volume = volume,
-    )
+    fun state(): PlayState = exclusive {
+        PlayState(
+            track = currentTrack,
+            isPlaying = playing,
+            positionMillis = positionMillis,
+            durationMillis = durationMillis,
+            queueIndex = order.getOrNull(cursor) ?: -1,
+            queueSize = queue.size,
+            shuffleEnabled = shuffleEnabled,
+            repeatMode = repeatMode,
+            volume = volume,
+        )
+    }
+
+    /**
+     * Runs [block] with the engine's state locked.
+     *
+     * Every public entry point goes through here, because the engine is reached from more than one
+     * thread in the real apps: `AppModel.startRadio` starts a queue on the IO executor while the UI
+     * thread reads `queueSnapshot()` to draw the queue. Without this, `queue.toList()` can iterate
+     * while another thread adds to it — a `ConcurrentModificationException` in the middle of a
+     * recomposition.
+     *
+     * The platform guards are reentrant, so the listener callbacks fired from inside a locked
+     * section may call back into the engine, and the private helpers below need no locking of their
+     * own. [NoGuard] makes all of this a no-op, which is what keeps the engine deterministic under
+     * test.
+     */
+    private fun <T> exclusive(block: () -> T): T = guard.exclusive(block)
 
     // ----------------------------------------------------------------------------------------
     // Loading
     // ----------------------------------------------------------------------------------------
 
     /** Replaces the queue and starts playing at [startIndex]. */
-    fun playQueue(tracks: List<Track>, startIndex: Int = 0): Boolean {
-        if (tracks.isEmpty()) return false
+    fun playQueue(tracks: List<Track>, startIndex: Int = 0): Boolean = exclusive {
+        if (tracks.isEmpty()) return@exclusive false
         audio.stop()
         queue.clear()
         queue += tracks
         rebuildOrder(startIndex.coerceIn(0, tracks.size - 1))
-        return startCurrent(attemptsLeft = queue.size)
+        startCurrent(attemptsLeft = queue.size)
     }
 
     /** Replaces the queue with a single track. */
     fun play(track: Track): Boolean = playQueue(listOf(track))
 
     /** Appends to the end of the queue; starts playback if the engine was idle. */
-    fun enqueue(tracks: List<Track>) {
-        if (tracks.isEmpty()) return
+    fun enqueue(tracks: List<Track>) = exclusive {
+        if (tracks.isEmpty()) return@exclusive
         val firstNew = queue.size
         queue += tracks
         if (cursor < 0) {
             rebuildOrder(firstNew)
             startCurrent(attemptsLeft = queue.size)
-            return
+            return@exclusive
         }
         val added = (firstNew until queue.size).toList()
         order += if (shuffleEnabled) added.shuffled(random) else added
@@ -102,8 +121,8 @@ class PlaybackEngine(
      * current index has to be remapped through the same transform or the cursor silently lands on a
      * different song. Removing the *current* track leaves the cursor at the front of the order.
      */
-    fun removeFromQueue(index: Int): Boolean {
-        if (index !in queue.indices) return false
+    fun removeFromQueue(index: Int): Boolean = exclusive {
+        if (index !in queue.indices) return@exclusive false
         val currentIndex = order.getOrNull(cursor)
         val remappedCurrent = currentIndex?.let {
             when {
@@ -123,10 +142,10 @@ class PlaybackEngine(
             cursor = remappedCurrent?.let { order.indexOf(it) }?.takeIf { it >= 0 } ?: 0
         }
         notifyStateChanged()
-        return true
+        true
     }
 
-    fun clearQueue() {
+    fun clearQueue() = exclusive {
         audio.stop()
         queue.clear()
         order.clear()
@@ -140,13 +159,13 @@ class PlaybackEngine(
     // Transport
     // ----------------------------------------------------------------------------------------
 
-    fun togglePlayPause() {
-        if (currentTrack == null) return
+    fun togglePlayPause() = exclusive {
+        if (currentTrack == null) return@exclusive
         if (playing) pause() else resume()
     }
 
-    fun resume() {
-        if (currentTrack == null) return
+    fun resume() = exclusive {
+        if (currentTrack == null) return@exclusive
         if (!audio.isReady()) startCurrent(attemptsLeft = queue.size) else {
             playing = true
             audio.play()
@@ -154,21 +173,21 @@ class PlaybackEngine(
         }
     }
 
-    fun pause() {
-        if (!playing) return
+    fun pause() = exclusive {
+        if (!playing) return@exclusive
         playing = false
         audio.pause()
         notifyStateChanged()
     }
 
-    fun stop() {
+    fun stop() = exclusive {
         playing = false
         positionMillis = 0
         audio.stop()
         notifyStateChanged()
     }
 
-    fun seekTo(positionMillis: Long) {
+    fun seekTo(positionMillis: Long) = exclusive {
         val target = positionMillis.coerceIn(0L, durationMillis.coerceAtLeast(positionMillis))
         this.positionMillis = if (durationMillis > 0) target.coerceAtMost(durationMillis) else target
         audio.seekTo(this.positionMillis)
@@ -176,42 +195,42 @@ class PlaybackEngine(
     }
 
     /** Seeks by a signed offset; clamped to the track. */
-    fun seekBy(deltaMillis: Long) = seekTo(positionMillis + deltaMillis)
+    fun seekBy(deltaMillis: Long) = exclusive { seekTo(positionMillis + deltaMillis) }
 
-    fun next(): Boolean = goTo(cursor + 1)
+    fun next(): Boolean = exclusive { goTo(cursor + 1) }
 
     /** Rewinds to the start if we are more than [REWIND_THRESHOLD_MILLIS] in, else goes back a track. */
-    fun previous(): Boolean {
+    fun previous(): Boolean = exclusive {
         if (positionMillis > REWIND_THRESHOLD_MILLIS && currentTrack != null) {
             seekTo(0)
-            return true
+            return@exclusive true
         }
-        return goTo(cursor - 1)
+        goTo(cursor - 1)
     }
 
-    fun setShuffle(enabled: Boolean) {
-        if (shuffleEnabled == enabled) return
+    fun setShuffle(enabled: Boolean) = exclusive {
+        if (shuffleEnabled == enabled) return@exclusive
         shuffleEnabled = enabled
         val current = order.getOrNull(cursor) ?: 0
         if (queue.isNotEmpty()) rebuildOrder(current.coerceIn(0, queue.size - 1))
         notifyStateChanged()
     }
 
-    fun toggleShuffle() = setShuffle(!shuffleEnabled)
+    fun toggleShuffle() = exclusive { setShuffle(!shuffleEnabled) }
 
-    fun cycleRepeatMode(): RepeatMode {
+    fun cycleRepeatMode(): RepeatMode = exclusive {
         repeatMode = repeatMode.next()
         notifyStateChanged()
-        return repeatMode
+        repeatMode
     }
 
-    fun setRepeatMode(mode: RepeatMode) {
-        if (repeatMode == mode) return
+    fun setRepeatMode(mode: RepeatMode) = exclusive {
+        if (repeatMode == mode) return@exclusive
         repeatMode = mode
         notifyStateChanged()
     }
 
-    fun setVolume(value: Float) {
+    fun setVolume(value: Float) = exclusive {
         volume = value.coerceIn(0f, 1f)
         audio.setVolume(volume)
         notifyStateChanged()
@@ -232,8 +251,8 @@ class PlaybackEngine(
         repeatMode: RepeatMode = RepeatMode.OFF,
         volume: Float = 1f,
         autoplay: Boolean = true,
-    ): Boolean {
-        if (tracks.isEmpty()) return false
+    ): Boolean = exclusive {
+        if (tracks.isEmpty()) return@exclusive false
         audio.stop()
         queue.clear()
         queue += tracks
@@ -247,18 +266,20 @@ class PlaybackEngine(
             if (positionMillis > 0) seekTo(positionMillis)
             if (!autoplay) pause()
         }
-        return started
+        started
     }
 
     /** Everything needed to persist this session. */
-    fun snapshotForPersistence(): PersistedPlayback = PersistedPlayback(
-        tracks = queueSnapshot(),
-        index = order.getOrNull(cursor) ?: -1,
-        positionMillis = positionMillis,
-        shuffleEnabled = shuffleEnabled,
-        repeatMode = repeatMode,
-        volume = volume,
-    )
+    fun snapshotForPersistence(): PersistedPlayback = exclusive {
+        PersistedPlayback(
+            tracks = queue.toList(),
+            index = order.getOrNull(cursor) ?: -1,
+            positionMillis = positionMillis,
+            shuffleEnabled = shuffleEnabled,
+            repeatMode = repeatMode,
+            volume = volume,
+        )
+    }
 
     // ----------------------------------------------------------------------------------------
     // Clock
@@ -270,8 +291,8 @@ class PlaybackEngine(
      * Called once per frame (or per 250 ms, whatever the host prefers). When the platform output can
      * report its own position that value wins, so the UI never drifts away from the audio.
      */
-    fun advance(deltaMillis: Long) {
-        if (!playing || deltaMillis <= 0) return
+    fun advance(deltaMillis: Long) = exclusive {
+        if (!playing || deltaMillis <= 0) return@exclusive
         val reported = audio.positionMillis()
         positionMillis = if (reported >= 0) reported else positionMillis + deltaMillis
         val duration = durationMillis
@@ -394,7 +415,14 @@ class PlaybackEngine(
         }
     }
 
-    private fun notifyStateChanged() = guard.exclusive { listener?.onStateChanged(state()) }
+    /**
+     * Fires the state callback. Every caller is already inside [exclusive], so there is no locking
+     * here — and a block body, so the expression-bodied transport methods infer `Unit` rather than
+     * the `Unit?` that `listener?.` would otherwise leak into their signatures.
+     */
+    private fun notifyStateChanged() {
+        listener?.onStateChanged(state())
+    }
 
     companion object {
         /** "Previous" restarts the track instead of changing it while we are past this point. */
