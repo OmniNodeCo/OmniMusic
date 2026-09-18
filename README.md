@@ -100,10 +100,12 @@ git tag v0.1.0 && git push origin v0.1.0
 ```
 
 That runs `.github/workflows/release.yml`, which builds `assembleRelease` plus the three native
-packages and publishes them as a GitHub release. The APK is signed with the debug key — the release
+packages and publishes them as a GitHub release — [`v0.1.0`](https://github.com/OmniNodeCo/OmniMusic/releases/tag/v0.1.0)
+is the tag that has been through it. The APK is signed with the debug key — the release
 build type points at `signingConfigs.debug` so the artifact installs out of the box — so replace
 that with a real signing config before publishing anywhere public. Running the workflow manually
-(`workflow_dispatch`) produces a prerelease named after the commit rather than a version.
+(`workflow_dispatch`) is meant to produce a prerelease named after the commit rather than a
+version; that branch of the script has not been executed.
 
 ### Everything, without Gradle
 
@@ -143,7 +145,7 @@ session restore), the LRC parser (centisecond and millisecond fractions, `[offse
 lines, metadata tags), the playlist, history and playback-state stores (including corrupt data on
 disk), the TTL cache, the local filter, the Deezer mappers, and the repository. The provider, repository and lyrics tests run against
 **recorded Deezer and LRCLIB responses** captured from the live APIs, not invented shapes.
-`AppModelTest` (57 tests) drives the UI's state holder itself — navigation, search, playlists,
+`AppModelTest` (59 tests) drives the UI's state holder itself — navigation, search, playlists,
 transport, lyrics, session restore — against faked collaborators, on a plain JVM; it is what caught
 the two session bugs described below. The two desktop platform classes are covered for real rather
 than through fakes: `JvmKeyValueStoreTest` (13) writes to a temporary directory, and
@@ -192,6 +194,15 @@ artifacts — a 9.1 MB debug APK and desktop distributions of 52.9 MB (Linux), 5
 The pinned versions in `gradle/libs.versions.toml` (Compose Multiplatform 1.8.2 / Kotlin 2.1.20 /
 AGP 8.7.3) do resolve and compile. There is still no Gradle wrapper jar committed — CI runs
 `gradle wrapper` first, and you should too.
+
+The `release` workflow has also run end to end once: tag [`v0.1.0`](https://github.com/OmniNodeCo/OmniMusic/releases/tag/v0.1.0)
+published `composeApp-release.apk` (7.7 MB), `omnimusic_1.0.0-1_amd64.deb` (54.5 MB),
+`OmniMusic-1.0.0.msi` (58.3 MB) and `OmniMusic-1.0.0.dmg` (68.4 MB). Each artifact's SHA-256 matched
+on download into the publishing job, so those four files are exactly what the build jobs produced.
+Its first attempt failed with a glob bug — `actions/download-artifact`'s `pattern` is a minimatch
+glob, not a prefix, so the wildcard-less `omnimusic-` matched none of the four artifacts and the job
+aborted on an empty `dist/` rather than cutting an empty release. Only the tag path has been
+exercised; the `workflow_dispatch` prerelease branch has never run.
 
 What no amount of building proves: nobody has opened a window. Rendering, the real network calls to
 Deezer and LRCLIB, and audio output have never been exercised end to end.
