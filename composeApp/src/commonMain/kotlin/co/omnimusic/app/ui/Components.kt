@@ -205,18 +205,34 @@ fun Message(text: String, modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * A round artist avatar.
+ *
+ * Same arrangement as [Artwork]: the tinted initial stays underneath, so it is the placeholder, the
+ * no-picture case and the offline case. Artists nested inside a track carry no picture at all, so
+ * [imageUrl] is routinely null rather than exceptional.
+ */
 @Composable
-fun AvatarBadge(name: String, modifier: Modifier = Modifier) {
+fun AvatarBadge(name: String, imageUrl: String? = null, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .clip(CircleShape)
             .background(accentFor(name))
             .padding(horizontal = 10.dp, vertical = 6.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = name.take(1).uppercase(),
             color = MaterialTheme.colorScheme.onPrimary,
             fontWeight = FontWeight.Bold,
         )
+        if (imageUrl != null) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize(),
+            )
+        }
     }
 }

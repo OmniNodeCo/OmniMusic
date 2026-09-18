@@ -134,7 +134,7 @@ fun SearchScreen(model: AppModel) {
                                         .padding(horizontal = 16.dp, vertical = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
-                                    AvatarBadge(artist.name, Modifier.size(40.dp))
+                                    AvatarBadge(artist.name, artist.imageUrl, Modifier.size(40.dp))
                                     Spacer(Modifier.width(12.dp))
                                     Text(artist.name, style = MaterialTheme.typography.bodyLarge)
                                 }
@@ -216,7 +216,7 @@ fun ArtistScreen(model: AppModel) {
             LazyColumn(Modifier.fillMaxSize()) {
                 item {
                     Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        AvatarBadge(artist.name, Modifier.size(72.dp))
+                        AvatarBadge(artist.name, artist.imageUrl, Modifier.size(72.dp))
                         Spacer(Modifier.width(16.dp))
                         Column {
                             Text(artist.name, fontSize = 22.sp, fontWeight = FontWeight.Bold)
