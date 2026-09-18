@@ -36,18 +36,7 @@ jobs:
         with:
           gradle-version: "8.11.1"
       - name: Generate the Gradle wrapper
-        shell: bash
-        run: |
-          gradle --version
-          if ! out="$(gradle wrapper --gradle-version 8.11.1 --stacktrace 2>&1)"; then
-            printf '%s\n' "$out"
-            # Job logs are served from a host that is not reachable from every environment, so
-            # surface the diagnosis as an annotation, which the REST API does return.
-            body="$(printf '%s\n' "$out" | tail -n 60 | tr -d '\r' | sed 's/%/%25/g')"
-            printf '::error title=Gradle wrapper generation failed::<<OMNIMUSIC_EOF\n%s\nOMNIMUSIC_EOF\n' "$body"
-            exit 1
-          fi
-          printf '%s\n' "$out"
+        run: gradle wrapper --gradle-version 8.11.1 --stacktrace
       - name: Assemble
         run: ./gradlew :composeApp:assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
@@ -72,18 +61,7 @@ jobs:
         with:
           gradle-version: "8.11.1"
       - name: Generate the Gradle wrapper
-        shell: bash
-        run: |
-          gradle --version
-          if ! out="$(gradle wrapper --gradle-version 8.11.1 --stacktrace 2>&1)"; then
-            printf '%s\n' "$out"
-            # Job logs are served from a host that is not reachable from every environment, so
-            # surface the diagnosis as an annotation, which the REST API does return.
-            body="$(printf '%s\n' "$out" | tail -n 60 | tr -d '\r' | sed 's/%/%25/g')"
-            printf '::error title=Gradle wrapper generation failed::<<OMNIMUSIC_EOF\n%s\nOMNIMUSIC_EOF\n' "$body"
-            exit 1
-          fi
-          printf '%s\n' "$out"
+        run: gradle wrapper --gradle-version 8.11.1 --stacktrace
       - name: Package for this OS
         run: ./gradlew :composeApp:packageDistributionForCurrentOS --stacktrace
       - uses: actions/upload-artifact@v4

@@ -136,14 +136,18 @@ than through fakes: `JvmKeyValueStoreTest` (13) writes to a temporary directory,
 which ships with the JRE and needs no network access. `./tools/run-demo.sh` runs the
 same core end to end and writes real playlist and history JSON to disk.
 
-**Type-checked, but never run** — the Compose UI. `./tools/check-ui.sh` compiles
+**Compiled, but never rendered** — the Compose UI. `./tools/check-ui.sh` compiles
 `composeApp/src/{commonMain,desktopMain,androidMain}` with kotlinc against the compile-only
 declarations in `tools/stubs/` (see that folder's README for exactly what that does and does not
 prove). Its first run found four genuine bugs, all now fixed: `Modifier.align(Alignment.BottomCenter)`
 on the snackbar outside a `BoxScope`; `Modifier.clickable(onClick, onLongClick)`, where `clickable`
 has no `onLongClick` and `combinedClickable` was meant; a smart cast on the delegated `model.screen`
-property; and a named `selector` argument passed to `LocalFilter.filter`'s `vararg selectors`. No
-composable in this project has ever been composed or drawn.
+property; and a named `selector` argument passed to `LocalFilter.filter`'s `vararg selectors`. CI
+then compiled the same sources against **real Compose Multiplatform 1.8.2** for both targets and
+found a fifth, which the stubs had hidden: `KeyEvent` is a value class and `key`/`type` are
+*extension properties*, so importing `KeyEvent` alone leaves them unresolved. The stub now mirrors
+the real declaration, and deleting those two imports makes `check-ui.sh` fail at the same two
+positions CI reported. No composable in this project has ever been composed or drawn.
 
 Two of the bugs found were behavioural, not typographical, and both broke session resume:
 
@@ -157,12 +161,19 @@ Two of the bugs found were behavioural, not typographical, and both broke sessio
   counted as a play (inflating play counts and reordering "recently played") and re-saved the
   position as 0:00 before the seek landed. A restore now records neither.
 
-**Not verified here** — the Gradle build and the Android layer at runtime. This sandbox has no
-Android SDK and cannot reach `repo1.maven.org` or `services.gradle.org`, so `./gradlew` cannot run
-at all. `composeApp/` and the Gradle scripts are written against Compose Multiplatform 1.8.2 /
-Kotlin 2.1.20 / AGP 8.7.3 (pinned in `gradle/libs.versions.toml`). Expect to adjust those versions
-on a first build, and expect the stub check to have missed anything the stubs mis-model. There is
-also no Gradle wrapper jar committed — run `gradle wrapper` once, as CI does.
+**Built in CI, never launched** — the Gradle build, the Android APK and the desktop packages.
+This sandbox has no Android SDK and cannot reach `repo1.maven.org` or `services.gradle.org`, so
+`./gradlew` cannot run *here*; GitHub Actions runs it on every push instead. The `build` workflow's
+five jobs are green: core tests, `:composeApp:assembleDebug`, and
+`:composeApp:packageDistributionForCurrentOS` on ubuntu, macOS and windows. That produced real
+artifacts — a 9.1 MB debug APK and desktop distributions of 52.9 MB (Linux), 55.9 MB (Windows) and
+66.5 MB (macOS) — which is what turned up the `desktopTest` source-set and key-event bugs above.
+The pinned versions in `gradle/libs.versions.toml` (Compose Multiplatform 1.8.2 / Kotlin 2.1.20 /
+AGP 8.7.3) do resolve and compile. There is still no Gradle wrapper jar committed — CI runs
+`gradle wrapper` first, and you should too.
+
+What no amount of building proves: nobody has opened a window. Rendering, the real network calls to
+Deezer and LRCLIB, and audio output have never been exercised end to end.
 
 ## Known limitations
 
