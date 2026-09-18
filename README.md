@@ -97,7 +97,7 @@ The core, the UI state holder and every test can be built and run with nothing b
 
 ```bash
 ./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
-./tools/run-tests.sh         # compile core + UI + tests, run 225 tests
+./tools/run-tests.sh         # compile core + UI + tests, run 234 tests
 ./tools/check-ui.sh          # type-check composeApp/ against compile-only Compose stubs
 ./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
 ```
@@ -121,7 +121,7 @@ Be precise about what has actually been executed, because it is not everything:
 
 **Verified in this repository** — `./tools/run-tests.sh` compiles `shared/src/commonMain`,
 `shared/src/desktopMain`, `composeApp/src/commonMain`, every test source set and the Compose stubs
-with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **225 tests, all passing**. They cover the
+with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **234 tests, all passing**. They cover the
 JSON parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
 playback engine (shuffle order, repeat modes, seek clamping, dead-stream skipping, queue mutation,
 session restore), the LRC parser (centisecond and millisecond fractions, `[offset:]`, multi-timestamp
@@ -130,7 +130,10 @@ disk), the TTL cache, the local filter, the Deezer mappers, and the repository. 
 **recorded Deezer and LRCLIB responses** captured from the live APIs, not invented shapes.
 `AppModelTest` (57 tests) drives the UI's state holder itself — navigation, search, playlists,
 transport, lyrics, session restore — against faked collaborators, on a plain JVM; it is what caught
-the two session bugs described below. `./tools/run-demo.sh` runs the
+the two session bugs described below. The two desktop platform classes are covered for real rather
+than through fakes: `JvmKeyValueStoreTest` (13) writes to a temporary directory, and
+`JdkHttpFetcherTest` (9) talks to a `com.sun.net.httpserver` instance on the loopback interface,
+which ships with the JRE and needs no network access. `./tools/run-demo.sh` runs the
 same core end to end and writes real playlist and history JSON to disk.
 
 **Type-checked, but never run** — the Compose UI. `./tools/check-ui.sh` compiles
