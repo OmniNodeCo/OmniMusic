@@ -22,6 +22,24 @@ sealed interface Screen {
 }
 
 /**
+ * The things a keyboard or media remote can ask for.
+ *
+ * Deliberately not Compose `Key` values: the mapping from a physical key lives in the UI layer, so
+ * this stays testable and a second input method (a TV remote, headset buttons) only has to produce
+ * the same enum.
+ */
+enum class KeyAction {
+    TOGGLE_PLAY_PAUSE,
+    NEXT_TRACK,
+    PREVIOUS_TRACK,
+    SEEK_FORWARD,
+    SEEK_BACKWARD,
+
+    /** Escape / system back: close the topmost thing. */
+    DISMISS,
+}
+
+/**
  * The one state holder the UI reads from.
  *
  * Repository calls are blocking, so they are dispatched on the environment's [co.omnimusic.core.Executor]
@@ -82,6 +100,9 @@ class AppModel(private val environment: AppEnvironment) {
 
     private val history = environment.history
 
+    /** Screens the back action returns to, newest last. Bounded: a long browse should not grow it. */
+    private val backStack = ArrayDeque<Screen>()
+
     /** Set while [restoreSession] is running, so a restored track is not counted as a play. */
     private var restoring = false
 
@@ -132,24 +153,29 @@ class AppModel(private val environment: AppEnvironment) {
 
     fun goHome() {
         screen = Screen.Home
+        backStack.clear()
     }
 
     fun goSearch() {
         screen = Screen.Search
+        backStack.clear()
         if (searchResults == null && searchQuery.isNotBlank()) runSearch(searchQuery)
     }
 
     fun goLibrary() {
         screen = Screen.Library
+        backStack.clear()
         refreshPlaylists()
     }
 
     fun goHistory() {
         screen = Screen.History
+        backStack.clear()
         refreshHistory()
     }
 
     fun openAlbum(id: String, title: String) {
+        pushScreen()
         screen = Screen.Album(id, title)
         album = null
         background { album = environment.repository.album(id) }
@@ -160,9 +186,67 @@ class AppModel(private val environment: AppEnvironment) {
             notice = "This entry has no artist id"
             return
         }
+        pushScreen()
         screen = Screen.Artist(id, name)
         artist = null
         background { artist = environment.repository.artist(id) }
+    }
+
+    private fun pushScreen() {
+        // Detail screens are the only ones worth going back to; tab switches reset the stack.
+        if (backStack.size < MAX_BACK_DEPTH) backStack.addLast(screen)
+    }
+
+    /**
+     * Closes the topmost thing: the now-playing panel, then the last detail screen.
+     *
+     * Returns false when there is nothing left to close, which is the caller's cue to let the
+     * platform do its default (exit on Android). Without this the system back button leaves the app
+     * from an album page, and desktop has no way out of the full-screen player but the mouse.
+     */
+    fun navigateBack(): Boolean {
+        if (nowPlayingExpanded) {
+            nowPlayingExpanded = false
+            return true
+        }
+        val previous = backStack.removeLastOrNull() ?: return false
+        screen = previous
+        // Re-fetch rather than trust the old state: the repository caches, so this is normally free,
+        // and a screen whose data was dropped would otherwise sit on its spinner forever.
+        when (previous) {
+            is Screen.Album -> background { album = environment.repository.album(previous.id) }
+            is Screen.Artist -> background { artist = environment.repository.artist(previous.id) }
+            Screen.Library -> refreshPlaylists()
+            Screen.History -> refreshHistory()
+            else -> Unit
+        }
+        return true
+    }
+
+    /** Keyboard, media keys and remote buttons, already translated out of platform key codes. */
+    fun handleKeyAction(action: KeyAction): Boolean {
+        if (action == KeyAction.DISMISS) return navigateBack()
+        if (playState.isEmpty) return false
+        return when (action) {
+            KeyAction.TOGGLE_PLAY_PAUSE -> {
+                togglePlayPause()
+                true
+            }
+
+            KeyAction.NEXT_TRACK -> next()
+            KeyAction.PREVIOUS_TRACK -> previous()
+            KeyAction.SEEK_FORWARD -> {
+                seekBy(SEEK_STEP_MILLIS)
+                true
+            }
+
+            KeyAction.SEEK_BACKWARD -> {
+                seekBy(-SEEK_STEP_MILLIS)
+                true
+            }
+
+            KeyAction.DISMISS -> false
+        }
     }
 
     // ----------------------------------------------------------------------------------------
@@ -326,6 +410,8 @@ class AppModel(private val environment: AppEnvironment) {
 
     fun seekTo(millis: Long) = environment.engine.seekTo(millis)
 
+    fun seekBy(deltaMillis: Long) = environment.engine.seekBy(deltaMillis)
+
     fun toggleShuffle() = environment.engine.toggleShuffle()
 
     fun cycleRepeat() = environment.engine.cycleRepeatMode()
@@ -438,5 +524,11 @@ class AppModel(private val environment: AppEnvironment) {
 
         /** Tracks per search page; "load more" fetches the next one. */
         const val SEARCH_PAGE_SIZE = 12
+
+        /** How far the seek keys jump. */
+        const val SEEK_STEP_MILLIS = 10_000L
+
+        /** Detail screens remembered for the back action. */
+        const val MAX_BACK_DEPTH = 20
     }
 }

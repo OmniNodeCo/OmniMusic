@@ -8,7 +8,9 @@ package androidx.activity
 import android.content.ContextWrapper
 import android.os.Bundle
 
-open class ComponentActivity : ContextWrapper() {
+open class ComponentActivity : ContextWrapper(), androidx.lifecycle.LifecycleOwner {
+
+    val onBackPressedDispatcher: OnBackPressedDispatcher = OnBackPressedDispatcher()
 
     protected open fun onCreate(savedInstanceState: Bundle?) {}
 }

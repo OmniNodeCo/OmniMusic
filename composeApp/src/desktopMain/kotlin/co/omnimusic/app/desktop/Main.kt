@@ -6,6 +6,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import co.omnimusic.app.App
+import co.omnimusic.app.AppModel
+import co.omnimusic.app.ui.keyActionFor
 import co.omnimusic.core.AppEnvironment
 import co.omnimusic.core.Executor
 import co.omnimusic.core.desktop.JavaSoundAudioOutput
@@ -24,13 +26,21 @@ import java.util.concurrent.Executors
 
 /** Desktop entry point: `./gradlew :composeApp:run` for a debug run, `packageDistributionForCurrentOS` for an installer. */
 fun main() = application {
+    val environment = remember { desktopEnvironment() }
+    val model = remember { AppModel(environment) }
     Window(
         onCloseRequest = ::exitApplication,
-        title = "OmniMusic",
+        // Recomposed as the track changes, so the window title (and the taskbar entry) says what
+        // is playing without the window having to be focused.
+        title = model.playState.track?.let { "${it.title} — ${it.artistName} · OmniMusic" } ?: "OmniMusic",
         state = rememberWindowState(width = 1120.dp, height = 780.dp),
+        // Installed at the window rather than on a composable: preview key events are dispatched
+        // down the focus chain, and a node that never takes focus would silently get nothing.
+        onPreviewKeyEvent = { event ->
+            keyActionFor(event)?.let(model::handleKeyAction) ?: false
+        },
     ) {
-        val environment = remember { desktopEnvironment() }
-        App(environment)
+        App(environment, model)
     }
 }
 

@@ -141,6 +141,57 @@ class AppModelTest {
         assertEquals(2, loaded.value.second.size)
     }
 
+    fun testBackReturnsFromAnAlbumToWhereItWasOpened() {
+        val model = model()
+        model.goLibrary()
+        model.openAlbum("a1", "Discovery")
+        assertIs<Screen.Album>(model.screen)
+        assertTrue(model.navigateBack())
+        assertIs<Screen.Library>(model.screen)
+    }
+
+    fun testBackWalksThroughNestedDetailScreens() {
+        val model = model()
+        model.openAlbum("a1", "Discovery")
+        model.openArtist("ar1", "Daft Punk")
+        model.navigateBack()
+        assertIs<Screen.Album>(model.screen)
+        model.navigateBack()
+        assertIs<Screen.Home>(model.screen)
+        assertFalse(model.navigateBack())
+    }
+
+    fun testBackReloadsTheScreenItReturnsTo() {
+        val model = model()
+        model.openAlbum("a1", "Discovery")
+        model.openArtist("ar1", "Daft Punk")
+        model.navigateBack()
+        // Not the spinner: a detail screen whose data was dropped is a dead end.
+        assertIs<Load.Success<Pair<Album, List<Track>>>>(model.album)
+    }
+
+    fun testBackClosesTheNowPlayingPanelBeforeNavigating() {
+        val model = model()
+        model.openAlbum("a1", "Discovery")
+        model.nowPlayingExpanded = true
+
+        // First press closes the panel and stays where it is…
+        assertTrue(model.navigateBack())
+        assertFalse(model.nowPlayingExpanded)
+        assertIs<Screen.Album>(model.screen)
+
+        // …the second one goes back.
+        assertTrue(model.navigateBack())
+        assertIs<Screen.Home>(model.screen)
+    }
+
+    fun testTabNavigationResetsTheBackStack() {
+        val model = model()
+        model.openAlbum("a1", "Discovery")
+        model.goHome()
+        assertFalse(model.navigateBack())
+    }
+
     fun testOpenArtistWithoutAnIdWarnsInsteadOfNavigating() {
         val model = model()
         model.openArtist("", "Nobody")
@@ -390,6 +441,43 @@ class AppModelTest {
         assertEquals("One More Time", entry.title)
         assertEquals(1, entry.plays)
         assertEquals(1_700_000_000_000L, entry.lastPlayedAt)
+    }
+
+    fun testKeyActionsDriveTheTransport() {
+        val model = model()
+        model.play(listOf(trackOne, trackTwo))
+        assertTrue(model.playState.isPlaying)
+
+        assertTrue(model.handleKeyAction(KeyAction.TOGGLE_PLAY_PAUSE))
+        assertFalse(model.playState.isPlaying)
+        model.handleKeyAction(KeyAction.TOGGLE_PLAY_PAUSE)
+
+        model.handleKeyAction(KeyAction.SEEK_FORWARD)
+        assertEquals(10_000L, model.playState.positionMillis)
+        model.handleKeyAction(KeyAction.SEEK_BACKWARD)
+        assertEquals(0L, model.playState.positionMillis)
+
+        model.handleKeyAction(KeyAction.NEXT_TRACK)
+        assertEquals("Starboy", model.playState.track?.title)
+        model.handleKeyAction(KeyAction.PREVIOUS_TRACK)
+        assertEquals("One More Time", model.playState.track?.title)
+    }
+
+    fun testTransportKeysAreIgnoredWhenNothingIsPlaying() {
+        val model = model()
+        assertFalse(model.handleKeyAction(KeyAction.TOGGLE_PLAY_PAUSE))
+        assertFalse(model.handleKeyAction(KeyAction.NEXT_TRACK))
+        assertFalse(model.handleKeyAction(KeyAction.SEEK_FORWARD))
+        assertTrue(model.playState.isEmpty)
+    }
+
+    fun testTheDismissKeyClosesThePanelEvenWithAnEmptyPlayer() {
+        val model = model()
+        model.nowPlayingExpanded = true
+        assertTrue(model.handleKeyAction(KeyAction.DISMISS))
+        assertFalse(model.nowPlayingExpanded)
+        // Nothing left to close, so the platform gets to decide (exit on Android).
+        assertFalse(model.handleKeyAction(KeyAction.DISMISS))
     }
 
     fun testRemoveFromQueueDropsTheEntryAndRepersists() {

@@ -33,6 +33,8 @@ There is no Python and no HTML anywhere in this repository.
 | Resume | The queue, cursor, position, shuffle/repeat and volume survive a restart |
 | Offline filter | Instant filtering of the queue and saved playlists over what is already in memory |
 | Caching | 5-minute TTL cache in the repository, so navigating back does not re-fetch |
+| Back | System back (Android) and Escape (desktop) close the now-playing panel, then walk back through album/artist pages |
+| Keyboard | Space play/pause, ←/→ seek 10 s, N/P next/previous, media keys, Escape to close; the desktop window title shows the playing track |
 
 The catalog backend is **Deezer's public REST API**: no API key, no OAuth, and a 30-second MP3
 preview per track that the player streams. Lyrics come from **LRCLIB**, also keyless. Swapping in
@@ -95,7 +97,7 @@ The core, the UI state holder and every test can be built and run with nothing b
 
 ```bash
 ./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
-./tools/run-tests.sh         # compile core + UI + tests, run 204 tests
+./tools/run-tests.sh         # compile core + UI + tests, run 212 tests
 ./tools/check-ui.sh          # type-check composeApp/ against compile-only Compose stubs
 ./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
 ```
@@ -119,14 +121,14 @@ Be precise about what has actually been executed, because it is not everything:
 
 **Verified in this repository** — `./tools/run-tests.sh` compiles `shared/src/commonMain`,
 `shared/src/desktopMain`, `composeApp/src/commonMain`, every test source set and the Compose stubs
-with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **204 tests, all passing**. They cover the
+with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **212 tests, all passing**. They cover the
 JSON parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
 playback engine (shuffle order, repeat modes, seek clamping, dead-stream skipping, queue mutation,
 session restore), the LRC parser (centisecond and millisecond fractions, `[offset:]`, multi-timestamp
 lines, metadata tags), the playlist, history and playback-state stores (including corrupt data on
 disk), the TTL cache, the local filter, the Deezer mappers, and the repository. The provider, repository and lyrics tests run against
 **recorded Deezer and LRCLIB responses** captured from the live APIs, not invented shapes.
-`AppModelTest` (49 tests) drives the UI's state holder itself — navigation, search, playlists,
+`AppModelTest` (57 tests) drives the UI's state holder itself — navigation, search, playlists,
 transport, lyrics, session restore — against faked collaborators, on a plain JVM; it is what caught
 the two session bugs described below. `./tools/run-demo.sh` runs the
 same core end to end and writes real playlist and history JSON to disk.

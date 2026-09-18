@@ -21,6 +21,7 @@ fun ApplicationScope.Window(
     onCloseRequest: () -> Unit,
     title: String = "Untitled",
     state: WindowState = WindowState(),
+    onPreviewKeyEvent: ((androidx.compose.ui.input.key.KeyEvent) -> Boolean)? = null,
     content: @Composable () -> Unit,
 ) {
 }
