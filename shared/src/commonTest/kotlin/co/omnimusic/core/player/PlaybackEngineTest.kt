@@ -273,6 +273,123 @@ class PlaybackEngineTest {
         assertEquals(-1, engine.state().queueIndex)
     }
 
+    // ----------------------------------------------------------------------------------------
+    // Reordering the queue
+    // ----------------------------------------------------------------------------------------
+
+    fun testMoveInQueueReordersTheQueue() {
+        val engine = engine()
+        engine.playQueue(testQueue(4))
+
+        assertTrue(engine.moveInQueue(0, 2))
+        assertEquals(listOf("2", "3", "1", "4"), engine.queueSnapshot().map { it.id })
+
+        assertTrue(engine.moveInQueue(3, 0))
+        assertEquals(listOf("4", "2", "3", "1"), engine.queueSnapshot().map { it.id })
+    }
+
+    fun testMovingTheCurrentTrackKeepsItCurrentAndPlaying() {
+        val engine = engine()
+        engine.playQueue(testQueue(4))
+        assertEquals("1", engine.currentTrack?.id)
+
+        assertTrue(engine.moveInQueue(0, 3))
+
+        // The entry moved to the end of the queue, but nothing about playback changed.
+        assertEquals("1", engine.currentTrack?.id)
+        assertTrue(engine.isPlaying)
+        assertEquals(listOf("2", "3", "4", "1"), engine.queueSnapshot().map { it.id })
+        assertEquals(3, engine.state().queueIndex)
+    }
+
+    fun testMovingAnotherEntryLeavesTheCursorOnTheSameTrack() {
+        val engine = engine()
+        engine.playQueue(testQueue(4))
+        engine.next()
+        assertEquals("2", engine.currentTrack?.id)
+
+        assertTrue(engine.moveInQueue(0, 3))
+
+        assertEquals("2", engine.currentTrack?.id)
+        // queueIndex is the current track's position in the queue, not the cursor: "2" now sits at
+        // the front, so 0 is the right answer even though the cursor has not moved.
+        assertEquals(0, engine.state().queueIndex)
+    }
+
+    fun testNextAfterAMoveFollowsTheNewQueueOrder() {
+        val engine = engine()
+        engine.playQueue(testQueue(3))
+        assertEquals("1", engine.currentTrack?.id)
+
+        // Move the last entry to the front: the visible queue changes, the play order must not.
+        assertTrue(engine.moveInQueue(2, 0))
+        assertEquals(listOf("3", "1", "2"), engine.queueSnapshot().map { it.id })
+
+        engine.next()
+        assertEquals("2", engine.currentTrack?.id)
+    }
+
+    fun testMovingPreservesTheShuffledPlayOrder() {
+        val engine = engine()
+        engine.setShuffle(true)
+        engine.playQueue(testQueue(6))
+        engine.next()
+        val before = engine.playOrderSnapshot().map { it.id }
+        val current = engine.currentTrack?.id
+        assertEquals(6, before.distinct().size)
+
+        // The strongest invariant available: a move rewrites queue indices, and if any one of them
+        // is remapped wrongly the sequence of tracks the player will walk changes.
+        assertTrue(engine.moveInQueue(1, 4))
+        assertEquals(before, engine.playOrderSnapshot().map { it.id })
+        assertEquals(current, engine.currentTrack?.id)
+
+        assertTrue(engine.moveInQueue(5, 0))
+        assertEquals(before, engine.playOrderSnapshot().map { it.id })
+        assertEquals(current, engine.currentTrack?.id)
+    }
+
+    fun testMoveInQueueRejectsOutOfRangeAndNoOpMoves() {
+        val engine = engine()
+        engine.playQueue(testQueue(3))
+        val before = engine.queueSnapshot().map { it.id }
+
+        assertFalse(engine.moveInQueue(1, 1))
+        assertFalse(engine.moveInQueue(0, 3))
+        assertFalse(engine.moveInQueue(3, 0))
+        assertFalse(engine.moveInQueue(-1, 0))
+        assertFalse(engine.moveInQueue(0, -1))
+        assertEquals(before, engine.queueSnapshot().map { it.id })
+    }
+
+    fun testMoveInQueueOnAnEmptyOrSingleEntryQueue() {
+        val engine = engine()
+        assertFalse(engine.moveInQueue(0, 0))
+        assertFalse(engine.moveInQueue(0, 1))
+
+        engine.playQueue(listOf(testTrack("only")))
+        assertFalse(engine.moveInQueue(0, 1))
+        assertEquals(listOf("only"), engine.queueSnapshot().map { it.id })
+    }
+
+    fun testMovingEveryEntryInTurnKeepsTheQueueConsistent() {
+        val engine = engine()
+        engine.playQueue(testQueue(5))
+
+        // Walk one entry all the way to the end and back, asserting the queue is always a
+        // permutation of the original rather than losing or duplicating a track.
+        val original = engine.queueSnapshot().map { it.id }.sorted()
+        for (i in 0 until 4) {
+            assertTrue(engine.moveInQueue(i, i + 1))
+            assertEquals(original, engine.queueSnapshot().map { it.id }.sorted())
+        }
+        for (i in 4 downTo 1) {
+            assertTrue(engine.moveInQueue(i, i - 1))
+            assertEquals(original, engine.queueSnapshot().map { it.id }.sorted())
+        }
+        assertEquals(listOf("1", "2", "3", "4", "5"), engine.queueSnapshot().map { it.id })
+    }
+
     fun testPauseResumeAndToggle() {
         val engine = engine()
         engine.playQueue(testQueue(2))

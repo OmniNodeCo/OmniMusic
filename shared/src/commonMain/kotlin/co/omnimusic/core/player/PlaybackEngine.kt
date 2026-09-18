@@ -145,6 +145,37 @@ class PlaybackEngine(
         true
     }
 
+    /**
+     * Moves a queue entry from [from] to [to], without touching what is playing.
+     *
+     * The queue and the play order are separate structures: [order] is a permutation of queue
+     * indices that the cursor walks. Moving an entry therefore has to rewrite every index in the
+     * range that shifted, or the cursor and everything after it silently point at the wrong song —
+     * the same trap [removeFromQueue] has to handle when an entry disappears.
+     *
+     * [cursor] itself is left alone on purpose: it indexes [order], and [order] still holds the
+     * same track at that position once the indices are remapped. Rewriting it here would be the
+     * bug.
+     */
+    fun moveInQueue(from: Int, to: Int): Boolean = exclusive {
+        if (from == to) return@exclusive false
+        if (from !in queue.indices || to !in queue.indices) return@exclusive false
+        val track = queue.removeAt(from)
+        queue.add(to, track)
+        order = order.map { index ->
+            when {
+                index == from -> to
+                // Moving down: the entries the track passed shift up one slot.
+                from < to && index in (from + 1)..to -> index - 1
+                // Moving up: the entries it passed shift down one slot.
+                from > to && index in to until from -> index + 1
+                else -> index
+            }
+        }.toMutableList()
+        notifyStateChanged()
+        true
+    }
+
     fun clearQueue() = exclusive {
         audio.stop()
         queue.clear()

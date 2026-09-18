@@ -136,6 +136,9 @@ fun TextButton(
 fun IconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    // Third position, matching Material3: a named `enabled` is the usual way to pass it, but a
+    // positional argument would land in the wrong slot if this were declared last.
+    enabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
 }

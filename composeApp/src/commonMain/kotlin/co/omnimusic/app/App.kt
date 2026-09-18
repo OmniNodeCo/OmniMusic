@@ -304,6 +304,20 @@ private fun NowPlayingPanel(model: AppModel) {
                             onClick = { model.play(queue, index) },
                             modifier = Modifier.weight(1f),
                         )
+                        // Reorder rather than drag: the engine keeps the play order separate from
+                        // the visible queue, so moving an entry never disturbs what is playing.
+                        IconButton(
+                            onClick = { model.moveInQueue(index, index - 1) },
+                            enabled = index > 0,
+                        ) {
+                            Text("↑", fontSize = 14.sp)
+                        }
+                        IconButton(
+                            onClick = { model.moveInQueue(index, index + 1) },
+                            enabled = index < queue.size - 1,
+                        ) {
+                            Text("↓", fontSize = 14.sp)
+                        }
                         IconButton(onClick = { model.removeFromQueue(index) }) {
                             Text("×", fontSize = 18.sp)
                         }

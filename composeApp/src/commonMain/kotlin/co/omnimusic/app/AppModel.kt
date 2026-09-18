@@ -427,6 +427,16 @@ class AppModel(private val environment: AppEnvironment) {
     fun removeFromQueue(index: Int): Boolean =
         environment.engine.removeFromQueue(index).also { removed -> if (removed) persistSession() }
 
+    /**
+     * Reorders the queue without disturbing playback.
+     *
+     * The engine keeps the play order separate from the visible queue, so the cursor does not move
+     * and the current track keeps playing; only what comes next changes. Persisted for the same
+     * reason a removal is — a restart should show the queue the user arranged.
+     */
+    fun moveInQueue(from: Int, to: Int): Boolean =
+        environment.engine.moveInQueue(from, to).also { moved -> if (moved) persistSession() }
+
     fun dismissNotice() {
         notice = null
     }

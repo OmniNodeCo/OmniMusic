@@ -495,6 +495,32 @@ class AppModelTest {
         assertEquals(1, model.queue().size)
     }
 
+    fun testMoveInQueueReordersAndRepersistsWithoutStoppingPlayback() {
+        val model = model()
+        model.play(listOf(trackOne, trackTwo))
+        val playingBefore = model.playState.isPlaying
+        val currentBefore = model.playState.track?.id
+
+        assertTrue(model.moveInQueue(0, 1))
+
+        assertEquals(listOf("Starboy", "One More Time"), model.queue().map { it.title })
+        // Reordering the visible queue must not restart or interrupt anything.
+        assertEquals(currentBefore, model.playState.track?.id)
+        assertEquals(playingBefore, model.playState.isPlaying)
+        assertEquals(
+            listOf("Starboy", "One More Time"),
+            playbackState.restore()?.tracks?.map { it.title },
+        )
+    }
+
+    fun testMoveInQueueRejectsOutOfRangeAndNoOpMoves() {
+        val model = model()
+        model.play(listOf(trackOne, trackTwo))
+        assertFalse(model.moveInQueue(1, 1))
+        assertFalse(model.moveInQueue(0, 5))
+        assertEquals(listOf("One More Time", "Starboy"), model.queue().map { it.title })
+    }
+
     fun testPausingPersistsThePositionForTheNextLaunch() {
         val model = model()
         model.play(listOf(trackOne, trackTwo))
