@@ -10,7 +10,7 @@ plugins {
 // Same entry point as tools/run-tests.sh, so CI and a laptop run identical code.
 tasks.register<Exec>("runCoreTests") {
     group = "verification"
-    description = "Compiles and runs the shared Kotlin core tests with kotlinc (no Gradle test framework)."
+    description = "Compiles and runs every Kotlin test (core + UI state holder) with kotlinc, no Gradle test framework."
     workingDir = rootDir
     commandLine("./tools/run-tests.sh")
 }

@@ -60,6 +60,7 @@ shared/src/commonTest/    tests for everything platform-independent
 composeApp/src/commonMain/  App.kt AppModel.kt ui/ theme/
 composeApp/src/androidMain/ MainActivity.kt AndroidPlatform.kt AndroidManifest.xml
 composeApp/src/desktopMain/ Main.kt
+composeApp/src/desktopTest/ AppModelTest.kt (the state holder, driven on a plain JVM)
 tools/           Gradle-free build: setup-toolchain.sh, run-tests.sh, check-ui.sh, run-demo.sh
                  stubs/       compile-only Compose/Android declarations for check-ui.sh
 ```
@@ -87,15 +88,14 @@ Two design rules make the core testable on a machine with no sound card and no n
 ./gradlew :composeApp:assembleDebug
 ```
 
-### The core, without Gradle
+### Everything, without Gradle
 
-The core and its tests can be built and run with nothing but a JRE and `kotlinc` — no Android SDK,
-no Maven Central. This is what CI runs first, and what you want when you are changing engine or
-parser logic:
+The core, the UI state holder and every test can be built and run with nothing but a JRE and
+`kotlinc` — no Android SDK, no Maven Central. This is what CI runs first:
 
 ```bash
 ./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
-./tools/run-tests.sh         # compile shared + tests, run 149 tests
+./tools/run-tests.sh         # compile core + UI + tests, run 186 tests
 ./tools/check-ui.sh          # type-check composeApp/ against compile-only Compose stubs
 ./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
 ```
@@ -118,14 +118,17 @@ recorded responses instead, which works offline.
 Be precise about what has actually been executed, because it is not everything:
 
 **Verified in this repository** — `./tools/run-tests.sh` compiles `shared/src/commonMain`,
-`shared/src/desktopMain`, `shared/src/commonTest` and `shared/src/desktopTest` with kotlinc
-(Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **149 tests, all passing**. They cover the JSON
-parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
+`shared/src/desktopMain`, `composeApp/src/commonMain`, every test source set and the Compose stubs
+with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **186 tests, all passing**. They cover the
+JSON parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
 playback engine (shuffle order, repeat modes, seek clamping, dead-stream skipping, queue mutation,
 session restore), the LRC parser (centisecond and millisecond fractions, `[offset:]`, multi-timestamp
 lines, metadata tags), the playlist, history and playback-state stores (including corrupt data on
 disk), the TTL cache, the local filter, the Deezer mappers, and the repository. The provider, repository and lyrics tests run against
-**recorded Deezer and LRCLIB responses** captured from the live APIs, not invented shapes. `./tools/run-demo.sh` runs the
+**recorded Deezer and LRCLIB responses** captured from the live APIs, not invented shapes.
+`AppModelTest` (37 tests) drives the UI's state holder itself — navigation, search, playlists,
+transport, lyrics, session restore — against faked collaborators, on a plain JVM; it is what caught
+the two session bugs described below. `./tools/run-demo.sh` runs the
 same core end to end and writes real playlist and history JSON to disk.
 
 **Type-checked, but never run** — the Compose UI. `./tools/check-ui.sh` compiles
@@ -136,6 +139,18 @@ on the snackbar outside a `BoxScope`; `Modifier.clickable(onClick, onLongClick)`
 has no `onLongClick` and `combinedClickable` was meant; a smart cast on the delegated `model.screen`
 property; and a named `selector` argument passed to `LocalFilter.filter`'s `vararg selectors`. No
 composable in this project has ever been composed or drawn.
+
+Two of the bugs found were behavioural, not typographical, and both broke session resume:
+
+- `AppModel.currentTimeMillis` was declared *below* the `init` block that restores the previous
+  session. Property initializers run in declaration order, so the field was still `null` when the
+  engine reported the restored track as started; the NPE landed inside the engine's
+  `startCurrent`, which treats a listener exception as an unplayable track and skips forward. Every
+  cold start with a saved session therefore opened on the **wrong song at 0:00** with a bogus
+  "Could not play" notice.
+- Restoring a session fired the same `onTrackStarted` path as pressing play, so reopening the app
+  counted as a play (inflating play counts and reordering "recently played") and re-saved the
+  position as 0:00 before the seek landed. A restore now records neither.
 
 **Not verified here** — the Gradle build and the Android layer at runtime. This sandbox has no
 Android SDK and cannot reach `repo1.maven.org` or `services.gradle.org`, so `./gradlew` cannot run

@@ -36,8 +36,7 @@ kotlin {
         }
 
         desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            // The JDK has no MP3 decoder. Music APIs hand back MP3 previews, so desktop playback
+            implementation(compose.desktop.currentOs)            // The JDK has no MP3 decoder. Music APIs hand back MP3 previews, so desktop playback
             // needs a Java Sound SPI. Uncomment these two lines to enable it:
             //
             // implementation("com.googlecode.soundlibs:mp3spi:1.9.5.4")
@@ -45,6 +44,15 @@ kotlin {
             //
             // Without them the app still runs — playback reports a clear "no decoder for this
             // stream" error from JavaSoundAudioOutput instead of failing silently.
+        }
+
+        // AppModelTest lives here: it drives the state holder on a plain JVM and deliberately
+        // depends only on :shared's main sources plus kotlin-test, so the same file is compiled by
+        // the Gradle build and by tools/run-tests.sh (which is what actually runs it today — the
+        // tests are plain classes discovered by name, not JUnit annotations).
+        desktopTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(project(":shared"))
         }
     }
 }

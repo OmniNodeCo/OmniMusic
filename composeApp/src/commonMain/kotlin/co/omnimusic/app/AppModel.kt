@@ -55,11 +55,27 @@ class AppModel(private val environment: AppEnvironment) {
 
     var libraryFilter by mutableStateOf("")
 
+    /** Draft name in the library screen's "new playlist" field. */
+    var newPlaylistName by mutableStateOf("")
+
     var nowPlayingExpanded by mutableStateOf(false)
 
     var notice by mutableStateOf<String?>(null)
 
     private val history = environment.history
+
+    /** Set while [restoreSession] is running, so a restored track is not counted as a play. */
+    private var restoring = false
+
+    /**
+     * Wall-clock reads live in the platform layer; this indirection keeps AppModel testable.
+     *
+     * Declared above [init] on purpose: property initializers run in declaration order, and `init`
+     * restores the previous session, which starts a track, which calls this. Declared any lower and
+     * the field is still null during construction — the restore NPEs inside the engine, the engine
+     * reports the track as unplayable and skips past it, and the app opens on the wrong song.
+     */
+    var currentTimeMillis: () -> Long = { 0L }
 
     init {
         environment.engine.listener = object : PlaybackListener {
@@ -68,9 +84,14 @@ class AppModel(private val environment: AppEnvironment) {
             }
 
             override fun onTrackStarted(track: Track) {
-                history.recordPlay(track, playedAt = currentTimeMillis())
                 loadLyricsFor(track)
-                persistSession()
+                // Loading the track a previous session left open is not the user pressing play: it
+                // must not inflate its play count, reorder "recently played", or overwrite the
+                // saved position with 0 before the seek lands.
+                if (!restoring) {
+                    history.recordPlay(track, playedAt = currentTimeMillis())
+                    persistSession()
+                }
             }
 
             override fun onTrackFailed(track: Track, reason: String) {
@@ -155,10 +176,33 @@ class AppModel(private val environment: AppEnvironment) {
         refreshPlaylists()
     }
 
+    /**
+     * Creates a playlist from the library screen's input field and clears it. Blank input is
+     * ignored rather than producing a playlist called "".
+     */
+    fun submitNewPlaylist() {
+        val name = newPlaylistName.trim()
+        if (name.isEmpty()) return
+        val created = environment.playlists.create(name)
+        refreshPlaylists()
+        newPlaylistName = ""
+        notice = "Created “${created.name}”"
+    }
+
     fun addToPlaylist(playlistId: String, track: Track) {
         environment.playlists.addTrack(playlistId, track)
         refreshPlaylists()
         notice = "Added to ${environment.playlists.byId(playlistId)?.name ?: "playlist"}"
+    }
+
+    /** "Add to playlist" for whatever is on screen in the player, without making the UI pass a track. */
+    fun addCurrentTrackToPlaylist(playlistId: String) {
+        val track = playState.track
+        if (track == null) {
+            notice = "Nothing is playing"
+            return
+        }
+        addToPlaylist(playlistId, track)
     }
 
     fun deletePlaylist(id: String) {
@@ -241,15 +285,20 @@ class AppModel(private val environment: AppEnvironment) {
     /** Restores the queue and position from the last session, without starting playback. */
     private fun restoreSession() {
         val saved = environment.playbackState.restore() ?: return
-        environment.engine.restore(
-            tracks = saved.tracks,
-            index = saved.index,
-            positionMillis = saved.positionMillis,
-            shuffleEnabled = saved.shuffleEnabled,
-            repeatMode = saved.repeatMode,
-            volume = saved.volume,
-            autoplay = false,
-        )
+        restoring = true
+        try {
+            environment.engine.restore(
+                tracks = saved.tracks,
+                index = saved.index,
+                positionMillis = saved.positionMillis,
+                shuffleEnabled = saved.shuffleEnabled,
+                repeatMode = saved.repeatMode,
+                volume = saved.volume,
+                autoplay = false,
+            )
+        } finally {
+            restoring = false
+        }
         playState = environment.engine.state()
         saved.currentTrack?.let(::loadLyricsFor)
     }
@@ -286,7 +335,4 @@ class AppModel(private val environment: AppEnvironment) {
             }
         }
     }
-
-    /** Wall-clock reads live in the platform layer; this indirection keeps AppModel testable. */
-    var currentTimeMillis: () -> Long = { 0L }
 }

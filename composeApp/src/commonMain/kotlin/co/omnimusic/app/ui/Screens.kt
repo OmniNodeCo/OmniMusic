@@ -236,36 +236,53 @@ fun LibraryScreen(model: AppModel) {
             label = { Text("Filter playlists") },
             singleLine = true,
         )
-        LazyColumn(Modifier.weight(1f)) {
-        item { SectionHeader("Playlists") }
-        if (playlists.isEmpty()) {
-            item { Message("No playlists match.") }
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OutlinedTextField(
+                value = model.newPlaylistName,
+                onValueChange = { model.newPlaylistName = it },
+                modifier = Modifier.weight(1f),
+                label = { Text("New playlist") },
+                singleLine = true,
+            )
+            Spacer(Modifier.width(8.dp))
+            Button(
+                onClick = model::submitNewPlaylist,
+                enabled = model.newPlaylistName.isNotBlank(),
+            ) { Text("Create") }
         }
-        items(playlists, key = { it.id }) { playlist ->
-            Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) {
-                        Text(playlist.name, style = MaterialTheme.typography.titleSmall)
-                        Text(
-                            text = "${playlist.tracks.size} tracks · ${playlist.durationLabel}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        LazyColumn(Modifier.weight(1f)) {
+            item { SectionHeader("Playlists") }
+            if (playlists.isEmpty()) {
+                item { Message("No playlists match.") }
+            }
+            items(playlists, key = { it.id }) { playlist ->
+                Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(playlist.name, style = MaterialTheme.typography.titleSmall)
+                            Text(
+                                text = "${playlist.tracks.size} tracks · ${playlist.durationLabel}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        TextButton(onClick = { model.playPlaylist(playlist) }) { Text("Play") }
+                        TextButton(onClick = { model.deletePlaylist(playlist.id) }) { Text("Delete") }
+                    }
+                    playlist.tracks.take(3).forEachIndexed { index, track ->
+                        TrackRow(
+                            index = index + 1,
+                            track = track,
+                            isCurrent = model.playState.track?.id == track.id,
+                            onClick = { model.play(playlist.tracks, index) },
                         )
                     }
-                    TextButton(onClick = { model.playPlaylist(playlist) }) { Text("Play") }
-                    TextButton(onClick = { model.deletePlaylist(playlist.id) }) { Text("Delete") }
-                }
-                playlist.tracks.take(3).forEachIndexed { index, track ->
-                    TrackRow(
-                        index = index + 1,
-                        track = track,
-                        isCurrent = model.playState.track?.id == track.id,
-                        onClick = { model.play(playlist.tracks, index) },
-                    )
                 }
             }
-        }
-        item { Spacer(Modifier.height(96.dp)) }
+            item { Spacer(Modifier.height(96.dp)) }
         }
     }
 }
