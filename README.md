@@ -95,7 +95,7 @@ The core, the UI state holder and every test can be built and run with nothing b
 
 ```bash
 ./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
-./tools/run-tests.sh         # compile core + UI + tests, run 198 tests
+./tools/run-tests.sh         # compile core + UI + tests, run 204 tests
 ./tools/check-ui.sh          # type-check composeApp/ against compile-only Compose stubs
 ./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
 ```
@@ -119,7 +119,7 @@ Be precise about what has actually been executed, because it is not everything:
 
 **Verified in this repository** — `./tools/run-tests.sh` compiles `shared/src/commonMain`,
 `shared/src/desktopMain`, `composeApp/src/commonMain`, every test source set and the Compose stubs
-with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **198 tests, all passing**. They cover the
+with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **204 tests, all passing**. They cover the
 JSON parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
 playback engine (shuffle order, repeat modes, seek clamping, dead-stream skipping, queue mutation,
 session restore), the LRC parser (centisecond and millisecond fractions, `[offset:]`, multi-timestamp
@@ -161,9 +161,13 @@ also no Gradle wrapper jar committed — run `gradle wrapper` once, as CI does.
 
 ## Known limitations
 
-- **Desktop MP3 playback needs a codec.** The JDK decodes WAV/AIFF/AU only, and Deezer previews are
-  MP3. `JavaSoundAudioOutput` fails loudly with an explanation; uncomment the two `mp3spi` lines in
-  `composeApp/build.gradle.kts` to enable it.
+- **Desktop MP3 playback depends on an SPI that this sandbox cannot fetch.** The JDK decodes
+  WAV/AIFF/AU only and Deezer previews are MP3, so the desktop target depends on
+  `com.googlecode.soundlibs:mp3spi:1.9.5.4` + `jlayer:1.0.1.4` (both verified to exist on Maven
+  Central) and `PcmConversion` converts whatever the SPI returns to PCM before the line is opened —
+  that conversion is the step usually missed, and the reason "I added the MP3 library" still fails.
+  The conversion *decision* is unit-tested here; actually decoding an MP3 has never been run in
+  this environment, because it needs both the dependency and a sound card.
 - **No cover art yet.** `Artwork` paints a deterministic gradient from the entity id. Adding Coil
   means replacing the body of that one composable.
 - **Previews are 30 seconds.** That is what a keyless API gives you.

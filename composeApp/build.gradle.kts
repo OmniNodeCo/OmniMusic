@@ -36,14 +36,14 @@ kotlin {
         }
 
         desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)            // The JDK has no MP3 decoder. Music APIs hand back MP3 previews, so desktop playback
-            // needs a Java Sound SPI. Uncomment these two lines to enable it:
-            //
-            // implementation("com.googlecode.soundlibs:mp3spi:1.9.5.4")
-            // implementation("com.googlecode.soundlibs:jlayer:1.0.1.4")
-            //
-            // Without them the app still runs — playback reports a clear "no decoder for this
-            // stream" error from JavaSoundAudioOutput instead of failing silently.
+            implementation(compose.desktop.currentOs)
+            // The JDK decodes WAV/AIFF/AU only, and music APIs hand back MP3 previews, so desktop
+            // playback needs a Java Sound SPI. Both coordinates verified against Maven Central.
+            // JavaSoundAudioOutput converts whatever the SPI returns to PCM via PcmConversion;
+            // without that step the line is opened against MPEG1L3 and Java Sound reports a
+            // missing audio device instead of a missing decoder.
+            implementation("com.googlecode.soundlibs:mp3spi:1.9.5.4")
+            implementation("com.googlecode.soundlibs:jlayer:1.0.1.4")
         }
 
         // AppModelTest lives here: it drives the state holder on a plain JVM and deliberately

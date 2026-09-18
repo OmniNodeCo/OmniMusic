@@ -28,8 +28,8 @@ import javax.sound.sampled.UnsupportedAudioFileException
  * check rather than a frozen native buffer.
  *
  * The JDK itself can decode WAV, AIFF and AU. MP3 (which is what music APIs hand back as previews)
- * needs a Java Sound SPI on the classpath — see `composeApp/build.gradle.kts`, which adds one for
- * the desktop target.
+ * comes from the mp3spi Java Sound SPI the desktop build depends on; whatever an SPI returns is
+ * converted to PCM by [PcmConversion] before the line is opened.
  */
 class JavaSoundAudioOutput(
     private val bufferSizeBytes: Int = 8192,
@@ -187,16 +187,44 @@ class JavaSoundAudioOutput(
     }
 
     private fun openRemote(url: String): AudioInputStream {
-        return try {
+        val raw = try {
             AudioSystem.getAudioInputStream(URI.create(url).toURL())
         } catch (e: UnsupportedAudioFileException) {
             throw UnsupportedAudioException(
                 "No decoder for this stream. The JDK can play WAV/AIFF/AU natively; MP3 and AAC need " +
-                    "a Java Sound SPI on the classpath (see composeApp/build.gradle.kts).",
+                    "a Java Sound SPI on the classpath (the desktop build ships mp3spi).",
                 e,
             )
         } catch (e: IOException) {
             throw AudioSourceException("could not open $url", e)
+        }
+        return decoded(raw, url)
+    }
+
+    /**
+     * Asks the SPI for PCM when it handed us its own encoding.
+     *
+     * See [PcmConversion] for why this step is not optional: without it an MP3 stream reaches
+     * [openLine] as `MPEG1L3`, no mixer supports that, and Java Sound blames the audio device.
+     */
+    private fun decoded(source: AudioInputStream, url: String): AudioInputStream {
+        if (!PcmConversion.needsConversion(source.format)) return source
+        val target = PcmConversion.targetFor(source.format)
+            ?: throw UnsupportedAudioException(
+                "cannot decode $url: the decoder reports an incomplete format (${source.format})",
+            )
+        return try {
+            AudioSystem.getAudioInputStream(target, source)
+        } catch (e: IllegalArgumentException) {
+            throw UnsupportedAudioException(
+                "Nothing on the classpath can convert ${source.format.encoding} to PCM",
+                e,
+            )
+        } catch (e: UnsupportedOperationException) {
+            throw UnsupportedAudioException(
+                "Nothing on the classpath can convert ${source.format.encoding} to PCM",
+                e,
+            )
         }
     }
 
