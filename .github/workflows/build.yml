@@ -36,7 +36,20 @@ jobs:
         with:
           gradle-version: "8.11.1"
       - name: Generate the Gradle wrapper
-        run: gradle wrapper --gradle-version 8.11.1
+        shell: bash
+        run: |
+          gradle --version
+          if ! out="$(gradle wrapper --gradle-version 8.11.1 --stacktrace 2>&1)"; then
+            printf '%s\n' "$out"
+            # Job logs are served from a host that is not reachable from every environment, so
+            # surface the diagnosis as annotations, which the REST API does return.
+            printf '%s\n' "$out" \
+              | grep -E '^\* |FAILURE|What went wrong|Caused by:|error:|Execution failed|Could not |Unsupported |requires Gradle' \
+              | tail -n 25 \
+              | while IFS= read -r line; do printf '::error::%s\n' "${line:0:300}"; done
+            exit 1
+          fi
+          printf '%s\n' "$out"
       - name: Assemble
         run: ./gradlew :composeApp:assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
@@ -61,7 +74,20 @@ jobs:
         with:
           gradle-version: "8.11.1"
       - name: Generate the Gradle wrapper
-        run: gradle wrapper --gradle-version 8.11.1
+        shell: bash
+        run: |
+          gradle --version
+          if ! out="$(gradle wrapper --gradle-version 8.11.1 --stacktrace 2>&1)"; then
+            printf '%s\n' "$out"
+            # Job logs are served from a host that is not reachable from every environment, so
+            # surface the diagnosis as annotations, which the REST API does return.
+            printf '%s\n' "$out" \
+              | grep -E '^\* |FAILURE|What went wrong|Caused by:|error:|Execution failed|Could not |Unsupported |requires Gradle' \
+              | tail -n 25 \
+              | while IFS= read -r line; do printf '::error::%s\n' "${line:0:300}"; done
+            exit 1
+          fi
+          printf '%s\n' "$out"
       - name: Package for this OS
         run: ./gradlew :composeApp:packageDistributionForCurrentOS --stacktrace
       - uses: actions/upload-artifact@v4
