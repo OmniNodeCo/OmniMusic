@@ -211,14 +211,18 @@ fun Message(text: String, modifier: Modifier = Modifier) {
  * Same arrangement as [Artwork]: the tinted initial stays underneath, so it is the placeholder, the
  * no-picture case and the offline case. Artists nested inside a track carry no picture at all, so
  * [imageUrl] is routinely null rather than exceptional.
+ *
+ * There is deliberately no inner padding. The badge used to inset its content, which only made
+ * sense while it sized itself to its initial; both call sites now pass an explicit size, and an
+ * inset would leave `matchParentSize()` matching the padded box rather than the circle. Callers
+ * that want a badge without a fixed size should pass one.
  */
 @Composable
 fun AvatarBadge(name: String, imageUrl: String? = null, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .clip(CircleShape)
-            .background(accentFor(name))
-            .padding(horizontal = 10.dp, vertical = 6.dp),
+            .background(accentFor(name)),
         contentAlignment = Alignment.Center,
     ) {
         Text(
