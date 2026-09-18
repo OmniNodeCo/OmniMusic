@@ -3,6 +3,7 @@ package co.omnimusic.core.store
 import co.omnimusic.core.json.Json
 import co.omnimusic.core.json.asBooleanOrDefault
 import co.omnimusic.core.json.asIntOrDefault
+import co.omnimusic.core.json.asLongOrDefault
 import co.omnimusic.core.json.asObjectOrNull
 import co.omnimusic.core.json.asStringOrDefault
 import co.omnimusic.core.json.asStringOrNull
@@ -36,6 +37,9 @@ object TrackJson {
         "albumId" to track.album?.id?.let(::jsonString),
         "album" to track.album?.title?.let(::jsonString),
         "albumImage" to track.album?.imageUrl?.let(::jsonString),
+        "albumTracks" to jsonNumber(track.album?.trackCount ?: 0),
+        "albumReleased" to track.album?.releaseDate?.let(::jsonString),
+        "popularity" to jsonNumber(track.popularity),
     )
 
     fun decode(node: Json?): Track? {
@@ -49,6 +53,8 @@ object TrackJson {
                 title = albumTitle ?: "",
                 artistName = obj["artist"].asStringOrDefault(""),
                 imageUrl = obj["albumImage"].asStringOrNull(),
+                trackCount = obj["albumTracks"].asIntOrDefault(0),
+                releaseDate = obj["albumReleased"].asStringOrNull(),
             )
         } else {
             null
@@ -65,6 +71,7 @@ object TrackJson {
             durationSeconds = obj["duration"].asIntOrDefault(0),
             streamUrl = obj["stream"].asStringOrNull(),
             explicit = obj["explicit"].asBooleanOrDefault(false),
+            popularity = obj["popularity"].asLongOrDefault(0),
         )
     }
 
