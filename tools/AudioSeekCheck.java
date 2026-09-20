@@ -55,7 +55,30 @@ public final class AudioSeekCheck {
             verdict = "reset() threw " + e.getClass().getSimpleName() + ": " + e.getMessage()
                     + " - which is the \"cannot seek this stream\" the fix removes";
         }
-        System.out.println("legacy rewind: " + verdict);
+        System.out.println("legacy rewind (raw MP3 stream): " + verdict);
+
+        // 3. The object the app actually seeks on is not the raw MP3 stream: PcmConversion wraps it
+        //    in a conversion stream, because no mixer accepts MPEG1L3. Whether reset() survives that
+        //    wrapper is the question the old code turned on, so test it separately.
+        AudioInputStream mp3 = AudioSystem.getAudioInputStream(new URL(url));
+        javax.sound.sampled.AudioFormat src = mp3.getFormat();
+        javax.sound.sampled.AudioFormat pcm = new javax.sound.sampled.AudioFormat(
+                javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED,
+                src.getSampleRate(), 16, src.getChannels(), src.getChannels() * 2,
+                src.getSampleRate(), false);
+        AudioInputStream converted = AudioSystem.getAudioInputStream(pcm, mp3);
+        System.out.println("conversion stream: " + converted.getFormat().getEncoding()
+                + " over " + src.getEncoding());
+        for (int i = 0; i < 16; i++) {
+            if (converted.read(sink) <= 0) break;
+        }
+        try {
+            converted.reset();
+            System.out.println("legacy rewind (conversion stream): reset() succeeded");
+        } catch (Exception e) {
+            System.out.println("legacy rewind (conversion stream): reset() threw "
+                    + e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
         System.out.println("OK");
     }
 
