@@ -80,15 +80,23 @@ class JvmKeyValueStore(private val file: Path) : KeyValueStore {
     companion object {
 
         /** `%APPDATA%\OmniMusic` on Windows, `~/.config/OmniMusic` on Linux, `~/Library/...` on macOS. */
-        fun default(appName: String = "OmniMusic"): JvmKeyValueStore {
+        fun default(appName: String = "OmniMusic"): JvmKeyValueStore =
+            JvmKeyValueStore(defaultDirectory(appName).resolve("store.json"))
+
+        /**
+         * The directory [default] keeps its store in, for anything else the app owns on disk —
+         * notably the startup failure log, which has to resolve without going through a store
+         * whose own load might be what failed.
+         */
+        fun defaultDirectory(appName: String = "OmniMusic"): Path {
             val home = System.getProperty("user.home")
             val os = System.getProperty("os.name").lowercase()
-            val directory = when {
+            val base = when {
                 os.contains("win") -> System.getenv("APPDATA")?.let { Path.of(it) } ?: Path.of(home, "AppData", "Roaming")
                 os.contains("mac") || os.contains("darwin") -> Path.of(home, "Library", "Application Support")
                 else -> System.getenv("XDG_CONFIG_HOME")?.let { Path.of(it) } ?: Path.of(home, ".config")
-            }.resolve(appName)
-            return JvmKeyValueStore(directory.resolve("store.json"))
+            }
+            return base.resolve(appName)
         }
     }
 }

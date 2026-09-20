@@ -81,7 +81,7 @@ Two design rules make the core testable on a machine with no sound card and no n
 
 ```bash
 ./gradlew :composeApp:run                             # debug window
-./gradlew :composeApp:packageDistributionForCurrentOS # .deb / .dmg / .msi
+./gradlew :composeApp:packageDistributionForCurrentOS # .deb / .dmg / .exe
 ```
 
 ### Android
@@ -101,7 +101,9 @@ git tag v0.1.0 && git push origin v0.1.0
 
 That runs `.github/workflows/release.yml`, which builds `assembleRelease` plus the three native
 packages and publishes them as a GitHub release — [`v0.1.0`](https://github.com/OmniNodeCo/OmniMusic/releases/tag/v0.1.0)
-is the tag that has been through it. The APK is signed with the debug key — the release
+is the tag that has been through it. Packaging the Windows `.exe` needs Inno Setup on the build
+machine, because that is what jpackage drives for `--type exe`; `tools/ensure-innosetup.ps1` installs
+it in CI. The APK is signed with the debug key — the release
 build type points at `signingConfigs.debug` so the artifact installs out of the box — so replace
 that with a real signing config before publishing anywhere public. Running the workflow manually
 (`workflow_dispatch`) is meant to produce a prerelease named after the commit rather than a
@@ -114,7 +116,7 @@ The core, the UI state holder and every test can be built and run with nothing b
 
 ```bash
 ./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
-./tools/run-tests.sh         # compile core + UI + tests, run 270 tests
+./tools/run-tests.sh         # compile core + UI + tests, run 272 tests
 ./tools/check-ui.sh          # type-check composeApp/ against compile-only Compose stubs
 ./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
 ```
@@ -138,7 +140,7 @@ Be precise about what has actually been executed, because it is not everything:
 
 **Verified in this repository** — `./tools/run-tests.sh` compiles `shared/src/commonMain`,
 `shared/src/desktopMain`, `composeApp/src/commonMain`, every test source set and the Compose stubs
-with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **270 tests, all passing**. They cover the
+with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **272 tests, all passing**. They cover the
 JSON parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
 playback engine (shuffle order, repeat modes, seek clamping, dead-stream skipping, queue mutation,
 session restore), the LRC parser (centisecond and millisecond fractions, `[offset:]`, multi-timestamp
@@ -148,7 +150,7 @@ disk), the TTL cache, the local filter, the Deezer mappers, and the repository. 
 `AppModelTest` (59 tests) drives the UI's state holder itself — navigation, search, playlists,
 transport, lyrics, session restore — against faked collaborators, on a plain JVM; it is what caught
 the two session bugs described below. The two desktop platform classes are covered for real rather
-than through fakes: `JvmKeyValueStoreTest` (13) writes to a temporary directory, and
+than through fakes: `JvmKeyValueStoreTest` (15) writes to a temporary directory, and
 `JdkHttpFetcherTest` (9) talks to a `com.sun.net.httpserver` instance on the loopback interface,
 which ships with the JRE and needs no network access. `PlaybackEngineConcurrencyTest` (5) runs the
 engine under the same kind of reentrant lock the platforms supply, and asserts both that a listener
@@ -202,7 +204,31 @@ on download into the publishing job, so those four files are exactly what the bu
 Its first attempt failed with a glob bug — `actions/download-artifact`'s `pattern` is a minimatch
 glob, not a prefix, so the wildcard-less `omnimusic-` matched none of the four artifacts and the job
 aborted on an empty `dist/` rather than cutting an empty release. Only the tag path has been
-exercised; the `workflow_dispatch` prerelease branch has never run.
+exercised; the `workflow_dispatch` prerelease branch has never run. The Windows asset in that
+release is an MSI; from `v0.1.1` on it is an Inno Setup `.exe`.
+
+**Launched in CI, never on a real machine** — the packaged Windows app. The `v0.1.0` MSI installed
+for a user and then failed with the launcher's *Failed to launch JVM*, which is what jpackage reports
+for everything that goes wrong before the first frame. Three things changed:
+
+- `nativeDistributions { includeAllModules = true }`. The bundled runtime is a jlink image, and the
+  module set jdeps infers misses anything reached reflectively or through `ServiceLoader` — which is
+  how Java Sound finds the MP3 SPI and how the JDK finds its TLS providers. This is the documented
+  remedy for exactly this symptom and costs tens of megabytes. **The cause is inferred, not
+  reproduced**: no Windows install has been run here, so this is the most likely explanation rather
+  than a confirmed one.
+- Windows ships as an **Inno Setup `.exe`** rather than an MSI (`TargetFormat.Exe`), and
+  `tools/ensure-innosetup.ps1` installs Inno Setup when the runner image does not ship it.
+- `Main.kt` catches what escapes `main()` and writes the stack trace to
+  `<config dir>/startup-error.log` — `%APPDATA%\OmniMusic` on Windows — plus a dialog, so the next
+  broken install reports a cause instead of one opaque line.
+
+`tools/smoke-windows-launch.ps1` is what makes any of this checkable. Both workflows run it on
+Windows after packaging and it does what the launcher does: the bundled `java.exe`, the packaged
+classpath, the real main class. A missing module or a broken classpath now fails the build instead of
+reaching the user. What it cannot prove is that a window draws on a machine that has one — a runner
+has no desktop, so the script fails only on the launcher's own signatures and treats a failure
+*inside* the window toolkit as a launched JVM.
 
 What no amount of building proves: nobody has opened a window. Rendering, the real network calls to
 Deezer and LRCLIB, and audio output have never been exercised end to end.

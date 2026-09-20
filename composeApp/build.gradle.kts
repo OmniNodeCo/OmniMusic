@@ -71,8 +71,8 @@ android {
         applicationId = "co.omnimusic.app"
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
     }
 
     buildTypes {
@@ -95,11 +95,23 @@ compose.desktop {
         mainClass = "co.omnimusic.app.desktop.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            // Windows ships as an Inno Setup installer (`--type exe`), not an MSI. jpackage drives
+            // Inno Setup for that, so the build machine needs ISCC.exe; CI checks for it and
+            // installs it if the runner image does not ship it.
+            targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "OmniMusic"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
+            vendor = "OmniNodeCo"
             description = "A music player for Android, Windows, macOS and Linux"
             copyright = "© 2026 OmniNodeCo"
+
+            // The bundled runtime is a jlink image, and the module set jdeps infers misses anything
+            // reached reflectively or through ServiceLoader — which describes Java Sound's SPI
+            // lookup for the MP3 decoder and the JDK's TLS providers. A module that is missing does
+            // not fail the build; it fails on the user's machine as the launcher's opaque "Failed
+            // to launch JVM". Bundling every module costs tens of megabytes and removes the class
+            // of failure rather than the instance.
+            includeAllModules = true
 
             macOS {
                 bundleID = "co.omnimusic.app"

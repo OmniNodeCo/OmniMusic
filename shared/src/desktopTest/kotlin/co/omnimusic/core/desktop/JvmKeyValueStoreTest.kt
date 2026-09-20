@@ -6,6 +6,7 @@ import co.omnimusic.core.json.asObjectOrNull
 import co.omnimusic.core.json.asStringOrNull
 import co.omnimusic.core.json.get
 import java.nio.file.Files
+import java.nio.file.Path
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -129,6 +130,31 @@ class JvmKeyValueStoreTest {
         assertNull(store.getString("anything"))
         assertEquals(setOf<String>(), store.keys(""))
         assertFalse(Files.exists(absent))
+    }
+
+    fun testAskingForTheDefaultDirectoryCreatesNothing() {
+        val directory = JvmKeyValueStore.defaultDirectory("NeverWritten")
+        assertTrue(directory.endsWith(Path.of("NeverWritten")), "got $directory")
+        // The store creates its file on the first write and the startup log creates its own
+        // directory; neither should happen as a side effect of asking where they would go.
+        assertFalse(Files.exists(directory))
+    }
+
+    fun testTheDefaultStoreLivesInsideTheDefaultDirectory() {
+        val originalHome = System.getProperty("user.home")
+        System.setProperty("user.home", directory.toString())
+        val expected = JvmKeyValueStore.defaultDirectory("TestApp")
+        try {
+            JvmKeyValueStore.default("TestApp").putString("k", "v")
+            assertTrue(
+                Files.exists(expected.resolve("store.json")),
+                "expected the default store under $expected, which is where the startup log goes too",
+            )
+        } finally {
+            System.setProperty("user.home", originalHome)
+            runCatching { Files.deleteIfExists(expected.resolve("store.json")) }
+            runCatching { Files.deleteIfExists(expected) }
+        }
     }
 
     fun testOverwritingAKeyKeepsTheOtherEntries() {

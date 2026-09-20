@@ -53,15 +53,21 @@ jobs:
           gradle-version: "8.11.1"
       - name: Generate the Gradle wrapper
         run: gradle wrapper --gradle-version 8.11.1 --stacktrace
+      - name: Make sure Inno Setup is available
+        if: matrix.os == 'windows-latest'
+        run: pwsh -File tools/ensure-innosetup.ps1
       - name: Package for this OS
         run: ./gradlew :composeApp:packageDistributionForCurrentOS --stacktrace
+      - name: Smoke-test that the packaged JVM starts
+        if: matrix.os == 'windows-latest'
+        run: pwsh -File tools/smoke-windows-launch.ps1
       - uses: actions/upload-artifact@v4
         with:
           name: omnimusic-desktop-${{ matrix.os }}
           path: |
             composeApp/build/compose/binaries/main/**/*.deb
             composeApp/build/compose/binaries/main/**/*.dmg
-            composeApp/build/compose/binaries/main/**/*.msi
+            composeApp/build/compose/binaries/main/exe/*.exe
 
   publish:
     name: Publish the release
@@ -109,7 +115,8 @@ jobs:
             echo "OmniMusic ${tag#v} — an Android APK plus native packages for Linux, macOS and Windows."
             echo
             echo "- \`*-release.apk\`: signed with the debug key, so it installs directly but is not Play-ready."
-            echo "- \`.deb\` / \`.dmg\` / \`.msi\`: built by \`packageDistributionForCurrentOS\` on each OS."
+            echo "- \`.deb\` / \`.dmg\` / \`.exe\`: built by \`packageDistributionForCurrentOS\` on each OS."
+            echo "  The Windows one is an Inno Setup installer, not an MSI."
             echo
             echo "Compiled and packaged by CI. No human has opened a window in any of these — see the"
             echo "verification section of the README for exactly what has and has not been exercised."
