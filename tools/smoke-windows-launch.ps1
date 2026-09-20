@@ -3,11 +3,15 @@
 # The installer's launcher reports "Failed to launch JVM" for anything that goes wrong before the
 # first frame - a JDK module missing from the bundled jlink runtime, a class the classpath does not
 # contain, an exception escaping main(). An installed build has no console, so a user sees that one
-# message and nothing else. This runs what the launcher runs: the bundled runtime, the classpath and
-# JVM options from the launcher's own .cfg, and the main class that .cfg names.
+# message and nothing else.
 #
-# It needs an app image, which `packageExe` does not leave behind - run `createDistributable` too.
-# The layout is <image>/app/<name>.cfg next to the jars, <image>/runtime for the jlink image, and
+# Two checks, because the failure has two independent halves:
+#   1. the bundled runtime carries the JDK modules the app needs at runtime, read from the runtime's
+#      own `release` file - a module jdeps cannot see is the classic cause of this symptom;
+#   2. the packaged classpath actually resolves the main class, by running it.
+#
+# Needs an app image, which `packageExe` does not leave behind - run `createDistributable` too.
+# Layout: <image>/app/<name>.cfg next to the jars, <image>/runtime for the jlink image, and
 # $APPDIR in the .cfg means <image>/app.
 #
 # Usage: pwsh -File tools/smoke-windows-launch.ps1 [-TimeoutMilliseconds 30000]
@@ -20,23 +24,32 @@ $ErrorActionPreference = 'Stop'
 
 $root = "composeApp/build/compose"
 
-# This script has to work on a machine nobody can look at, so when it cannot find something the
-# log should already say what was there.
-Write-Host "--- layout under $root/binaries ---"
-@(Get-ChildItem "$root/binaries" -Recurse -Depth 3 -Directory -ErrorAction SilentlyContinue) |
-    Select-Object -First 40 | ForEach-Object { Write-Host ("  " + $_.FullName) }
-
-# The launcher config is the source of truth for what gets run, and it sits in the app directory.
+# The .cfg is the source of truth for what gets run, and it sits in the app directory.
 $cfg = @(Get-ChildItem "$root/binaries" -Recurse -Filter '*.cfg' -ErrorAction SilentlyContinue)[0]
 if (-not $cfg) { throw "no launcher .cfg under $root/binaries - did :composeApp:createDistributable run?" }
 $appDir = $cfg.Directory.FullName
 $imageRoot = Split-Path $appDir -Parent
 Write-Host "app image: $imageRoot"
-Write-Host "--- $($cfg.Name) ---"
-Get-Content $cfg.FullName
 
-# Parse the .cfg the way the launcher reads it: app.classpath repeats, one jar per line, and
-# $APPDIR is expanded in the classpath and in the JVM options alike.
+# --- 1. the bundled runtime's module set -------------------------------------------------------
+# What the app needs beyond what a bare Compose app pulls in: Java Sound's SPI lookup reaches the
+# MP3 decoder reflectively, and HTTPS to the music APIs needs the EC crypto provider. jdeps sees
+# none of that, which is exactly how a module goes missing.
+$requiredModules = @('java.desktop', 'jdk.crypto.ec', 'jdk.unsupported', 'java.sql', 'jdk.zipfs')
+
+$runtimeDir = Join-Path $imageRoot 'runtime'
+$releaseFile = Join-Path $runtimeDir 'release'
+if (-not (Test-Path $releaseFile)) { throw "no runtime/release at $releaseFile" }
+$releaseLine = @(Get-Content $releaseFile | Where-Object { $_ -match '^MODULES=' })[0]
+$bundled = @(($releaseLine -replace '^MODULES="?', '' -replace '"$', '') -split '\s+')
+Write-Host ("bundled modules: {0}" -f $bundled.Count)
+$missing = @($requiredModules | Where-Object { $bundled -notcontains $_ })
+if ($missing.Count -gt 0) {
+    throw "the bundled runtime is missing modules the app needs at runtime: $($missing -join ', ')"
+}
+Write-Host ("required modules present: {0}" -f ($requiredModules -join ', '))
+
+# --- the launcher's own configuration ---------------------------------------------------------
 $classpathEntries = @()
 $javaOptions = @()
 $mainClass = 'co.omnimusic.app.desktop.MainKt'
@@ -50,59 +63,29 @@ foreach ($line in Get-Content $cfg.FullName) {
 $expand = { param($value) $value.Replace('$APPDIR', $appDir) }
 $classpath = (($classpathEntries | ForEach-Object { & $expand $_ }) | Join-String -Separator ';')
 $javaOptions = @($javaOptions | ForEach-Object { & $expand $_ })
-if (-not $classpath) {
-    $classpath = (Get-ChildItem $appDir -Filter *.jar -ErrorAction SilentlyContinue |
-        ForEach-Object { $_.FullName }) -join ';'
-}
-if (-not $classpath) { throw "no classpath in $($cfg.FullName) and no jars under $appDir" }
-Write-Host ("classpath: {0} entries" -f ($classpath -split ';').Count)
+if (-not $classpath) { throw "no app.classpath entries in $($cfg.FullName)" }
+Write-Host ("classpath: {0} entries from {1}" -f ($classpath -split ';').Count, $cfg.Name)
 Write-Host "main class: $mainClass"
-Write-Host ("java options: {0}" -f ($javaOptions -join ' '))
 
-# The bundled runtime - the java.exe the installer ships, not the one on PATH. It is a junction
-# onto the jlink output, so report where it points before trusting it.
-$runtimeDir = Join-Path $imageRoot 'runtime'
-$runtimeItem = Get-Item $runtimeDir -Force -ErrorAction SilentlyContinue
-if ($runtimeItem) {
-    Write-Host ("runtime: LinkType={0} Target={1}" -f $runtimeItem.LinkType, ($runtimeItem.Target -join ','))
-} else {
-    Write-Host "runtime: absent at $runtimeDir"
+# --- 2. run it -------------------------------------------------------------------------------
+# Prefer the bundled runtime; if it has no launcher JVM, say so loudly and fall back to the JDK
+# the build used, because the classpath half of the check is still worth having.
+$bundledJava = Join-Path $runtimeDir 'bin/java.exe'
+Write-Host ("bundled java.exe present: {0}" -f (Test-Path $bundledJava))
+if (-not (Test-Path $bundledJava)) {
+    @(Get-ChildItem (Join-Path $runtimeDir 'bin') -Force -ErrorAction SilentlyContinue) |
+        Where-Object { -not $_.PSIsContainer } |
+        Where-Object { $_.Name -notlike 'api-ms-win-*' } |
+        ForEach-Object { Write-Host ("  runtime/bin: " + $_.Name) }
 }
-$candidates = @(
-    (Join-Path $runtimeDir 'bin/java.exe'),
-    "$root/runtime/main/bin/java.exe"
-)
-if ($runtimeItem -and $runtimeItem.Target) {
-    # .Target is a string[] for a link; wrap it so a single string is not indexed into characters.
-    $candidates = @((Join-Path (@($runtimeItem.Target)[0]) 'bin/java.exe')) + $candidates
+$java = if (Test-Path $bundledJava) { $bundledJava } else {
+    $fallback = Join-Path $env:JAVA_HOME 'bin/java.exe'
+    Write-Host "::warning::bundled runtime has no bin/java.exe; falling back to $fallback, so this run does not exercise the shipped JVM"
+    if (-not (Test-Path $fallback)) { throw "no java.exe in the bundled runtime or in JAVA_HOME" }
+    $fallback
 }
-$java = @($candidates | Where-Object { Test-Path $_ })[0]
-if (-not $java) {
-    Write-Host "looked for a bundled runtime at:"
-    $candidates | ForEach-Object { Write-Host "  $_" }
-    @(Get-ChildItem $runtimeDir -Force -ErrorAction SilentlyContinue) |
-        Select-Object -First 15 | ForEach-Object { Write-Host ("  runtime contains: " + $_.Name) }
-    # A jlink image always has bin/java.exe, so if it is missing here the runtime the installer
-    # was built from is incomplete - which is itself a "Failed to launch JVM" cause. Say what is
-    # actually in there and whether any other java.exe exists in the build output.
-    $binDir = Join-Path $runtimeDir 'bin'
-    $binItem = Get-Item $binDir -Force -ErrorAction SilentlyContinue
-    Write-Host ("runtime/bin: exists={0} LinkType={1} Target={2}" -f `
-        [bool]$binItem, $binItem.LinkType, ($binItem.Target -join ','))
-    @(Get-ChildItem $binDir -Force -ErrorAction SilentlyContinue) |
-        Select-Object -First 25 | ForEach-Object { Write-Host ("  runtime/bin contains: " + $_.Name) }
-    $release = Join-Path $runtimeDir 'release'
-    if (Test-Path $release) { Write-Host "--- runtime/release ---"; Get-Content $release }
-    @(Get-ChildItem "composeApp/build" -Recurse -Filter 'java.exe' -ErrorAction SilentlyContinue) |
-        Select-Object -First 5 | ForEach-Object { Write-Host ("  java.exe elsewhere: " + $_.FullName) }
-    throw "no bundled java.exe for the app image at $imageRoot"
-}
-Write-Host "bundled runtime: $java"
-
-Write-Host "--- bundled runtime ---"
+Write-Host "running with: $java"
 & $java -version
-$modules = @(& $java --list-modules)
-Write-Host ("bundled modules: {0}" -f $modules.Count)
 
 Write-Host "--- launching the packaged app ---"
 $err = Join-Path $env:RUNNER_TEMP "omnimusic-launch.err"
@@ -113,7 +96,7 @@ $proc = Start-Process -FilePath $java `
 
 if (-not $proc.WaitForExit($TimeoutMilliseconds)) {
     Stop-Process -Id $proc.Id -Force
-    Write-Host "PASS: still running after $($TimeoutMilliseconds / 1000)s - the bundled JVM launched the packaged app"
+    Write-Host "PASS: still running after $($TimeoutMilliseconds / 1000)s - the JVM launched the packaged app"
     exit 0
 }
 

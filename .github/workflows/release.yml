@@ -56,6 +56,18 @@ jobs:
       - name: Make sure Inno Setup is available
         if: matrix.os == 'windows-latest'
         run: pwsh -File tools/ensure-innosetup.ps1
+      - name: Discard any cached compose output
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          # The launch smoke test found a bundled runtime with no bin/java.exe in it while
+          # createRuntimeImage was UP-TO-DATE from an earlier run. Regenerating it from scratch
+          # says whether that was a stale cache or how the image really is - and an installer
+          # built from a fresh runtime is the one worth shipping either way.
+          if (Test-Path composeApp/build/compose) {
+            Remove-Item composeApp/build/compose -Recurse -Force
+            Write-Host "removed composeApp/build/compose"
+          }
       - name: Package for this OS
         run: ./gradlew :composeApp:packageDistributionForCurrentOS --stacktrace
       - name: Create the app image the smoke test launches
