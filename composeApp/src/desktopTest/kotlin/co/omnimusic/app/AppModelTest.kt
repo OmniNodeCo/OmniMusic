@@ -463,6 +463,23 @@ class AppModelTest {
         assertEquals("One More Time", model.playState.track?.title)
     }
 
+    fun testASeekTheDecoderRefusesBecomesANoticeNotACrash() {
+        val model = model()
+        model.play(listOf(trackOne, trackTwo))
+        audio.failNextSeekWith = "cannot seek this stream"
+
+        // The arrow keys reach the audio output through handleKeyAction, which the desktop window
+        // calls from onPreviewKeyEvent - an exception escaping there lands inside composition.
+        assertTrue(model.handleKeyAction(KeyAction.SEEK_FORWARD))
+        assertEquals("cannot seek this stream", model.notice)
+
+        // And the player is still usable afterwards.
+        model.dismissNotice()
+        assertTrue(model.handleKeyAction(KeyAction.SEEK_FORWARD))
+        assertNull(model.notice)
+        assertEquals(10_000L, model.playState.positionMillis)
+    }
+
     fun testTransportKeysAreIgnoredWhenNothingIsPlaying() {
         val model = model()
         assertFalse(model.handleKeyAction(KeyAction.TOGGLE_PLAY_PAUSE))
@@ -843,6 +860,7 @@ private class FakeAudio : AudioOutput {
     private var ready = false
     private var playing = false
     var failNextPrepareWith: String? = null
+    var failNextSeekWith: String? = null
 
     override fun prepare(source: AudioSource) {
         failNextPrepareWith?.let { message ->
@@ -866,7 +884,12 @@ private class FakeAudio : AudioOutput {
         playing = false
     }
 
-    override fun seekTo(positionMillis: Long) = Unit
+    override fun seekTo(positionMillis: Long) {
+        failNextSeekWith?.let { message ->
+            failNextSeekWith = null
+            throw AudioSourceException(message)
+        }
+    }
 
     /** Always -1, so the engine accumulates [PlaybackEngine.advance] ticks deterministically. */
     override fun positionMillis(): Long = -1L

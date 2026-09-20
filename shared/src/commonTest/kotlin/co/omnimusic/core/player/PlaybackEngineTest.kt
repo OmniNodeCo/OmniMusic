@@ -1,12 +1,14 @@
 package co.omnimusic.core.player
 
 import co.omnimusic.core.audio.AudioSource
+import co.omnimusic.core.audio.AudioSourceException
 import co.omnimusic.core.model.Track
 import co.omnimusic.core.testing.FakeAudioOutput
 import co.omnimusic.core.testing.testQueue
 import co.omnimusic.core.testing.testTrack
 import kotlin.random.Random
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -416,6 +418,19 @@ class PlaybackEngineTest {
         engine.seekTo(-50)
         assertEquals(0L, engine.state().positionMillis)
         assertEquals(0f, engine.state().progress)
+    }
+
+    fun testARefusedSeekLeavesTheReportedPositionWhereTheAudioIs() {
+        val engine = engine()
+        engine.playQueue(testQueue(1))
+        engine.seekTo(30_000)
+        assertEquals(30_000L, engine.state().positionMillis)
+
+        // A decoder that cannot rewind throws. The position must not move anyway, or the UI shows a
+        // time the audio is nowhere near.
+        audio.failNextSeekWith = "cannot seek this stream"
+        assertFailsWith<AudioSourceException> { engine.seekTo(90_000) }
+        assertEquals(30_000L, engine.state().positionMillis)
     }
 
     fun testProgressTracksTheClock() {

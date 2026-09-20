@@ -220,8 +220,11 @@ class PlaybackEngine(
 
     fun seekTo(positionMillis: Long) = exclusive {
         val target = positionMillis.coerceIn(0L, durationMillis.coerceAtLeast(positionMillis))
-        this.positionMillis = if (durationMillis > 0) target.coerceAtMost(durationMillis) else target
-        audio.seekTo(this.positionMillis)
+        val clamped = if (durationMillis > 0) target.coerceAtMost(durationMillis) else target
+        // Ask the output first. A decoder that cannot rewind throws, and if the reported position
+        // had already moved, the UI would show a time the audio is nowhere near.
+        audio.seekTo(clamped)
+        this.positionMillis = clamped
         notifyStateChanged()
     }
 

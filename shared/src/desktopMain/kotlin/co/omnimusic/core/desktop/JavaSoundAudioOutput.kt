@@ -187,8 +187,11 @@ class JavaSoundAudioOutput(
     }
 
     private fun openRemote(url: String): AudioInputStream {
+        // Buffered rather than streamed. `AudioSystem.getAudioInputStream(URL)` hands back the
+        // connection's own stream, which cannot be marked, so `reset()` throws — and `reset()` is
+        // the only way `seekTo` works. Every seek of a remote track failed because of it.
         val raw = try {
-            AudioSystem.getAudioInputStream(URI.create(url).toURL())
+            RemoteAudioBuffer.open(URI.create(url).toURL())
         } catch (e: UnsupportedAudioFileException) {
             throw UnsupportedAudioException(
                 "No decoder for this stream. The JDK can play WAV/AIFF/AU natively; MP3 and AAC need " +
@@ -196,7 +199,7 @@ class JavaSoundAudioOutput(
                 e,
             )
         } catch (e: IOException) {
-            throw AudioSourceException("could not open $url", e)
+            throw AudioSourceException("could not read $url", e)
         }
         return decoded(raw, url)
     }

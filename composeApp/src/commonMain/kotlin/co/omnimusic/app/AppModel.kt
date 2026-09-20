@@ -408,9 +408,26 @@ class AppModel(private val environment: AppEnvironment) {
 
     fun previous(): Boolean = environment.engine.previous().also { persistSession() }
 
-    fun seekTo(millis: Long) = environment.engine.seekTo(millis)
+    /**
+     * Seeks absolutely. A seek can fail — a decoder that cannot rewind, a stream that is gone — and
+     * that failure used to escape through the key handler into composition. It belongs in the same
+     * notice channel as every other error, not in the crash handler.
+     */
+    fun seekTo(millis: Long) {
+        seek { environment.engine.seekTo(millis) }
+    }
 
-    fun seekBy(deltaMillis: Long) = environment.engine.seekBy(deltaMillis)
+    fun seekBy(deltaMillis: Long) {
+        seek { environment.engine.seekBy(deltaMillis) }
+    }
+
+    private inline fun seek(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: Exception) {
+            notice = e.message ?: "Could not seek"
+        }
+    }
 
     fun toggleShuffle() = environment.engine.toggleShuffle()
 

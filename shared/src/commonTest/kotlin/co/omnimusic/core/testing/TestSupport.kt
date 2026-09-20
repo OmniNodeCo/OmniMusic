@@ -40,6 +40,9 @@ class FakeAudioOutput : AudioOutput {
     /** When non-null, the next [prepare] throws with this message. */
     var failNextPrepareWith: String? = null
 
+    /** When non-null, the next [seekTo] throws with this message. */
+    var failNextSeekWith: String? = null
+
     override fun prepare(source: AudioSource) {
         commands += "prepare"
         failNextPrepareWith?.let { message ->
@@ -69,6 +72,10 @@ class FakeAudioOutput : AudioOutput {
 
     override fun seekTo(positionMillis: Long) {
         commands += "seek:$positionMillis"
+        failNextSeekWith?.let { message ->
+            failNextSeekWith = null
+            throw AudioSourceException(message)
+        }
         reportedPosition = if (reportedPosition >= 0) positionMillis else reportedPosition
     }
 

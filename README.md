@@ -116,7 +116,7 @@ The core, the UI state holder and every test can be built and run with nothing b
 
 ```bash
 ./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
-./tools/run-tests.sh         # compile core + UI + tests, run 272 tests
+./tools/run-tests.sh         # compile core + UI + tests, run 279 tests
 ./tools/check-ui.sh          # type-check composeApp/ against compile-only Compose stubs
 ./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
 ```
@@ -140,7 +140,7 @@ Be precise about what has actually been executed, because it is not everything:
 
 **Verified in this repository** — `./tools/run-tests.sh` compiles `shared/src/commonMain`,
 `shared/src/desktopMain`, `composeApp/src/commonMain`, every test source set and the Compose stubs
-with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **272 tests, all passing**. They cover the
+with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **279 tests, all passing**. They cover the
 JSON parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
 playback engine (shuffle order, repeat modes, seek clamping, dead-stream skipping, queue mutation,
 session restore), the LRC parser (centisecond and millisecond fractions, `[offset:]`, multi-timestamp
@@ -185,6 +185,24 @@ Two of the bugs found were behavioural, not typographical, and both broke sessio
 - Restoring a session fired the same `onTrackStarted` path as pressing play, so reopening the app
   counted as a play (inflating play counts and reordering "recently played") and re-saved the
   position as 0:00 before the seek landed. A restore now records neither.
+
+A third was reported by a user and is the only one of the three found outside this repository:
+
+- **Seeking a remote track failed with `cannot seek this stream`.** `openRemote` handed
+  `AudioSystem` the URL itself, and `seekTo` rewinds with `reset()`. Java Sound's own reader marks
+  **200 bytes** to parse the header, and the JDK wraps a URL stream in an **8 KB** buffer — enough
+  for that header reset, so the stream opens and plays. But once playback has read past the buffer
+  the mark is gone, and `reset()` throws `Resetting to invalid mark`. 8 KB of 16-bit mono is about a
+  fifth of a second, so every seek after the first instant failed: the arrow keys, the seek bar,
+  resuming a saved position, and looping a track with repeat-one. The fix is
+  `RemoteAudioBuffer.open`, which decodes from a buffered copy of the body instead of the
+  connection, so the mark a seek returns to always exists. `RemoteAudioBufferTest` proves the old
+  code path fails and the new one does not — reverting `open` to `getAudioInputStream(url)` makes
+  `testAStreamOpenedFromTheNetworkCanBeRewoundPastTheBuffer` fail with exactly the reported error.
+  Two supporting fixes came out of the same report: `PlaybackEngine.seekTo` no longer moves the
+  reported position when the output refuses the seek (it used to, so the UI showed a time the audio
+  was not at), and `AppModel` routes seek failures into the notice channel instead of letting an
+  exception escape `onPreviewKeyEvent` into composition.
 
 **Built in CI, never launched** — the Gradle build, the Android APK and the desktop packages.
 This sandbox has no Android SDK and cannot reach `repo1.maven.org` or `services.gradle.org`, so
