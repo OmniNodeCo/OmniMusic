@@ -68,19 +68,14 @@ Write-Host ("classpath: {0} entries from {1}" -f ($classpath -split ';').Count, 
 Write-Host "main class: $mainClass"
 
 # --- 2. run it -------------------------------------------------------------------------------
-# Prefer the bundled runtime; if it has no launcher JVM, say so loudly and fall back to the JDK
-# the build used, because the classpath half of the check is still worth having.
+# The bundled runtime ships no launcher executables at all - bin holds only DLLs, because
+# jpackage's own launcher enters the JVM through jli.dll and never spawns java.exe. So the classpath
+# check runs on the JDK the build used, which cannot vouch for the shipped runtime's module set;
+# that is what check 1 above is for, and it reads it from the runtime's own release file.
 $bundledJava = Join-Path $runtimeDir 'bin/java.exe'
-Write-Host ("bundled java.exe present: {0}" -f (Test-Path $bundledJava))
-if (-not (Test-Path $bundledJava)) {
-    @(Get-ChildItem (Join-Path $runtimeDir 'bin') -Force -ErrorAction SilentlyContinue) |
-        Where-Object { -not $_.PSIsContainer } |
-        Where-Object { $_.Name -notlike 'api-ms-win-*' } |
-        ForEach-Object { Write-Host ("  runtime/bin: " + $_.Name) }
-}
 $java = if (Test-Path $bundledJava) { $bundledJava } else {
     $fallback = Join-Path $env:JAVA_HOME 'bin/java.exe'
-    Write-Host "::warning::bundled runtime has no bin/java.exe; falling back to $fallback, so this run does not exercise the shipped JVM"
+    Write-Host "the bundled runtime has no bin/java.exe (launcher executables are stripped; jli.dll is what the launcher uses)"
     if (-not (Test-Path $fallback)) { throw "no java.exe in the bundled runtime or in JAVA_HOME" }
     $fallback
 }

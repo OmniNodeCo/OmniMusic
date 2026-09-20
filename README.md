@@ -223,12 +223,23 @@ for everything that goes wrong before the first frame. Three things changed:
   `<config dir>/startup-error.log` — `%APPDATA%\OmniMusic` on Windows — plus a dialog, so the next
   broken install reports a cause instead of one opaque line.
 
-`tools/smoke-windows-launch.ps1` is what makes any of this checkable. Both workflows run it on
-Windows after packaging and it does what the launcher does: the bundled `java.exe`, the packaged
-classpath, the real main class. A missing module or a broken classpath now fails the build instead of
-reaching the user. What it cannot prove is that a window draws on a machine that has one — a runner
-has no desktop, so the script fails only on the launcher's own signatures and treats a failure
-*inside* the window toolkit as a launched JVM.
+`tools/smoke-windows-launch.ps1` is what makes any of this checkable, and it runs in both workflows
+after packaging. It makes two claims, and it is worth being exact about which is which:
+
+- **The bundled runtime carries the modules the app needs.** Read from the runtime's own `release`
+  file: **71 modules**, including `java.desktop`, `jdk.crypto.ec`, `jdk.unsupported`, `java.sql` and
+  `jdk.zipfs`, all of which the script asserts by name. This is the half of the symptom jdeps cannot
+  see, so it is the half worth pinning down.
+- **The packaged classpath resolves and starts the app.** The script parses `OmniMusic.cfg` the way
+  the launcher does — `app.classpath` repeats once per jar, 48 entries here, `app.mainclass`, and
+  `$APPDIR` expanded in the JVM options too — and runs it. The process was **still alive after 30
+  seconds**, so the main class resolved and Compose initialised rather than dying on a missing class.
+
+What that second check deliberately does *not* use is the shipped JVM: the bundled runtime's `bin`
+holds only DLLs, because jpackage's launcher enters the JVM through `jli.dll` and never spawns
+`java.exe`. The script falls back to the build JDK for that run and says so in the log. So the
+module set is verified against the real artifact and the classpath is verified against the real jars
+— but no shipped `OmniMusic.exe` has been double-clicked, and no window has been drawn.
 
 What no amount of building proves: nobody has opened a window. Rendering, the real network calls to
 Deezer and LRCLIB, and audio output have never been exercised end to end.
