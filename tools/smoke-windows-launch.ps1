@@ -82,6 +82,19 @@ if (-not $java) {
     $candidates | ForEach-Object { Write-Host "  $_" }
     @(Get-ChildItem $runtimeDir -Force -ErrorAction SilentlyContinue) |
         Select-Object -First 15 | ForEach-Object { Write-Host ("  runtime contains: " + $_.Name) }
+    # A jlink image always has bin/java.exe, so if it is missing here the runtime the installer
+    # was built from is incomplete - which is itself a "Failed to launch JVM" cause. Say what is
+    # actually in there and whether any other java.exe exists in the build output.
+    $binDir = Join-Path $runtimeDir 'bin'
+    $binItem = Get-Item $binDir -Force -ErrorAction SilentlyContinue
+    Write-Host ("runtime/bin: exists={0} LinkType={1} Target={2}" -f `
+        [bool]$binItem, $binItem.LinkType, ($binItem.Target -join ','))
+    @(Get-ChildItem $binDir -Force -ErrorAction SilentlyContinue) |
+        Select-Object -First 25 | ForEach-Object { Write-Host ("  runtime/bin contains: " + $_.Name) }
+    $release = Join-Path $runtimeDir 'release'
+    if (Test-Path $release) { Write-Host "--- runtime/release ---"; Get-Content $release }
+    @(Get-ChildItem "composeApp/build" -Recurse -Filter 'java.exe' -ErrorAction SilentlyContinue) |
+        Select-Object -First 5 | ForEach-Object { Write-Host ("  java.exe elsewhere: " + $_.FullName) }
     throw "no bundled java.exe for the app image at $imageRoot"
 }
 Write-Host "bundled runtime: $java"
