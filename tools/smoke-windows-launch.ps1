@@ -7,8 +7,8 @@
 # JVM options from the launcher's own .cfg, and the main class that .cfg names.
 #
 # It needs an app image, which `packageExe` does not leave behind - run `createDistributable` too.
-# Note that <image>/runtime is a junction onto the jlink output, so recursion does not descend into
-# it; the runtime is resolved by path, and `Test-Path` follows the link.
+# The layout is <image>/app/<name>.cfg next to the jars, <image>/runtime for the jlink image, and
+# $APPDIR in the .cfg means <image>/app.
 #
 # Usage: pwsh -File tools/smoke-windows-launch.ps1 [-TimeoutMilliseconds 30000]
 
@@ -26,51 +26,65 @@ Write-Host "--- layout under $root/binaries ---"
 @(Get-ChildItem "$root/binaries" -Recurse -Depth 3 -Directory -ErrorAction SilentlyContinue) |
     Select-Object -First 40 | ForEach-Object { Write-Host ("  " + $_.FullName) }
 
-# The launcher config is the source of truth for what gets run, and it sits at the image root.
+# The launcher config is the source of truth for what gets run, and it sits in the app directory.
 $cfg = @(Get-ChildItem "$root/binaries" -Recurse -Filter '*.cfg' -ErrorAction SilentlyContinue)[0]
 if (-not $cfg) { throw "no launcher .cfg under $root/binaries - did :composeApp:createDistributable run?" }
-$imageRoot = $cfg.Directory.FullName
+$appDir = $cfg.Directory.FullName
+$imageRoot = Split-Path $appDir -Parent
 Write-Host "app image: $imageRoot"
 Write-Host "--- $($cfg.Name) ---"
 Get-Content $cfg.FullName
-Write-Host "--- image contents ---"
-Get-ChildItem $imageRoot -Force | ForEach-Object {
-    Write-Host ("  {0}  {1}  {2}" -f $_.Mode, $_.Name, $_.Target)
-}
 
-# The bundled runtime, i.e. the java.exe the installer ships - not the one on PATH.
-$runtimeCandidates = @(
-    (Join-Path $imageRoot 'runtime/bin/java.exe'),
+# Parse the .cfg the way the launcher reads it: app.classpath repeats, one jar per line, and
+# $APPDIR is expanded in the classpath and in the JVM options alike.
+$classpathEntries = @()
+$javaOptions = @()
+$mainClass = 'co.omnimusic.app.desktop.MainKt'
+foreach ($line in Get-Content $cfg.FullName) {
+    switch -Regex ($line) {
+        '^\s*app\.classpath\s*=\s*(.+)$' { $classpathEntries += $matches[1].Trim(); break }
+        '^\s*app\.mainclass\s*=\s*(.+)$' { $mainClass = $matches[1].Trim(); break }
+        '^\s*java-options\s*=\s*(.+)$' { $javaOptions += $matches[1].Trim(); break }
+    }
+}
+$expand = { param($value) $value.Replace('$APPDIR', $appDir) }
+$classpath = (($classpathEntries | ForEach-Object { & $expand $_ }) | Join-String -Separator ';')
+$javaOptions = @($javaOptions | ForEach-Object { & $expand $_ })
+if (-not $classpath) {
+    $classpath = (Get-ChildItem $appDir -Filter *.jar -ErrorAction SilentlyContinue |
+        ForEach-Object { $_.FullName }) -join ';'
+}
+if (-not $classpath) { throw "no classpath in $($cfg.FullName) and no jars under $appDir" }
+Write-Host ("classpath: {0} entries" -f ($classpath -split ';').Count)
+Write-Host "main class: $mainClass"
+Write-Host ("java options: {0}" -f ($javaOptions -join ' '))
+
+# The bundled runtime - the java.exe the installer ships, not the one on PATH. It is a junction
+# onto the jlink output, so report where it points before trusting it.
+$runtimeDir = Join-Path $imageRoot 'runtime'
+$runtimeItem = Get-Item $runtimeDir -Force -ErrorAction SilentlyContinue
+if ($runtimeItem) {
+    Write-Host ("runtime: LinkType={0} Target={1}" -f $runtimeItem.LinkType, ($runtimeItem.Target -join ','))
+} else {
+    Write-Host "runtime: absent at $runtimeDir"
+}
+$candidates = @(
+    (Join-Path $runtimeDir 'bin/java.exe'),
     "$root/runtime/main/bin/java.exe"
 )
-$java = @($runtimeCandidates | Where-Object { Test-Path $_ })[0]
+if ($runtimeItem -and $runtimeItem.Target) {
+    # .Target is a string[] for a link; wrap it so a single string is not indexed into characters.
+    $candidates = @((Join-Path (@($runtimeItem.Target)[0]) 'bin/java.exe')) + $candidates
+}
+$java = @($candidates | Where-Object { Test-Path $_ })[0]
 if (-not $java) {
     Write-Host "looked for a bundled runtime at:"
-    $runtimeCandidates | ForEach-Object { Write-Host "  $_" }
+    $candidates | ForEach-Object { Write-Host "  $_" }
+    @(Get-ChildItem $runtimeDir -Force -ErrorAction SilentlyContinue) |
+        Select-Object -First 15 | ForEach-Object { Write-Host ("  runtime contains: " + $_.Name) }
     throw "no bundled java.exe for the app image at $imageRoot"
 }
 Write-Host "bundled runtime: $java"
-
-$classpath = $null
-$mainClass = 'co.omnimusic.app.desktop.MainKt'
-$javaOptions = @()
-foreach ($line in Get-Content $cfg.FullName) {
-    if ($line -match '^\s*app\.classpath\s*=\s*(.+)$') {
-        $classpath = (($matches[1].Trim() -split ';') |
-            ForEach-Object { $_.Replace('$APPDIR', $imageRoot) } |
-            Join-String -Separator ';')
-    }
-    elseif ($line -match '^\s*main-class\s*=\s*(.+)$') { $mainClass = $matches[1].Trim() }
-    elseif ($line -match '^\s*java-options\s*=\s*(.+)$') { $javaOptions += $matches[1].Trim() }
-}
-if (-not $classpath) {
-    # No app.classpath entry means the whole app directory is the classpath.
-    $classpath = (Get-ChildItem (Join-Path $imageRoot 'app') -Filter *.jar -ErrorAction SilentlyContinue |
-        ForEach-Object { $_.FullName }) -join ';'
-}
-if (-not $classpath) { throw "no classpath in $($cfg.FullName) and no jars under $imageRoot\app" }
-Write-Host "classpath: $classpath"
-Write-Host "main class: $mainClass"
 
 Write-Host "--- bundled runtime ---"
 & $java -version
