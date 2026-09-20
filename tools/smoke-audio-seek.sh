@@ -9,11 +9,24 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-APP_DIR="composeApp/build/compose/binaries/main/app/OmniMusic"
-if [ ! -d "$APP_DIR/app" ]; then
-  echo "no app image at $APP_DIR - run :composeApp:createDistributable first" >&2
-  exit 1
+# Discover the image rather than naming it: the directory follows the app name, which differs in
+# case from the Linux package name, and guessing it is how this script would fail silently.
+BINARIES="composeApp/build/compose/binaries/main/app"
+APP_DIR="$(find "$BINARIES" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1)"
+if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR/app" ]; then
+  echo "what is under $BINARIES:" >&2
+  find composeApp/build/compose/binaries -maxdepth 3 2>/dev/null | head -20 >&2
+  fail "no app image under $BINARIES (found: ${APP_DIR:-nothing})"
 fi
+echo "app image: $APP_DIR"
+
+# Job logs are awkward to reach after the fact, so failures are also raised as annotations, which
+# the check-runs API returns directly. Without this the only evidence is "exit code 1".
+fail() {
+  echo "FAIL: $1" >&2
+  echo "::error::$1"
+  exit 1
+}
 
 JAVA="${JAVA_HOME:+$JAVA_HOME/bin/}java"
 JAVAC="${JAVA_HOME:+$JAVA_HOME/bin/}javac"
@@ -29,12 +42,18 @@ echo "decoder present: $(find "$APP_DIR/app" -name 'mp3spi*.jar' -o -name 'jlaye
 PREVIEW="$(curl -fsS 'https://api.deezer.com/search?q=daft%20punk&limit=1' \
   | python3 -c 'import json,sys; print(json.load(sys.stdin)["data"][0]["preview"])')"
 if [ -z "$PREVIEW" ]; then
-  echo "could not get a preview URL from the Deezer API" >&2
-  exit 1
+  fail "could not get a preview URL from the Deezer API"
 fi
 echo "preview: ${PREVIEW%%\?*}"
 
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
-"$JAVAC" -nowarn -cp "$CLASSPATH" -d "$OUT" tools/AudioSeekCheck.java
-"$JAVA" -cp "$OUT:$CLASSPATH" AudioSeekCheck "$PREVIEW"
+command -v "$JAVAC" >/dev/null 2>&1 || fail "no javac on PATH (JAVA_HOME=${JAVA_HOME:-unset})"
+
+if ! "$JAVAC" -nowarn -cp "$CLASSPATH" -d "$OUT" tools/AudioSeekCheck.java >/tmp/javac.log 2>&1; then
+  fail "javac could not compile against the packaged jars: $(tr '\n' ' ' </tmp/javac.log | head -c 500)"
+fi
+
+if ! "$JAVA" -cp "$OUT:$CLASSPATH" AudioSeekCheck "$PREVIEW"; then
+  fail "the packaged decoder could not seek a real MP3 (see the step output above)"
+fi
