@@ -7,6 +7,8 @@
 # JVM options from the launcher's own .cfg, and the main class that .cfg names.
 #
 # It needs an app image, which `packageExe` does not leave behind - run `createDistributable` too.
+# Note that <image>/runtime is a junction onto the jlink output, so recursion does not descend into
+# it; the runtime is resolved by path, and `Test-Path` follows the link.
 #
 # Usage: pwsh -File tools/smoke-windows-launch.ps1 [-TimeoutMilliseconds 30000]
 
@@ -18,25 +20,37 @@ $ErrorActionPreference = 'Stop'
 
 $root = "composeApp/build/compose"
 
-# Print the layout first: this script has to work on a machine nobody can look at, so when it
-# cannot find something the log should say what was actually there.
+# This script has to work on a machine nobody can look at, so when it cannot find something the
+# log should already say what was there.
 Write-Host "--- layout under $root/binaries ---"
 @(Get-ChildItem "$root/binaries" -Recurse -Depth 3 -Directory -ErrorAction SilentlyContinue) |
     Select-Object -First 40 | ForEach-Object { Write-Host ("  " + $_.FullName) }
 
-# The bundled runtime: the java.exe the installer ships, not the one on PATH.
-$javaExe = @(Get-ChildItem $root -Recurse -Filter 'java.exe' -ErrorAction SilentlyContinue)[0]
-if (-not $javaExe) { throw "no bundled java.exe under $root - did :composeApp:createDistributable run?" }
-$java = $javaExe.FullName
+# The launcher config is the source of truth for what gets run, and it sits at the image root.
+$cfg = @(Get-ChildItem "$root/binaries" -Recurse -Filter '*.cfg' -ErrorAction SilentlyContinue)[0]
+if (-not $cfg) { throw "no launcher .cfg under $root/binaries - did :composeApp:createDistributable run?" }
+$imageRoot = $cfg.Directory.FullName
+Write-Host "app image: $imageRoot"
+Write-Host "--- $($cfg.Name) ---"
+Get-Content $cfg.FullName
+Write-Host "--- image contents ---"
+Get-ChildItem $imageRoot -Force | ForEach-Object {
+    Write-Host ("  {0}  {1}  {2}" -f $_.Mode, $_.Name, $_.Target)
+}
+
+# The bundled runtime, i.e. the java.exe the installer ships - not the one on PATH.
+$runtimeCandidates = @(
+    (Join-Path $imageRoot 'runtime/bin/java.exe'),
+    "$root/runtime/main/bin/java.exe"
+)
+$java = @($runtimeCandidates | Where-Object { Test-Path $_ })[0]
+if (-not $java) {
+    Write-Host "looked for a bundled runtime at:"
+    $runtimeCandidates | ForEach-Object { Write-Host "  $_" }
+    throw "no bundled java.exe for the app image at $imageRoot"
+}
 Write-Host "bundled runtime: $java"
 
-# The launcher config is the source of truth for what gets run.
-$cfg = @(Get-ChildItem "$root/binaries" -Recurse -Filter '*.cfg' -ErrorAction SilentlyContinue)[0]
-if (-not $cfg) { throw "no launcher .cfg under $root/binaries" }
-Write-Host "--- $($cfg.FullName) ---"
-Get-Content $cfg.FullName
-
-$imageRoot = $cfg.Directory.FullName
 $classpath = $null
 $mainClass = 'co.omnimusic.app.desktop.MainKt'
 $javaOptions = @()
