@@ -72,3 +72,6 @@ if ! "$JAVA" -cp "$OUT:$CLASSPATH" AudioSeekCheck "$PREVIEW" >/tmp/seek.log 2>&1
   fail "AudioSeekCheck: $(tr '\n' ' ' </tmp/seek.log | tail -c 600)"
 fi
 cat /tmp/seek.log
+# Job logs are hard to reach after the fact, so the verdict goes into the annotations too - on
+# success as well, because what the legacy rewind did on a real MP3 is the interesting half.
+echo "::notice::AudioSeekCheck: $(tr '\n' ' ' </tmp/seek.log | tail -c 500)"
