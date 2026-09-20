@@ -21,8 +21,8 @@ fail() {
 # Discover the image rather than naming it: the directory follows the app name, which differs in
 # case from the Linux package name, and guessing it is how this script would fail silently.
 BINARIES="composeApp/build/compose/binaries/main/app"
-APP_DIR="$(find "$BINARIES" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1)"
-if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR/app" ]; then
+APP_DIR="$(find "$BINARIES" -mindepth 1 -maxdepth 1 -type d -print -quit 2>/dev/null)"
+if [ -z "$APP_DIR" ]; then
   echo "what is under composeApp/build/compose:" >&2
   find composeApp/build/compose -maxdepth 4 2>/dev/null | head -30 >&2
   layout="$(find composeApp/build/compose -maxdepth 4 -type d 2>/dev/null | head -12 | tr '\n' ' ')"
@@ -30,14 +30,23 @@ if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR/app" ]; then
 fi
 echo "app image: $APP_DIR"
 
+# jpackage lays the image out differently per platform: jars sit in app/ on Windows and macOS, but
+# in lib/ on Linux. A hardcoded app/ is what made this fail on ubuntu.
+FIRST_JAR="$(find "$APP_DIR" -maxdepth 2 -name '*.jar' -print -quit 2>/dev/null)"
+if [ -z "$FIRST_JAR" ]; then
+  fail "no jars under $APP_DIR; contents: $(find "$APP_DIR" -maxdepth 2 2>/dev/null | head -12 | tr '\n' ' ')"
+fi
+JAR_DIR="$(dirname "$FIRST_JAR")"
+echo "jars: $JAR_DIR"
+
 JAVA="${JAVA_HOME:+$JAVA_HOME/bin/}java"
 JAVAC="${JAVA_HOME:+$JAVA_HOME/bin/}javac"
 command -v "$JAVAC" >/dev/null 2>&1 || JAVAC=javac
 command -v "$JAVA" >/dev/null 2>&1 || JAVA=java
 
-CLASSPATH="$(find "$APP_DIR/app" -name '*.jar' | tr '\n' ':')"
-echo "app jars: $(find "$APP_DIR/app" -name '*.jar' | wc -l)"
-echo "decoder present: $(find "$APP_DIR/app" -name 'mp3spi*.jar' -o -name 'jlayer*.jar' | tr '\n' ' ')"
+CLASSPATH="$(find "$JAR_DIR" -name '*.jar' | tr '\n' ':')"
+echo "app jars: $(find "$JAR_DIR" -name '*.jar' | wc -l)"
+echo "decoder present: $(find "$JAR_DIR" \( -name 'mp3spi*.jar' -o -name 'jlayer*.jar' \) | tr '\n' ' ')"
 
 # A live preview URL from the API the app uses. Signed and short-lived, which is fine: it is used
 # within seconds of being fetched.
