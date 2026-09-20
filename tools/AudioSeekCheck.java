@@ -34,8 +34,8 @@ public final class AudioSeekCheck {
         // 10 s, not 30: a Deezer preview is 30 s long, so seeking to its end finds no audio and the
         // check would fail for a reason that has nothing to do with seeking.
         byte[] fromThirty = readFrom(output.reopenedAt(10_000), 4096);
-        require(fromStart.length == 4096, "the decoder produced no audio at the start");
-        require(fromThirty.length == 4096, "the decoder produced no audio 10 s in");
+        require(fromStart.length == 4096, "the decoder produced " + fromStart.length + " of 4096 bytes at the start");
+        require(fromThirty.length == 4096, "the decoder produced " + fromThirty.length + " of 4096 bytes 10 s in");
         require(!java.util.Arrays.equals(fromStart, fromThirty),
                 "seeking 10 s in returned the same audio as the start - the seek did nothing");
         System.out.println("PASS: re-decoding lands 10 s in, on different audio");
@@ -61,11 +61,20 @@ public final class AudioSeekCheck {
 
     private static byte[] readFrom(AudioInputStream stream, int count) throws Exception {
         if (stream == null) throw new IllegalStateException("no stream to read from");
+        System.out.println("  format: " + stream.getFormat());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buffer = new byte[4096];
+        int emptyReads = 0;
         while (out.size() < count) {
             int read = stream.read(buffer, 0, Math.min(buffer.length, count - out.size()));
-            if (read <= 0) break;
+            // A decoder may report "nothing decoded yet" as 0, which is not end of stream. Treating
+            // it as EOF is how a working stream looks like an empty one.
+            if (read < 0) break;
+            if (read == 0) {
+                if (++emptyReads > 200) break;
+                continue;
+            }
+            emptyReads = 0;
             out.write(buffer, 0, read);
         }
         stream.close();

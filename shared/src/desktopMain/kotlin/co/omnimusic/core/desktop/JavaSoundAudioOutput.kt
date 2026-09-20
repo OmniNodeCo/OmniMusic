@@ -195,6 +195,7 @@ class JavaSoundAudioOutput(
         stopRequested = false
         val thread = Thread({
             val buffer = ByteArray(bufferSizeBytes)
+            var emptyReads = 0
             try {
                 while (!stopRequested) {
                     lock.lock()
@@ -205,7 +206,15 @@ class JavaSoundAudioOutput(
                     }
                     if (stopRequested) break
                     val read = input.read(buffer, 0, buffer.size)
-                    if (read <= 0) break
+                    if (read < 0) break
+                    if (read == 0) {
+                        // Some SPIs report "nothing decoded yet" as 0 rather than end of stream.
+                        // Treating that as EOF ends the track in silence; spinning forever on it is
+                        // worse, so give up only once it has happened a lot in a row.
+                        if (++emptyReads > 200) break
+                        continue
+                    }
+                    emptyReads = 0
                     output.write(buffer, 0, read)
                     framesWritten += read / output.format.frameSize
                 }
