@@ -32,9 +32,11 @@ echo "app image: $APP_DIR"
 
 # jpackage lays the image out differently per platform: jars sit in app/ on Windows and macOS, but
 # in lib/ on Linux. A hardcoded app/ is what made this fail on ubuntu.
-FIRST_JAR="$(find "$APP_DIR" -maxdepth 2 -name '*.jar' -print -quit 2>/dev/null)"
+# Depth 4 because the two platforms nest differently: Windows has <image>/app/*.jar, Linux has
+# <image>/lib/app/*.jar.
+FIRST_JAR="$(find "$APP_DIR" -maxdepth 4 -name '*.jar' -print -quit 2>/dev/null)"
 if [ -z "$FIRST_JAR" ]; then
-  fail "no jars under $APP_DIR; contents: $(find "$APP_DIR" -maxdepth 2 2>/dev/null | head -12 | tr '\n' ' ')"
+  fail "no jars under $APP_DIR; contents: $(find "$APP_DIR" -maxdepth 4 2>/dev/null | head -12 | tr '\n' ' ')"
 fi
 JAR_DIR="$(dirname "$FIRST_JAR")"
 echo "jars: $JAR_DIR"
