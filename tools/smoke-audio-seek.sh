@@ -9,17 +9,6 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-# Discover the image rather than naming it: the directory follows the app name, which differs in
-# case from the Linux package name, and guessing it is how this script would fail silently.
-BINARIES="composeApp/build/compose/binaries/main/app"
-APP_DIR="$(find "$BINARIES" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1)"
-if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR/app" ]; then
-  echo "what is under $BINARIES:" >&2
-  find composeApp/build/compose/binaries -maxdepth 3 2>/dev/null | head -20 >&2
-  fail "no app image under $BINARIES (found: ${APP_DIR:-nothing})"
-fi
-echo "app image: $APP_DIR"
-
 # Job logs are awkward to reach after the fact, so failures are also raised as annotations, which
 # the check-runs API returns directly. Without this the only evidence is "exit code 1".
 fail() {
@@ -27,6 +16,19 @@ fail() {
   echo "::error::$1"
   exit 1
 }
+
+
+# Discover the image rather than naming it: the directory follows the app name, which differs in
+# case from the Linux package name, and guessing it is how this script would fail silently.
+BINARIES="composeApp/build/compose/binaries/main/app"
+APP_DIR="$(find "$BINARIES" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1)"
+if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR/app" ]; then
+  echo "what is under composeApp/build/compose:" >&2
+  find composeApp/build/compose -maxdepth 4 2>/dev/null | head -30 >&2
+  layout="$(find composeApp/build/compose -maxdepth 4 -type d 2>/dev/null | head -12 | tr '\n' ' ')"
+  fail "no app image under $BINARIES; compose dirs: ${layout:-none}"
+fi
+echo "app image: $APP_DIR"
 
 JAVA="${JAVA_HOME:+$JAVA_HOME/bin/}java"
 JAVAC="${JAVA_HOME:+$JAVA_HOME/bin/}javac"
