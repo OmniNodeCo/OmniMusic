@@ -3,48 +3,60 @@
 # The installer's launcher reports "Failed to launch JVM" for anything that goes wrong before the
 # first frame - a JDK module missing from the bundled jlink runtime, a class the classpath does not
 # contain, an exception escaping main(). An installed build has no console, so a user sees that one
-# message and nothing else. This runs exactly what the launcher runs: the bundled runtime, the
-# packaged classpath, the real main class.
+# message and nothing else. This runs what the launcher runs: the bundled runtime, the classpath and
+# JVM options from the launcher's own .cfg, and the main class that .cfg names.
 #
 # It needs an app image, which `packageExe` does not leave behind - run `createDistributable` too.
 #
-# Usage: pwsh -File tools/smoke-windows-launch.ps1 [-Image <path to an app image>]
+# Usage: pwsh -File tools/smoke-windows-launch.ps1 [-TimeoutMilliseconds 30000]
 
 param(
-    [string]$Image = "",
     [int]$TimeoutMilliseconds = 30000
 )
 
 $ErrorActionPreference = 'Stop'
 
-function Resolve-AppImage {
-    param([string]$Explicit)
+$root = "composeApp/build/compose"
 
-    if ($Explicit) { return $Explicit }
+# Print the layout first: this script has to work on a machine nobody can look at, so when it
+# cannot find something the log should say what was actually there.
+Write-Host "--- layout under $root/binaries ---"
+@(Get-ChildItem "$root/binaries" -Recurse -Depth 3 -Directory -ErrorAction SilentlyContinue) |
+    Select-Object -First 40 | ForEach-Object { Write-Host ("  " + $_.FullName) }
 
-    # createDistributable writes <binaries>/<build type>/app/<name>, holding app/ and runtime/.
-    # Take whichever build type is present rather than guessing between main and main-release.
-    $found = @(Get-ChildItem "composeApp/build/compose/binaries" -Directory -ErrorAction SilentlyContinue |
-        ForEach-Object { Join-Path $_.FullName "app" } |
-        Where-Object { Test-Path $_ } |
-        ForEach-Object { Get-ChildItem $_ -Directory } |
-        Where-Object { Test-Path (Join-Path $_.FullName "runtime/bin/java.exe") })
-    if ($found.Count -eq 0) {
-        throw "no app image with a bundled runtime under composeApp/build/compose/binaries - did :composeApp:createDistributable run?"
+# The bundled runtime: the java.exe the installer ships, not the one on PATH.
+$javaExe = @(Get-ChildItem $root -Recurse -Filter 'java.exe' -ErrorAction SilentlyContinue)[0]
+if (-not $javaExe) { throw "no bundled java.exe under $root - did :composeApp:createDistributable run?" }
+$java = $javaExe.FullName
+Write-Host "bundled runtime: $java"
+
+# The launcher config is the source of truth for what gets run.
+$cfg = @(Get-ChildItem "$root/binaries" -Recurse -Filter '*.cfg' -ErrorAction SilentlyContinue)[0]
+if (-not $cfg) { throw "no launcher .cfg under $root/binaries" }
+Write-Host "--- $($cfg.FullName) ---"
+Get-Content $cfg.FullName
+
+$imageRoot = $cfg.Directory.FullName
+$classpath = $null
+$mainClass = 'co.omnimusic.app.desktop.MainKt'
+$javaOptions = @()
+foreach ($line in Get-Content $cfg.FullName) {
+    if ($line -match '^\s*app\.classpath\s*=\s*(.+)$') {
+        $classpath = (($matches[1].Trim() -split ';') |
+            ForEach-Object { $_.Replace('$APPDIR', $imageRoot) } |
+            Join-String -Separator ';')
     }
-    return $found[0].FullName
+    elseif ($line -match '^\s*main-class\s*=\s*(.+)$') { $mainClass = $matches[1].Trim() }
+    elseif ($line -match '^\s*java-options\s*=\s*(.+)$') { $javaOptions += $matches[1].Trim() }
 }
-
-$image = Resolve-AppImage -Explicit $Image
-$java = Join-Path $image "runtime/bin/java.exe"
-if (-not (Test-Path $java)) { throw "no bundled runtime at $java" }
-Write-Host "app image: $image"
-
-$config = @(Get-ChildItem $image -Filter *.cfg -ErrorAction SilentlyContinue)[0]
-if ($config) {
-    Write-Host "--- what the launcher is told to run ---"
-    Get-Content $config.FullName
+if (-not $classpath) {
+    # No app.classpath entry means the whole app directory is the classpath.
+    $classpath = (Get-ChildItem (Join-Path $imageRoot 'app') -Filter *.jar -ErrorAction SilentlyContinue |
+        ForEach-Object { $_.FullName }) -join ';'
 }
+if (-not $classpath) { throw "no classpath in $($cfg.FullName) and no jars under $imageRoot\app" }
+Write-Host "classpath: $classpath"
+Write-Host "main class: $mainClass"
 
 Write-Host "--- bundled runtime ---"
 & $java -version
@@ -52,14 +64,10 @@ $modules = @(& $java --list-modules)
 Write-Host ("bundled modules: {0}" -f $modules.Count)
 
 Write-Host "--- launching the packaged app ---"
-$appDir = Join-Path $image "app"
-$classpath = (Get-ChildItem $appDir -Filter *.jar | ForEach-Object { $_.FullName }) -join ';'
-if (-not $classpath) { throw "no jars under $appDir" }
-
 $err = Join-Path $env:RUNNER_TEMP "omnimusic-launch.err"
 $out = Join-Path $env:RUNNER_TEMP "omnimusic-launch.out"
 $proc = Start-Process -FilePath $java `
-    -ArgumentList '-cp', $classpath, 'co.omnimusic.app.desktop.MainKt' `
+    -ArgumentList (@($javaOptions) + @('-cp', $classpath, $mainClass)) `
     -NoNewWindow -PassThru -RedirectStandardError $err -RedirectStandardOutput $out
 
 if (-not $proc.WaitForExit($TimeoutMilliseconds)) {
