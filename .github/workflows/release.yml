@@ -58,6 +58,9 @@ jobs:
         run: pwsh -File tools/ensure-innosetup.ps1
       - name: Package for this OS
         run: ./gradlew :composeApp:packageDistributionForCurrentOS --stacktrace
+      - name: Create the app image the smoke test launches
+        if: matrix.os == 'windows-latest'
+        run: ./gradlew :composeApp:createDistributable --stacktrace
       - name: Smoke-test that the packaged JVM starts
         if: matrix.os == 'windows-latest'
         run: pwsh -File tools/smoke-windows-launch.ps1
