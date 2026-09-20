@@ -41,6 +41,9 @@ object RemoteAudioBuffer {
     fun open(url: URL, limitBytes: Int = DEFAULT_LIMIT_BYTES): AudioInputStream =
         AudioSystem.getAudioInputStream(ByteArrayInputStream(read(url, limitBytes)))
 
+    /** The raw body behind [url], which is what a seek re-decodes from. */
+    fun bytes(url: URL, limitBytes: Int = DEFAULT_LIMIT_BYTES): ByteArray = read(url, limitBytes)
+
     /** Reads at most [limitBytes] of [url], failing with a readable error rather than buffering forever. */
     fun read(url: URL, limitBytes: Int = DEFAULT_LIMIT_BYTES): ByteArray {
         val connection = url.openConnection()

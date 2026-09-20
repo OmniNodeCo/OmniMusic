@@ -49,12 +49,16 @@ class JavaSoundAudioOutput(
     private var framesWritten = 0L
     private var format: AudioFormat? = null
 
+    /**
+     * Opens the audio this output was prepared with again, positioned at a given time.
+     *
+     * A seek is a second decoder over audio already in memory, never a rewind of the first one.
+     */
+    private var reopenAt: ((Long) -> AudioInputStream)? = null
+
     override fun prepare(source: AudioSource) {
         stop()
-        val input = when (source) {
-            is AudioSource.Remote -> openRemote(source.url)
-            is AudioSource.Pcm -> openPcm(source)
-        }
+        val input = openSource(source)
         stream = input
         format = input.format
         line = openLine(input.format)
@@ -109,23 +113,51 @@ class JavaSoundAudioOutput(
         runCatching { stream?.close() }
         line = null
         stream = null
+        reopenAt = null
         ready = false
         framesWritten = 0
     }
 
+    /**
+     * Moves to [positionMillis] by decoding the audio a second time and dropping the frames before
+     * it.
+     *
+     * The obvious implementation is `reset()` followed by `skip()`, and that is what this used to
+     * do — it is also what produced "cannot seek this stream". An MP3 does not arrive as a stream
+     * over bytes: it arrives as a *conversion* stream over a decoder with its own frame state and
+     * bit reservoir, and rewinding that is not something a Java Sound SPI has to honour, however
+     * seekable the bytes underneath are. Starting a fresh decoder cannot fail that way, and since
+     * the whole body is already in memory it costs a header parse rather than a network round trip.
+     *
+     * The cost is that skipping decodes: reaching the end of a long track means decoding all of it.
+     * That is worth trading for a seek that always lands.
+     */
     override fun seekTo(positionMillis: Long) {
-        val current = stream ?: return
-        val target = current.format.frameRate.toLong() * positionMillis / 1000L
-        try {
-            current.reset()
-            val skipped = current.skip(target)
-            framesWritten = skipped
+        val again = reopenAt
+        val output = line
+        if (again == null || output == null) return
+
+        val wasPaused = paused
+        // The writer thread is blocked inside read() on the decoder being replaced, so it has to go
+        // first; swapping the stream underneath it would leave it reading one nobody owns.
+        stopWriter()
+
+        val reopened = try {
+            again(positionMillis)
         } catch (e: IOException) {
             throw AudioSourceException("cannot seek this stream", e)
         }
-        if (!paused) {
-            line?.flush()
+        stream = reopened
+        framesWritten = frameAt(reopened.format, positionMillis)
+
+        lock.lock()
+        try {
+            paused = wasPaused
+        } finally {
+            lock.unlock()
         }
+        if (!wasPaused) output.flush()
+        startWriter()
     }
 
     override fun positionMillis(): Long {
@@ -142,9 +174,25 @@ class JavaSoundAudioOutput(
 
     // ----------------------------------------------------------------------------------------
 
+    /** Stops the reader thread but leaves the line open, so a seek can carry on playing. */
+    private fun stopWriter() {
+        lock.lock()
+        try {
+            stopRequested = true
+            paused = false
+            resumed.signalAll()
+        } finally {
+            lock.unlock()
+        }
+        writer?.let { thread -> runCatching { thread.join(1_000) } }
+        writer = null
+        runCatching { stream?.close() }
+    }
+
     private fun startWriter() {
         val output = line ?: return
         val input = stream ?: return
+        stopRequested = false
         val thread = Thread({
             val buffer = ByteArray(bufferSizeBytes)
             try {
@@ -186,12 +234,43 @@ class JavaSoundAudioOutput(
         thread.start()
     }
 
-    private fun openRemote(url: String): AudioInputStream {
-        // Buffered rather than streamed. `AudioSystem.getAudioInputStream(URL)` hands back the
-        // connection's own stream, which cannot be marked, so `reset()` throws — and `reset()` is
-        // the only way `seekTo` works. Every seek of a remote track failed because of it.
+    /**
+     * Opens the audio behind [source] and records how to open it again, without touching a device.
+     *
+     * Split out of [prepare] so the part a seek depends on can be tested on a machine with no sound
+     * card — which is every machine CI has.
+     */
+    fun openSource(source: AudioSource): AudioInputStream = when (source) {
+        is AudioSource.Remote -> {
+            val url = source.url
+            val body = fetch(url)
+            reopenAt = { millis -> openAt(body, millis, url) }
+            decode(body, url)
+        }
+
+        is AudioSource.Pcm -> {
+            reopenAt = { millis -> positioned(openPcm(source), millis) }
+            openPcm(source)
+        }
+    }
+
+    /** The stream a seek switches to, or null when this output has not been given any audio. */
+    fun reopenedAt(positionMillis: Long): AudioInputStream? = reopenAt?.invoke(positionMillis)
+
+    /** Reads a remote body into memory, which is what makes seeking possible at all. */
+    private fun fetch(url: String): ByteArray = try {
+        RemoteAudioBuffer.bytes(URI.create(url).toURL())
+    } catch (e: IOException) {
+        throw AudioSourceException("could not open $url", e)
+    }
+
+    /**
+     * Decodes an audio body held in memory, asking for PCM if the decoder handed back its own
+     * encoding. Opened up so a seek can start a second decoder over the same bytes.
+     */
+    fun decode(bytes: ByteArray, label: String = "audio"): AudioInputStream {
         val raw = try {
-            RemoteAudioBuffer.open(URI.create(url).toURL())
+            AudioSystem.getAudioInputStream(ByteArrayInputStream(bytes))
         } catch (e: UnsupportedAudioFileException) {
             throw UnsupportedAudioException(
                 "No decoder for this stream. The JDK can play WAV/AIFF/AU natively; MP3 and AAC need " +
@@ -199,9 +278,24 @@ class JavaSoundAudioOutput(
                 e,
             )
         } catch (e: IOException) {
-            throw AudioSourceException("could not read $url", e)
+            throw AudioSourceException("could not read $label", e)
         }
-        return decoded(raw, url)
+        return decoded(raw, label)
+    }
+
+    /** A fresh decoder over [bytes], already positioned at [positionMillis]. */
+    fun openAt(bytes: ByteArray, positionMillis: Long, label: String = "audio"): AudioInputStream =
+        positioned(decode(bytes, label), positionMillis)
+
+    private fun positioned(stream: AudioInputStream, positionMillis: Long): AudioInputStream {
+        val frames = frameAt(stream.format, positionMillis)
+        if (frames > 0) stream.skip(frames)
+        return stream
+    }
+
+    private fun frameAt(audioFormat: AudioFormat?, positionMillis: Long): Long {
+        val rate = audioFormat?.frameRate ?: return 0L
+        return if (rate <= 0f || positionMillis <= 0) 0L else rate.toLong() * positionMillis / 1000L
     }
 
     /**

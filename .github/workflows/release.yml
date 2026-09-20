@@ -76,6 +76,14 @@ jobs:
       - name: Smoke-test that the packaged JVM starts
         if: matrix.os == 'windows-latest'
         run: pwsh -File tools/smoke-windows-launch.ps1
+      - name: Smoke-test that a real MP3 can be seeked
+        if: matrix.os == 'ubuntu-latest'
+        # The unit tests can only decode WAV: mp3spi is on the Gradle classpath, not the kotlinc one,
+        # and the seek bug was MP3-specific. This runs the seek against a real preview using the jars
+        # the app image ships.
+        run: |
+          ./gradlew :composeApp:createDistributable --stacktrace
+          bash tools/smoke-audio-seek.sh
       - uses: actions/upload-artifact@v4
         with:
           name: omnimusic-desktop-${{ matrix.os }}
