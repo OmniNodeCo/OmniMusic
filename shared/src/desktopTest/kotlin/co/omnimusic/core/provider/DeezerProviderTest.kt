@@ -2,6 +2,7 @@ package co.omnimusic.core.provider
 
 import co.omnimusic.core.net.ApiError
 import co.omnimusic.core.provider.deezer.DeezerProvider
+import co.omnimusic.core.util.StreamLink
 import co.omnimusic.core.testing.FixtureHttpFetcher
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -22,6 +23,34 @@ class DeezerProviderTest {
     fun testProviderIdentity() {
         assertEquals("deezer", provider.id)
         assertEquals("Deezer", provider.displayName)
+    }
+
+    fun testTrackFetchesOneTrackWithAFreshSignedLink() {
+        val track = provider.track("2868828162")
+
+        assertEquals("2868828162", track.id)
+        assertEquals("NEVER GET USED TO THIS (feat. JVKE)", track.title)
+        assertEquals("Forrest Frank", track.artist.name)
+        // The featured artist is in the title, not the artist field: this track is filed under
+        // Forrest Frank alone, which is what the search result says too.
+        assertEquals("Forrest Frank", track.artistName)
+        assertContains(track.title, "feat. JVKE")
+        assertEquals("NEVER GET USED TO THIS", track.album?.title)
+        assertEquals(145, track.durationSeconds)
+        assertEquals(1, fetcher.requestsTo("/track/2868828162"))
+
+        // The fixture keeps its real token, so this reads the expiry out of the actual wire format
+        // rather than a URL invented for the test.
+        val url = track.streamUrl!!
+        assertEquals(1_789_942_732_000L, StreamLink.expiresAtMillis(url))
+        assertTrue(StreamLink.isExpired(url, 1_789_942_732_000L + 1))
+    }
+
+    fun testATrackTheApiDoesNotKnowIsAnErrorNotAnEmptyTrack() {
+        fetcher.route("/track/1", "error_parameter.json")
+        // The error body wins over "no data", so the message is Deezer's own.
+        val error = assertFailsWith<ApiError> { provider.track("1") }
+        assertContains(error.message ?: "", "wrong parameter")
     }
 
     fun testSearchTracksMapsEveryField() {

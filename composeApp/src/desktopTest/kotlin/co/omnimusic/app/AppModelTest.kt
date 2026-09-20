@@ -463,6 +463,59 @@ class AppModelTest {
         assertEquals("One More Time", model.playState.track?.title)
     }
 
+    fun testAnExpiredStreamLinkIsRefreshedBeforePlaying() {
+        val model = model()
+        val stale = trackOne.copy(streamUrl = "https://cdn.example/old.mp3?hdnea=exp=1000000000")
+        catalog.refreshedStreamUrl = "https://cdn.example/new.mp3?hdnea=exp=9999999999"
+
+        model.play(listOf(stale))
+
+        // The link in the track had expired, so the provider was asked and its answer is what plays.
+        assertEquals(
+            "https://cdn.example/new.mp3?hdnea=exp=9999999999",
+            (audio.prepared as AudioSource.Remote).url,
+        )
+        assertEquals(1, catalog.trackCalls)
+    }
+
+    fun testALinkStillInsideItsWindowPlaysWithoutAnotherRequest() {
+        val model = model()
+        val live = trackOne.copy(streamUrl = "https://cdn.example/live.mp3?hdnea=exp=9999999999")
+
+        model.play(listOf(live))
+
+        assertEquals(
+            "https://cdn.example/live.mp3?hdnea=exp=9999999999",
+            (audio.prepared as AudioSource.Remote).url,
+        )
+        assertEquals(0, catalog.trackCalls)
+    }
+
+    fun testARefreshedLinkIsReusedRatherThanRefetchedEveryPlay() {
+        val model = model()
+        val stale = trackOne.copy(streamUrl = "https://cdn.example/old.mp3?hdnea=exp=1000000000")
+        catalog.refreshedStreamUrl = "https://cdn.example/new.mp3?hdnea=exp=9999999999"
+
+        model.play(listOf(stale))
+        model.play(listOf(stale))
+
+        assertEquals(1, catalog.trackCalls)
+    }
+
+    fun testAFailedRefreshStillTriesTheLinkWeHad() {
+        val model = model()
+        val stale = trackOne.copy(streamUrl = "https://cdn.example/old.mp3?hdnea=exp=1000000000")
+        catalog.failTrackWith = "the api is down"
+
+        model.play(listOf(stale))
+
+        // A read failure explains itself better than claiming this track has no stream at all.
+        assertEquals(
+            "https://cdn.example/old.mp3?hdnea=exp=1000000000",
+            (audio.prepared as AudioSource.Remote).url,
+        )
+    }
+
     fun testASeekTheDecoderRefusesBecomesANoticeNotACrash() {
         val model = model()
         model.play(listOf(trackOne, trackTwo))
@@ -765,6 +818,11 @@ private class FakeCatalog(private val tracks: List<Track>) : MusicProvider {
     var failAlbumWith: String? = null
     var failRadioWith: String? = null
     var failSearchTracksWith: String? = null
+    var failTrackWith: String? = null
+    var trackCalls = 0
+
+    /** What `track(id)` hands back as the stream link, standing in for a freshly signed one. */
+    var refreshedStreamUrl: String? = null
     var radioResult: List<Track> = emptyList()
 
     /**
@@ -789,6 +847,13 @@ private class FakeCatalog(private val tracks: List<Track>) : MusicProvider {
             total = matching.size,
             nextCursor = if (nextStart < matching.size) nextStart.toString() else null,
         )
+    }
+
+    override fun track(trackId: String): Track {
+        trackCalls++
+        failTrackWith?.let { throw ApiError(it) }
+        val found = tracks.find { it.id == trackId } ?: throw ApiError("no track $trackId")
+        return found.copy(streamUrl = refreshedStreamUrl ?: found.streamUrl)
     }
 
     override fun searchAlbums(query: String, cursor: String?, limit: Int): Page<Album> =
@@ -860,9 +925,14 @@ private class FakeAudio : AudioOutput {
     private var ready = false
     private var playing = false
     var failNextPrepareWith: String? = null
+
+    /** The source of the last [prepare], so tests can assert which stream link actually played. */
+    var prepared: AudioSource? = null
+        private set
     var failNextSeekWith: String? = null
 
     override fun prepare(source: AudioSource) {
+        prepared = source
         failNextPrepareWith?.let { message ->
             failNextPrepareWith = null
             throw AudioSourceException(message)

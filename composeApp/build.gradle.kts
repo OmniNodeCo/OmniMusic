@@ -71,8 +71,8 @@ android {
         applicationId = "co.omnimusic.app"
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
     }
 
     buildTypes {
@@ -100,7 +100,7 @@ compose.desktop {
             // installs it if the runner image does not ship it.
             targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "OmniMusic"
-            packageVersion = "1.0.2"
+            packageVersion = "1.0.3"
             vendor = "OmniNodeCo"
             description = "A music player for Android, Windows, macOS and Linux"
             copyright = "© 2026 OmniNodeCo"

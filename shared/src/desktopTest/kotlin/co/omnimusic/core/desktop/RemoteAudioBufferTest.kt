@@ -8,6 +8,8 @@ import java.net.InetSocketAddress
 import java.net.URI
 import javax.sound.sampled.AudioSystem
 import kotlin.test.assertContentEquals
+import kotlin.test.assertContains
+import kotlin.test.assertFalse
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
@@ -24,10 +26,10 @@ class RemoteAudioBufferTest {
 
     private var server: HttpServer? = null
 
-    private fun serve(body: ByteArray): String {
+    private fun serve(body: ByteArray, status: Int = 200): String {
         val http = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
         http.createContext("/preview") { exchange ->
-            exchange.sendResponseHeaders(200, body.size.toLong())
+            exchange.sendResponseHeaders(status, body.size.toLong())
             exchange.responseBody.use { it.write(body) }
         }
         http.start()
@@ -83,6 +85,25 @@ class RemoteAudioBufferTest {
                 assertTrue(stream.read(ByteArray(4_096)) > 0)
                 stream.reset()
             }
+        } finally {
+            shutdown()
+        }
+    }
+
+    fun testAnExpiredLinkIsReportedAsSuchWithoutQuotingTheToken() {
+        // What the CDN does with a signed preview URL past its `exp`: 403. The old notice pasted the
+        // whole 300-character link into a snackbar, which told the user nothing they could act on.
+        val base = serve(ByteArray(16), status = 403)
+        val url = "$base?hdnea=exp=1789911086~acl=/preview.mp3*~hmac=deadbeefdeadbeef"
+        try {
+            val error = assertFailsWith<AudioSourceException> {
+                RemoteAudioBuffer.read(URI.create(url).toURL())
+            }
+            val message = error.message!!
+            assertContains(message, "403")
+            assertContains(message, "expired")
+            assertFalse(message.contains("hdnea"), "the notice quoted the signed link: $message")
+            assertFalse(message.contains("deadbeef"), "the notice quoted the signature: $message")
         } finally {
             shutdown()
         }

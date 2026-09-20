@@ -52,6 +52,14 @@ class MusicRepository(
             attempt { provider.searchTracks(query, cursor, limit) }
         }
 
+    /**
+     * Re-reads [track] from the provider to get a stream link that works now.
+     *
+     * Deliberately not cached: the whole point is that the link we already have has expired, and a
+     * cached refresh would hand back the same dead URL.
+     */
+    fun freshTrack(track: Track): Load<Track> = attempt { provider.track(track.id) }
+
     fun album(albumId: String): Load<Pair<Album, List<Track>>> = cached("album:$albumId") { provider.albumDetail(albumId) }
 
     fun artist(artistId: String): Load<Pair<Artist, List<Track>>> = cached("artist:$artistId") {

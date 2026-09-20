@@ -68,6 +68,12 @@ class DeezerProvider(
 
     override fun genres(): List<Genre> = DeezerJson.genreList(get("/genre"))
 
+    override fun track(trackId: String): Track {
+        val path = "/track/$trackId"
+        return DeezerJson.track(get(path))
+            ?: throw ApiError("Track $trackId returned no data", path)
+    }
+
     override fun albumDetail(albumId: String): Pair<Album, List<Track>> {
         val node = get("/album/$albumId")
         val album = DeezerJson.album(node) ?: throw ApiError("Album $albumId returned no data", "/album/$albumId")

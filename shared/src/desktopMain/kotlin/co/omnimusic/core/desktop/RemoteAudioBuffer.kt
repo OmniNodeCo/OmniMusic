@@ -4,6 +4,7 @@ import co.omnimusic.core.audio.AudioSourceException
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import java.net.HttpURLConnection
 import java.net.URL
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
@@ -45,9 +46,22 @@ object RemoteAudioBuffer {
         val connection = url.openConnection()
         connection.connectTimeout = CONNECT_TIMEOUT_MILLIS
         connection.readTimeout = READ_TIMEOUT_MILLIS
-        connection.getInputStream().use { input ->
-            return readAtMost(input, limitBytes, url.toString())
+        if (connection is HttpURLConnection) {
+            val status = connection.responseCode
+            // An expired signed link comes back as 403. Saying so beats quoting the URL: a preview
+            // link is 300 characters of token and tells the user nothing.
+            if (status !in 200..299) throw AudioSourceException(refusalMessage(status))
         }
+        connection.getInputStream().use { input ->
+            return readAtMost(input, limitBytes, url.toString().substringBefore('?'))
+        }
+    }
+
+    private fun refusalMessage(status: Int): String = when (status) {
+        403, 410 -> "This track's stream link has expired (HTTP $status). Music services sign " +
+            "preview links for only a few minutes, so play the track again to get a fresh one."
+        404 -> "The music service no longer has this stream (HTTP 404)."
+        else -> "The music service refused this stream (HTTP $status)."
     }
 
     private fun readAtMost(input: InputStream, limitBytes: Int, description: String): ByteArray {

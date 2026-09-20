@@ -1,6 +1,8 @@
 package co.omnimusic.core.repo
 
 import co.omnimusic.core.model.Load
+import co.omnimusic.core.model.Track
+import co.omnimusic.core.testing.testTrack
 import co.omnimusic.core.provider.deezer.DeezerProvider
 import co.omnimusic.core.testing.FixtureHttpFetcher
 import kotlin.test.assertContains
@@ -39,6 +41,24 @@ class MusicRepositoryTest {
         assertEquals(2, search.tracks.items.size)
         assertTrue(search.albums.isEmpty)
         assertEquals(2, search.artists.items.size)
+    }
+
+    fun testFreshTrackBypassesTheCacheBecauseANewLinkIsTheWholePoint() {
+        val track = testTrack("2868828162")
+
+        val first = assertIs<Load.Success<*>>(repository.freshTrack(track))
+        val second = assertIs<Load.Success<*>>(repository.freshTrack(track))
+
+        assertEquals("NEVER GET USED TO THIS (feat. JVKE)", (first.value as Track).title)
+        assertEquals("2868828162", (second.value as Track).id)
+        // A cached answer would hand back the expired link we asked to be rid of.
+        assertEquals(2, fetcher.requestsTo("/track/2868828162"))
+    }
+
+    fun testAFailedRefreshComesBackAsAFailureTheCallerCanReport() {
+        fetcher.fail("/track/2868828162")
+        val result = assertIs<Load.Failure>(repository.freshTrack(testTrack("2868828162")))
+        assertTrue(result.error.isNotBlank())
     }
 
     fun testResultsAreCachedForRepeatNavigation() {

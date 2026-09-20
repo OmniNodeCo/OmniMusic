@@ -31,6 +31,14 @@ interface MusicProvider {
     fun genres(): List<Genre>
 
     /** Album metadata plus its full track list. */
+    /**
+     * Fetches one track by id.
+     *
+     * This is how a stale stream link is replaced: preview URLs are signed for a few minutes, so a
+     * track restored from a saved session, playlist or history needs a new one before it can play.
+     */
+    fun track(trackId: String): Track
+
     fun albumDetail(albumId: String): Pair<Album, List<Track>>
 
     fun artistDetail(artistId: String): Artist

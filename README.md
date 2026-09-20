@@ -116,7 +116,7 @@ The core, the UI state holder and every test can be built and run with nothing b
 
 ```bash
 ./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
-./tools/run-tests.sh         # compile core + UI + tests, run 279 tests
+./tools/run-tests.sh         # compile core + UI + tests, run 294 tests
 ./tools/check-ui.sh          # type-check composeApp/ against compile-only Compose stubs
 ./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
 ```
@@ -140,7 +140,7 @@ Be precise about what has actually been executed, because it is not everything:
 
 **Verified in this repository** — `./tools/run-tests.sh` compiles `shared/src/commonMain`,
 `shared/src/desktopMain`, `composeApp/src/commonMain`, every test source set and the Compose stubs
-with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **279 tests, all passing**. They cover the
+with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **294 tests, all passing**. They cover the
 JSON parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
 playback engine (shuffle order, repeat modes, seek clamping, dead-stream skipping, queue mutation,
 session restore), the LRC parser (centisecond and millisecond fractions, `[offset:]`, multi-timestamp
@@ -203,6 +203,23 @@ A third was reported by a user and is the only one of the three found outside th
   reported position when the output refuses the seek (it used to, so the UI showed a time the audio
   was not at), and `AppModel` routes seek failures into the notice channel instead of letting an
   exception escape `onPreviewKeyEvent` into composition.
+
+And a fourth came from the same user a release later, which turned out to be the more interesting one:
+
+- **`could not read https://cdnt-preview.dzcdn.net/...mp3?hdnea=exp=...` — a stream link that had
+  already expired.** A track stores the stream URL it was fetched with, and Deezer signs those URLs
+  for about **15 minutes**: the same track id, requested twice 262 seconds apart, came back with the
+  same file path and a different `exp`/`hmac`. The app keeps tracks in saved playlists, listening
+  history and the session it restores on start, so nearly everything played later than a few minutes
+  after it was found had a dead link, and the CDN answered 403. `StreamLink` reads the expiry out of
+  the token, and `AppModel` now resolves a track's audio at play time: a link still inside its window
+  is played as it is, anything else is re-fetched from the provider by track id first and remembered
+  for the rest of the session. A refused link now reports `HTTP 403` instead of pasting 300
+  characters of signature into a snackbar.
+  `fixtures/track_detail.json` is a recorded `/track/{id}` response that deliberately keeps its
+  signed query, because a stripped URL cannot test the parser; `StreamLinkTest`, `DeezerProviderTest`
+  and four `AppModelTest` cases cover it. Disconnecting the resolver in `AppModel` makes the two
+  refresh tests fail, so they are load-bearing rather than decorative.
 
 **Built in CI, never launched** — the Gradle build, the Android APK and the desktop packages.
 This sandbox has no Android SDK and cannot reach `repo1.maven.org` or `services.gradle.org`, so

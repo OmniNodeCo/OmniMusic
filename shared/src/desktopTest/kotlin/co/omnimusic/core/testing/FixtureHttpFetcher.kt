@@ -77,6 +77,7 @@ class FixtureHttpFetcher(fixtureDir: Path = defaultFixtureDir()) : HttpFetcher {
             .route("/album/6575789/tracks", "album_tracks.json")
             .route("/artist/27", "artist_detail.json")
             .route("/artist/27/top", "artist_top.json")
+            .route("/track/2868828162", "track_detail.json")
             .route("/track/3135553/radio", "radio.json")
             .route("/playlist/908622995", "playlist_detail.json")
             .route("/api/get", "lrclib_synced.json")

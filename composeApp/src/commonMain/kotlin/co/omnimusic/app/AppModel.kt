@@ -4,10 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import co.omnimusic.core.AppEnvironment
+import co.omnimusic.core.audio.AudioSource
 import co.omnimusic.core.lyrics.Lyrics
 import co.omnimusic.core.model.*
 import co.omnimusic.core.store.ListeningHistory
 import co.omnimusic.core.util.LocalFilter
+import co.omnimusic.core.util.StreamLink
 import co.omnimusic.core.player.PlayState
 import co.omnimusic.core.player.PlaybackListener
 
@@ -116,7 +118,14 @@ class AppModel(private val environment: AppEnvironment) {
      */
     var currentTimeMillis: () -> Long = { 0L }
 
+    /**
+     * Stream links fetched since startup, by track id, so playing the same track again does not ask
+     * the provider twice. Entries age out on their own: [resolveSource] re-checks the token.
+     */
+    private val freshStreamUrls = mutableMapOf<String, String>()
+
     init {
+        environment.engine.sourceResolver = ::resolveSource
         environment.engine.listener = object : PlaybackListener {
             override fun onStateChanged(state: PlayState) {
                 playState = state
@@ -534,6 +543,34 @@ class AppModel(private val environment: AppEnvironment) {
     )
 
     // ----------------------------------------------------------------------------------------
+
+    /**
+     * Supplies the audio for a track at the moment it is about to play.
+     *
+     * A track carries the stream link it was fetched with, and that link is signed for a few
+     * minutes. Anything restored from a saved session, a stored playlist or the history tab is
+     * therefore already dead, and playing it used to fail with a notice quoting the whole signed
+     * URL. Asking the provider for the track again is the difference between that and a track that
+     * starts. Links that are still inside their window are used as they are, so playing straight
+     * from search results costs no extra request.
+     */
+    private fun resolveSource(track: Track): AudioSource? {
+        val now = currentTimeMillis()
+        val stored = track.streamUrl?.takeIf { it.isNotBlank() }
+        if (stored != null && !StreamLink.isExpired(stored, now)) return AudioSource.Remote(stored)
+
+        val remembered = freshStreamUrls[track.id]
+        if (remembered != null && !StreamLink.isExpired(remembered, now)) return AudioSource.Remote(remembered)
+
+        val refreshed = when (val load = environment.repository.freshTrack(track)) {
+            is Load.Success -> load.value.streamUrl?.takeIf { it.isNotBlank() }
+            // Keep whatever link we had: the engine falls back to it, and a read failure is a more
+            // useful message than pretending this track has no stream at all.
+            is Load.Failure -> null
+        } ?: return null
+        freshStreamUrls[track.id] = refreshed
+        return AudioSource.Remote(refreshed)
+    }
 
     private fun background(block: () -> Unit) {
         environment.executor.submit {
