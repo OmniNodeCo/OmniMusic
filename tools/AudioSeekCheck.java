@@ -31,12 +31,14 @@ public final class AudioSeekCheck {
 
         // 1. What the player does now: two independent decoders over bytes already in memory.
         byte[] fromStart = readFrom(output.reopenedAt(0), 4096);
-        byte[] fromThirty = readFrom(output.reopenedAt(30_000), 4096);
+        // 10 s, not 30: a Deezer preview is 30 s long, so seeking to its end finds no audio and the
+        // check would fail for a reason that has nothing to do with seeking.
+        byte[] fromThirty = readFrom(output.reopenedAt(10_000), 4096);
         require(fromStart.length == 4096, "the decoder produced no audio at the start");
-        require(fromThirty.length == 4096, "the decoder produced no audio 30 s in");
+        require(fromThirty.length == 4096, "the decoder produced no audio 10 s in");
         require(!java.util.Arrays.equals(fromStart, fromThirty),
-                "seeking 30 s in returned the same audio as the start - the seek did nothing");
-        System.out.println("PASS: re-decoding lands 30 s in, on different audio");
+                "seeking 10 s in returned the same audio as the start - the seek did nothing");
+        System.out.println("PASS: re-decoding lands 10 s in, on different audio");
 
         // 2. What the player used to do: rewind the one stream. This is the failure being replaced,
         //    demonstrated rather than assumed.

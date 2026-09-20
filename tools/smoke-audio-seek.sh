@@ -67,6 +67,8 @@ if ! "$JAVAC" -nowarn -cp "$CLASSPATH" -d "$OUT" tools/AudioSeekCheck.java >/tmp
   fail "javac could not compile against the packaged jars: $(tr '\n' ' ' </tmp/javac.log | head -c 500)"
 fi
 
-if ! "$JAVA" -cp "$OUT:$CLASSPATH" AudioSeekCheck "$PREVIEW"; then
-  fail "the packaged decoder could not seek a real MP3 (see the step output above)"
+if ! "$JAVA" -cp "$OUT:$CLASSPATH" AudioSeekCheck "$PREVIEW" >/tmp/seek.log 2>&1; then
+  cat /tmp/seek.log >&2
+  fail "AudioSeekCheck: $(tr '\n' ' ' </tmp/seek.log | tail -c 600)"
 fi
+cat /tmp/seek.log
