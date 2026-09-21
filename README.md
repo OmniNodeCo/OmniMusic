@@ -116,7 +116,7 @@ The core, the UI state holder and every test can be built and run with nothing b
 
 ```bash
 ./tools/setup-toolchain.sh   # JRE from PyPI (jdk4py) + kotlinc from the npm registry
-./tools/run-tests.sh         # compile core + UI + tests, run 294 tests
+./tools/run-tests.sh         # compile core + UI + tests, run 299 tests
 ./tools/check-ui.sh          # type-check composeApp/ against compile-only Compose stubs
 ./tools/run-demo.sh session  # CLI front end: search, playlist, playback, history
 ```
@@ -140,7 +140,7 @@ Be precise about what has actually been executed, because it is not everything:
 
 **Verified in this repository** — `./tools/run-tests.sh` compiles `shared/src/commonMain`,
 `shared/src/desktopMain`, `composeApp/src/commonMain`, every test source set and the Compose stubs
-with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **294 tests, all passing**. They cover the
+with kotlinc (Kotlin 2.4.20, Temurin JRE 25.0.2) and runs **299 tests, all passing**. They cover the
 JSON parser and writer, the WAV codec (including 24-bit and float PCM and malformed containers), the
 playback engine (shuffle order, repeat modes, seek clamping, dead-stream skipping, queue mutation,
 session restore), the LRC parser (centisecond and millisecond fractions, `[offset:]`, multi-timestamp
@@ -188,21 +188,34 @@ Two of the bugs found were behavioural, not typographical, and both broke sessio
 
 A third was reported by a user and is the only one of the three found outside this repository:
 
-- **Seeking a remote track failed with `cannot seek this stream`.** `openRemote` handed
-  `AudioSystem` the URL itself, and `seekTo` rewinds with `reset()`. Java Sound's own reader marks
-  **200 bytes** to parse the header, and the JDK wraps a URL stream in an **8 KB** buffer — enough
-  for that header reset, so the stream opens and plays. But once playback has read past the buffer
-  the mark is gone, and `reset()` throws `Resetting to invalid mark`. 8 KB of 16-bit mono is about a
-  fifth of a second, so every seek after the first instant failed: the arrow keys, the seek bar,
-  resuming a saved position, and looping a track with repeat-one. The fix is
-  `RemoteAudioBuffer.open`, which decodes from a buffered copy of the body instead of the
-  connection, so the mark a seek returns to always exists. `RemoteAudioBufferTest` proves the old
-  code path fails and the new one does not — reverting `open` to `getAudioInputStream(url)` makes
-  `testAStreamOpenedFromTheNetworkCanBeRewoundPastTheBuffer` fail with exactly the reported error.
+- **Seeking a remote track failed with `cannot seek this stream`.** `seekTo` rewound with `reset()`,
+  and the stream it called that on is the one `PcmConversion` produces — no mixer accepts `MPEG1L3`,
+  so an MP3 is always wrapped in a PCM conversion stream before playback. Measured in CI against a
+  real Deezer preview (`tools/AudioSeekCheck.java`, run from the ubuntu desktop job):
+
+  ```
+  conversion stream: PCM_SIGNED over MPEG1L3
+  legacy rewind (raw MP3 stream):    reset() succeeded
+  legacy rewind (conversion stream): reset() threw IOException: mark not supported
+  ```
+
+  The raw MP3 stream rewinds fine; the conversion wrapper does not support `mark` at all. So every
+  seek failed — the arrow keys, the seek bar, resuming a saved position, looping with repeat-one.
+
+  The first attempt at this was wrong and is worth keeping visible: it buffered the body so the
+  bytes underneath could be marked, and `RemoteAudioBufferTest` proved that much. It could not have
+  helped, because the failure is in the wrapper above those bytes, and the user came back with the
+  same error. `seekTo` now starts a second decoder over the buffered body and drops the frames
+  before the target, which cannot fail the way a rewind can; the same CI check reports
+  `PASS: re-decoding lands 10 s in, on different audio`. The trade is that skipping decodes, so
+  seeking near the end of a long track decodes everything before it.
+
   Two supporting fixes came out of the same report: `PlaybackEngine.seekTo` no longer moves the
   reported position when the output refuses the seek (it used to, so the UI showed a time the audio
   was not at), and `AppModel` routes seek failures into the notice channel instead of letting an
-  exception escape `onPreviewKeyEvent` into composition.
+  exception escape `onPreviewKeyEvent` into composition. A third came from the CI check: a
+  zero-length read is not end of stream, and the writer thread treated it as one, which would have
+  ended a track in silence.
 
 And a fourth came from the same user a release later, which turned out to be the more interesting one:
 
