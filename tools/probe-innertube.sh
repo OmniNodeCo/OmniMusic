@@ -23,8 +23,6 @@ command -v curl >/dev/null 2>&1 || fail "no curl on PATH"
 command -v python3 >/dev/null 2>&1 || fail "no python3 on PATH"
 
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
-# A long-standing, permanently available video, so the probe does not depend on a trending track.
-VIDEO_ID="dQw4w9WgXcQ"
 
 # --------------------------------------------------------------------------------------------
 # Step 1: the key and client version, taken from the page rather than remembered.
@@ -38,9 +36,6 @@ if [ -z "$KEY" ]; then
 fi
 echo "key: ${KEY:0:12}...  web client version: ${WEB_VERSION:-unknown}"
 
-# --------------------------------------------------------------------------------------------
-# Step 2: ask each client for the same video and report what came back.
-# --------------------------------------------------------------------------------------------
 probe() {
   local host="$1" client="$2" version="$3"
   local body response
@@ -82,7 +77,63 @@ for f in plain[:4]:
 }
 
 report="$(
-  echo "clients:"
+  # --------------------------------------------------------------------------------------------
+# Step 2: find a real music videoId through InnerTube search.
+#
+# The first version asked YouTube Music about a plain YouTube video and got "Video unavailable" from
+# WEB_REMIX, which says as much about the video as about the endpoint. Searching first also answers
+# the metadata half of the question on its own - search is far less gated than playback.
+# --------------------------------------------------------------------------------------------
+SEARCH_BODY="$(python3 -c '
+import json, sys
+print(json.dumps({
+    "context": {"client": {"clientName": "WEB_REMIX", "clientVersion": sys.argv[1], "hl": "en", "gl": "US"}},
+    "query": sys.argv[2],
+}))' "${WEB_VERSION:-7.20.1}" "daft punk one more time")"
+
+SEARCH="$(curl -fsS -X POST "https://music.youtube.com/youtubei/v1/search?key=$KEY" \
+  -H 'Content-Type: application/json' -H "User-Agent: $UA" -d "$SEARCH_BODY" || true)"
+
+VIDEO_ID="$(printf '%s' "$SEARCH" | python3 -c '
+import json, sys
+try:
+    data = json.load(sys.stdin)
+except Exception as exc:
+    print(""); raise SystemExit(0)
+
+found = []
+def walk(node):
+    if isinstance(node, dict):
+        # A song row carries its id in the menu/overlay; the renderer name is what identifies it.
+        if "musicResponsiveListItemRenderer" in node:
+            row = node["musicResponsiveListItemRenderer"]
+            for target in ("playlistItemData",):
+                pid = row.get(target, {}).get("videoId")
+                if pid:
+                    found.append(pid)
+        for value in node.values():
+            walk(value)
+    elif isinstance(node, list):
+        for value in node:
+            walk(value)
+
+walk(data)
+print(found[0] if found else "")
+')"
+
+if [ -z "$VIDEO_ID" ]; then
+  echo "search: no videoId in the response (body bytes: ${#SEARCH})"
+  echo "::warning::InnerTube search returned no videoId, so the player probe had nothing to ask about"
+  VIDEO_ID="dQw4w9WgXcQ"
+else
+  echo "search: WEB_REMIX returned videoId $VIDEO_ID for 'daft punk one more time'"
+fi
+echo "::notice::InnerTube search works: videoId=$VIDEO_ID"
+
+# --------------------------------------------------------------------------------------------
+# Step 3: ask each client for that video and report what came back.
+# --------------------------------------------------------------------------------------------
+echo "clients:"
   for host in https://music.youtube.com https://www.youtube.com; do
     probe "$host" WEB_REMIX "${WEB_VERSION:-7.20.1}"
     probe "$host" ANDROID 19.09.37
