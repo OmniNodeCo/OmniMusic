@@ -292,6 +292,35 @@ module set is verified against the real artifact and the classpath is verified a
 What no amount of building proves: nobody has opened a window. Rendering, the real network calls to
 Deezer and LRCLIB, and audio output have never been exercised end to end.
 
+## Why the music source is Deezer, and what switching would take
+
+Deezer is not the obvious choice — 30-second previews and stream links signed for about 15 minutes
+are real limits. It is the choice because it is keyless, mainstream, and serves MP3, which is the one
+codec this player can decode. The alternatives were checked rather than assumed:
+
+| Source | Key | Catalog | Stream |
+| --- | --- | --- | --- |
+| **Deezer** (in use) | none | mainstream | 30 s MP3, link signed ~15 min — refreshed at play time |
+| iTunes Search | none | mainstream | 30 s **AAC** `.m4a` — no decoder in the build |
+| Audius | none | independent artists only | full-length MP3 |
+| YouTube Music (what SimpMusic uses) | none | mainstream | full-length **Opus/AAC** |
+
+YouTube Music was probed directly, with `tools/probe-innertube.sh` on a CI runner, because it is what
+the reference app uses and would give full-length mainstream tracks. None of the three InnerTube
+clients tried returned a single playable format:
+
+```
+WEB_REMIX 7.20.1      HTTP 404 from music.youtube.com/youtubei/v1/player
+ANDROID_MUSIC 7.03.52 playability=LOGIN_REQUIRED "Please sign in"            0 formats
+TVHTML5 7.20240101    playability=UNPLAYABLE "The page needs to be reloaded"  0 formats
+```
+
+That is not proof InnerTube is closed, only that it is not an endpoint you can call with a guessed
+client version. SimpMusic resolves streams with a maintained player-config table, a three-tier
+NewPipe extractor cascade, and a QuickJS JavaScript engine to run YouTube's signature cipher — and
+then plays itag 250/251 (Opus) or 141/774 (AAC). Porting it means those dependencies plus a decoder
+this build does not have, so it is a project rather than a configuration change.
+
 ## Known limitations
 
 - **Desktop MP3 playback depends on an SPI that this sandbox cannot fetch.** The JDK decodes
