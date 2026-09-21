@@ -9,8 +9,18 @@
 # the cipher dependency entirely. The second question is the codec: this player decodes MP3, and
 # YouTube serves Opus and AAC, so which itags are on offer decides whether a decoder is needed too.
 #
-# Runs where there is network - a CI runner - and reports through annotations, since job logs are
-# awkward to reach afterwards.
+# Run it from a CI runner, or anywhere with network; it reports through annotations so the result
+# survives the job log. It was wired into the build once and has since been taken out again: it
+# answered the question it was written for, and a step that always prints a failed InnerTube call
+# would only add noise. The measured answer, on 2026-09-21:
+#
+#   WEB_REMIX 7.20.1     HTTP 404 from music.youtube.com/youtubei/v1/player
+#   ANDROID_MUSIC 7.03.52 playability=LOGIN_REQUIRED "Please sign in"     0 formats
+#   TVHTML5 7.20240101    playability=UNPLAYABLE "The page needs to be reloaded" 0 formats
+#
+# No client returned a single playable format, which is the point: this is not an endpoint you can
+# call with a guessed client version. SimpMusic tracks a maintained player-config table and runs a
+# three-tier extractor cascade for exactly that reason.
 set -euo pipefail
 
 fail() {
