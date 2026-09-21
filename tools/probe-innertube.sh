@@ -93,6 +93,7 @@ report="$(
   done
 )"
 echo "$report"
-# Annotations survive the job log, so the verdict goes there too - one per line would be clearer but
-# the API returns them as a single message, so keep it to the playable formats and the failures.
-echo "::notice::InnerTube probe (key read from the page): $(echo "$report" | grep -E 'playable|->|error' | tr '\n' ' ' | head -c 900)"
+# Annotations survive the job log, so the verdict goes there too. The first version of this filtered
+# the report down to lines mentioning a playable format or an error, which threw away the status line
+# for every client that answered with a parseable body - exactly the interesting case. Send it all.
+echo "::notice::InnerTube probe (key read from the page): $(echo "$report" | tr '\n' '|' | head -c 2400)"
