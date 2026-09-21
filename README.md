@@ -305,21 +305,32 @@ codec this player can decode. The alternatives were checked rather than assumed:
 | Audius | none | independent artists only | full-length MP3 |
 | YouTube Music (what SimpMusic uses) | none | mainstream | full-length **Opus/AAC** |
 
-YouTube Music was probed directly, with `tools/probe-innertube.sh` on a CI runner, because it is what
-the reference app uses and would give full-length mainstream tracks. None of the three InnerTube
-clients tried returned a single playable format:
+YouTube Music was probed directly from a CI runner, with `tools/probe-innertube.sh`, because it is
+what the reference app uses and would give full-length mainstream tracks. The first probe was wrong
+and is worth keeping as a caution: it hardcoded an API key, got HTTP 404 from every client, and I
+reported that as evidence YouTube could not serve this player. InnerTube answers an *unrecognised
+key* with 404, so that run measured the probe's own bug. Reading the key out of a live
+`music.youtube.com` page load gives a real answer, and it splits in two:
 
 ```
-WEB_REMIX 7.20.1      HTTP 404 from music.youtube.com/youtubei/v1/player
-ANDROID_MUSIC 7.03.52 playability=LOGIN_REQUIRED "Please sign in"            0 formats
-TVHTML5 7.20240101    playability=UNPLAYABLE "The page needs to be reloaded"  0 formats
+search:  WEB_REMIX returned videoId n6RTF4OPzf8 for "daft punk one more time"
+player:  WEB_REMIX      LOGIN_REQUIRED  reason=Sign in to confirm you're not a bot
+         MWEB           LOGIN_REQUIRED  reason=Sign in to confirm you're not a bot
+         ANDROID_MUSIC  LOGIN_REQUIRED  reason=Please sign in
+         ANDROID, IOS   HTTP 400        (each client family needs its own key, not the web one)
 ```
 
-That is not proof InnerTube is closed, only that it is not an endpoint you can call with a guessed
-client version. SimpMusic resolves streams with a maintained player-config table, a three-tier
-NewPipe extractor cascade, and a QuickJS JavaScript engine to run YouTube's signature cipher — and
-then plays itag 250/251 (Opus) or 141/774 (AAC). Porting it means those dependencies plus a decoder
-this build does not have, so it is a project rather than a configuration change.
+**Search works. Stream resolution is refused — because of where the request comes from.** "Sign in
+to confirm you're not a bot" is YouTube's answer to a datacenter IP, and every CI runner is one. So
+InnerTube's metadata half is reachable and testable, while the half that produces audio cannot be
+exercised here or in CI at all; it would only be verifiable from a residential connection, which is
+presumably where this app actually gets used.
+
+Two further costs are independent of that. SimpMusic resolves streams with a maintained player-config
+table, a three-tier NewPipe extractor cascade, and a QuickJS JavaScript engine to run YouTube's
+signature cipher. And the audio it selects is itag 250/251 (Opus) or 141/774 (AAC), neither of which
+this build can decode. Switching source therefore means those dependencies, a decoder, and a
+playback path that cannot be tested anywhere this project can run.
 
 ## Known limitations
 
